@@ -1,0 +1,11 @@
+### Directories ###
+
+# Ignore .NET build directories
+[Bb]in
+[Oo]bj
+
+### Files ###
+
+# Ignore VIM backup files
+*~
+*.swp
