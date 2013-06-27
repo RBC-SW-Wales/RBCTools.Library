@@ -9,13 +9,11 @@ using System.Runtime.InteropServices;
 // General Information about an assembly is controlled through the following 
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
-[assembly: AssemblyTitle("RbcApplicationImporter")]
+[assembly: AssemblyTitle("RBC Volunteer Application Importer")]
 [assembly: AssemblyDescription("")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("")]
-[assembly: AssemblyProduct("RbcApplicationImporter")]
-[assembly: AssemblyCopyright("Copyright 2013")]
-[assembly: AssemblyTrademark("")]
+[assembly: AssemblyProduct("RBC Volunteer Application Importer")]
 [assembly: AssemblyCulture("")]
 
 // This sets the default COM visibility of types in the assembly to invisible.

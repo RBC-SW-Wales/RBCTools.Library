@@ -1,7 +1,7 @@
 ﻿
 using System;
 
-namespace RbcApplicationImporter
+namespace RbcVolunteerApplications.Importer
 {
 	class Program
 	{
