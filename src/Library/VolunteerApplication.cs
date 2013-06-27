@@ -17,7 +17,7 @@ namespace RbcVolunteerApplications.Library
 		
 		public ApplicationKind ApplicationKind { get; set; }
 		
-		public FormsOfService FormsOfService { get; set; }
+		public FormOfServiceKinds FormsOfService { get; set; }
 		
 		public string LastName { get; set; }
 		
@@ -25,11 +25,27 @@ namespace RbcVolunteerApplications.Library
 		
 		public string MiddleName { get; set; }
 		
-		public Gender Gender { get; set; }
+		public GenderKind Gender { get; set; }
 		
 		public DateTime DateOfBirth { get; set; }
 		
 		public DateTime DateOfBaptism { get; set; }
+		
+		public string AddressStreetAndNumber { get; set; }
+		
+		public string AddressTown { get; set; }
+		
+		public string PostCode { get; set; }
+		
+		public string EmailAddress { get; set; }
+		
+		public string PhoneNumberHome { get; set; }
+		
+		public string PhoneNumberWork { get; set; }
+		
+		public string PhoneNumberMobile { get; set; }
+		
+		public PriviledgeKinds CurrentPriviledges { get; set; }
 		
 		#endregion
 		
@@ -43,17 +59,26 @@ namespace RbcVolunteerApplications.Library
 	}
 	
 	[Flags]
-	public enum FormsOfService
+	public enum FormOfServiceKinds
 	{
 		NoneSpecified = 0,
 		HallConstruction = 1,
 		DisasterRelief = 2
 	}
 	
-	public enum Gender
+	public enum GenderKind
 	{
 		NoneSpecified = 0,
 		Male = 1,
 		Femail = 2
+	}
+	
+	[Flags]
+	public enum PriviledgeKinds
+	{
+		NoneSpecified = 0,
+		Elder = 1,
+		MinisterialServant = 2,
+		RegularPioneer = 4
 	}
 }
