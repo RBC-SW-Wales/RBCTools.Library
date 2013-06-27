@@ -2,7 +2,9 @@
 Microsoft Visual Studio Solution File, Format Version 11.00
 # Visual Studio 2010
 # SharpDevelop 4.3
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Importer", "Importer\Importer.csproj", "{EAE86486-EA18-4DDB-8A2A-DB682D5DE91F}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RbcVolunteerApplications.Importer", "Importer\RbcVolunteerApplications.Importer.csproj", "{EAE86486-EA18-4DDB-8A2A-DB682D5DE91F}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RbcVolunteerApplications.Library", "Library\RbcVolunteerApplications.Library.csproj", "{B756777A-A247-47B2-B2ED-8A9121EC787D}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -14,5 +16,9 @@ Global
 		{EAE86486-EA18-4DDB-8A2A-DB682D5DE91F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{EAE86486-EA18-4DDB-8A2A-DB682D5DE91F}.Release|Any CPU.Build.0 = Release|Any CPU
 		{EAE86486-EA18-4DDB-8A2A-DB682D5DE91F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B756777A-A247-47B2-B2ED-8A9121EC787D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B756777A-A247-47B2-B2ED-8A9121EC787D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B756777A-A247-47B2-B2ED-8A9121EC787D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B756777A-A247-47B2-B2ED-8A9121EC787D}.Release|Any CPU.ActiveCfg = Release|Any CPU
 	EndGlobalSection
 EndGlobal
