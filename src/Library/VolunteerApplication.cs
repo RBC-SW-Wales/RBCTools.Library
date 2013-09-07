@@ -23,7 +23,7 @@ namespace RbcVolunteerApplications.Library
 		
 		public string FirstName { get; set; }
 		
-		public string MiddleName { get; set; }
+		public string MiddleNames { get; set; }
 		
 		public GenderKind Gender { get; set; }
 		
