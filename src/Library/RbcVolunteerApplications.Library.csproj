@@ -53,8 +53,13 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="ApplicationKind.cs" />
+    <Compile Include="FormOfServiceKinds.cs" />
+    <Compile Include="GenderKind.cs" />
+    <Compile Include="PriviledgeKinds.cs" />
     <Compile Include="VolunteerApplication.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="WorkBackground.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
