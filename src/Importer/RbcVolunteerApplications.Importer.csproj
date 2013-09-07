@@ -63,5 +63,11 @@
   <ItemGroup>
     <None Include="app.config" />
   </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Library\RbcVolunteerApplications.Library.csproj">
+      <Project>{B756777A-A247-47B2-B2ED-8A9121EC787D}</Project>
+      <Name>RbcVolunteerApplications.Library</Name>
+    </ProjectReference>
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
