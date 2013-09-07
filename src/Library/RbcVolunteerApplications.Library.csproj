@@ -60,6 +60,7 @@
     <Compile Include="FormOfServiceKinds.cs" />
     <Compile Include="GenderKind.cs" />
     <Compile Include="PriviledgeKinds.cs" />
+    <Compile Include="S82Reader.cs" />
     <Compile Include="VolunteerApplication.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="WorkBackground.cs" />
