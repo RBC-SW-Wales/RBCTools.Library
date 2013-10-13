@@ -17,7 +17,7 @@ namespace RbcVolunteerApplications.Importer
 			
 			ConsoleX.WriteTitle("RBC Application Form (S82) Importer");
 			
-			Program.OpenAndProcessFiles();
+			Program.OpenFilesAndProcess();
 			
 //			Program.DisplaySelectedData();
 			
@@ -27,17 +27,15 @@ namespace RbcVolunteerApplications.Importer
 			Console.ReadKey(true);
 		}
 		
-		private static void OpenAndProcessFiles()
+		private static void OpenFilesAndProcess()
 		{
 			
-			ConsoleX.WriteIntro("Open and process files");
+			ConsoleX.WriteIntro("Open and fields in files");
 			
 			ConsoleX.WriteLine("First you will need to choose the S82 PDF files that you wish to import.");
 			ConsoleX.WriteLine("Press any key to continue to select files...");
 			Console.ReadKey(true);
-
-			var failures = new Dictionary<string, List<string>>();
-
+			
 			OpenFileDialog dlg = new OpenFileDialog();
 			dlg.Multiselect = true;
 			dlg.Title = "Choose S82 PDF files";
@@ -46,39 +44,32 @@ namespace RbcVolunteerApplications.Importer
 			{
 				foreach (string str in dlg.FileNames)
 				{
-					FileInfo file = new FileInfo(str);
-					ConsoleX.WriteLine(string.Format("Importing file: {0} (not really, soon though!)", file.Name));
 					var reader = new S82Reader(str);
-					if (!reader.ReadSuccessful)
-					{
-						failures.Add(file.Name, reader.ProblemList);
-					}
-					else
-					{
-						var application = reader.VolunteerApplication;
-					}
-					// TODO Save the application to the database.
+					
+					var application = reader.BuildVolunteerApplication(ConsoleX.WriteQuery);
+					
+					ConsoleX.WriteLine("Read the file. Here's the summary.");
+					ConsoleX.WriteLine("Last Name: " + application.LastName);
+					ConsoleX.WriteLine("First Name: " + application.FirstName);
+					ConsoleX.WriteLine("Middle Names: " + application.MiddleNames);
+					ConsoleX.WriteLine("Read the file, and ready to save into database! Press any key to continue.");
+					Console.ReadKey(true);
+					
+					ConsoleX.WriteLine("Inserting into database");
+					application.InsertIntoDatabase();
+					ConsoleX.WriteLine("Complete.");
+					
+					//reader.ShowFields(ConsoleX.WriteLine);
 				}
 			}
-
-			// TODO List files that failed to import.
-			ConsoleX.WriteWarning("The following files could not be imported for the reasons stated.");
-			ConsoleX.WriteLine("Please correct problems and try again");
-
-			foreach (var item in failures)
-			{
-				ConsoleX.WriteLine("File: " + item.Key);
-				ConsoleX.WriteLine("Problems:");
-				foreach (var problem in item.Value)
-					ConsoleX.WriteWarning(" * " + problem);
-			}
-
-			ConsoleX.WriteLine("Process complete.");
+			
+			ConsoleX.WriteLine("All files completed!");
+			
 		}
 		
 		private static void DisplaySelectedData()
 		{
-			ConsoleX.WriteLine("Test Database Connection");
+			ConsoleX.WriteIntro("Test Database Connection, SELECT data");
 			Connector.SelectTest(ConsoleX.WriteLine, ConsoleX.WriteWarning);
 			ConsoleX.WriteLine("Database select completed.");
 		}
