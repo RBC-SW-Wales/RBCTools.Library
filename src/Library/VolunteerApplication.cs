@@ -63,5 +63,21 @@ namespace RbcVolunteerApplications.Library
 		
 		#endregion
 		
+		#region Methods
+		
+		public void InsertIntoDatabase()
+		{
+			var connector = new Connector("INSERT INTO Volunteers " + 
+			                              "(Surname, FirstName, MiddleName) " +
+			                              "VALUES (@Surname, @FirstName, @MiddleName)");
+			
+			connector.AddParameter("@Surname", "AAA TEST " + this.LastName);
+			connector.AddParameter("@FirstName", this.FirstName);
+			connector.AddParameter("@MiddleName", this.MiddleNames);
+			connector.ExecuteNonQuery();
+			connector = null;
+		}
+		
+		#endregion
 	}
 }

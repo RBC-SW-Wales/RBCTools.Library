@@ -76,27 +76,6 @@ namespace RbcVolunteerApplications.Library
 			}
 		}
 		
-		public static void InsertTest(Action<string> outputLine, Action<string> outputWarning)
-		{
-			try
-			{
-				outputLine("Attempting INSERT");
-				var connector = new Connector("INSERT INTO Volunteers (FirstName, MiddleName, Surname) VALUES (@FirstName, @MiddleName, @Surname)");
-				connector.AddParameter("@FirstName", "John");
-				connector.AddParameter("@MiddleName", "Test");
-				connector.AddParameter("@Surname", "X");
-				connector.ExecuteNonQuery();
-				connector = null;
-				outputLine("INSERT Completed!");
-			}
-			catch (Exception ex)
-			{
-				outputWarning("Error! " + ex.Message);
-				outputLine("Exception type: " + ex.GetType().ToString());
-				outputLine("Stack trace: " + ex.StackTrace);
-			}
-		}
-		
 		public void ExecuteNonQuery()
 		{
 			this.OpenConnection();
