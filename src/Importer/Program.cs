@@ -21,46 +21,48 @@ namespace RbcVolunteerApplications.Importer
 			ConsoleX.WriteLine("Press any key to continue to select files...");
 			Console.ReadKey(true);
 			
-//			var failures = new Dictionary<string, List<string>>();
-//			
-//			OpenFileDialog dlg = new OpenFileDialog();
-//			dlg.Multiselect = true;
-//			dlg.Title = "Choose S82 PDF files";
-//			dlg.Filter = "PDF Files|*.pdf";
-//			if (dlg.ShowDialog() == DialogResult.OK)
-//			{
-//				foreach(string str in dlg.FileNames)
-//				{
-//					FileInfo file = new FileInfo(str);
-//					ConsoleX.WriteLine(string.Format("Importing file: {0} (not really, soon though!)", file.Name));
-//					var reader = new S82Reader(str);
-//					if(!reader.ReadSuccessful)
-//					{
-//						failures.Add(file.Name, reader.ProblemList);
-//					}
-//					else
-//					{
-//						var application = reader.VolunteerApplication;
-//						// TODO Save the application to the database.
-//					}
-//					
-//				}
-//			}
+			var failures = new Dictionary<string, List<string>>();
+			
+			OpenFileDialog dlg = new OpenFileDialog();
+			dlg.Multiselect = true;
+			dlg.Title = "Choose S82 PDF files";
+			dlg.Filter = "PDF Files|*.pdf";
+			if (dlg.ShowDialog() == DialogResult.OK)
+			{
+				foreach(string str in dlg.FileNames)
+				{
+					FileInfo file = new FileInfo(str);
+					ConsoleX.WriteLine(string.Format("Importing file: {0} (not really, soon though!)", file.Name));
+					var reader = new S82Reader(str);
+					if(!reader.ReadSuccessful)
+					{
+						failures.Add(file.Name, reader.ProblemList);
+					}
+					else
+					{
+						var application = reader.VolunteerApplication;
+						// TODO Save the application to the database.
+					}
+					
+				}
+			}
 			
 			// TODO List files that failed to import.
-//			ConsoleX.WriteWarning("The following files could not be imported for the reasons stated.");
-//			ConsoleX.WriteLine("Please correct problems and try again");
-//			
-//			foreach(var item in failures)
-//			{
-//				ConsoleX.WriteLine("File: " + item.Key);
-//				ConsoleX.WriteLine("Problems:");
-//				foreach(var problem in item.Value) ConsoleX.WriteWarning(" * " + problem);
-//			}
-//			
-//			ConsoleX.WriteLine("Process complete.");
+			ConsoleX.WriteWarning("The following files could not be imported for the reasons stated.");
+			ConsoleX.WriteLine("Please correct problems and try again");
+			
+			foreach(var item in failures)
+			{
+				ConsoleX.WriteLine("File: " + item.Key);
+				ConsoleX.WriteLine("Problems:");
+				foreach(var problem in item.Value) ConsoleX.WriteWarning(" * " + problem);
+			}
+			
+			ConsoleX.WriteLine("Process complete.");
 
-//			Connector.InsertTest(ConsoleX.WriteLine, ConsoleX.WriteWarning);
+			ConsoleX.WriteLine("Test Database Connection");
+			Connector.SelectTest(ConsoleX.WriteLine, ConsoleX.WriteWarning);
+			ConsoleX.WriteLine("Database select completed.");
 			
 			ConsoleX.WriteLine("Press any key to close...");
 			Console.ReadKey(true);
