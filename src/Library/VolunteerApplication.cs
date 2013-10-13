@@ -62,5 +62,6 @@ namespace RbcVolunteerApplications.Library
 		public string EmergencyContactAddress { get; set; }
 		
 		#endregion
+		
 	}
 }
