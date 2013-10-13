@@ -40,5 +40,16 @@ namespace RbcVolunteerApplications.Importer
 			Console.ResetColor();
 		}
 		
+		public static string WriteQuery(string text)
+		{
+			Console.WriteLine("    " + text);
+			Console.WriteLine(" ");
+			var input =  Console.ReadLine();
+			Console.WriteLine(" ");
+			Console.WriteLine("Thanks.");
+			Console.WriteLine(" ");
+			return input;
+		}
+		
 	}
 }
