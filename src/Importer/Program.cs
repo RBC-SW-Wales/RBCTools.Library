@@ -12,8 +12,13 @@ namespace RbcVolunteerApplications.Importer
 		[STAThread]
 		public static void Main(string[] args)
 		{
-			Console.WriteLine("First you will need to choose the S82 PDF files that you wish to import.");
-			Console.WriteLine("Press any key to continue to select files...");
+			// Get size right
+			Console.SetWindowSize(Console.LargestWindowWidth - 2, Console.LargestWindowHeight);
+			
+			ConsoleX.WriteIntro("RBC Application Form (S82) Importer");
+			
+			ConsoleX.WriteLine("First you will need to choose the S82 PDF files that you wish to import.");
+			ConsoleX.WriteLine("Press any key to continue to select files...");
 			Console.ReadKey(true);
 			
 			var failures = new Dictionary<string, List<string>>();
@@ -27,7 +32,7 @@ namespace RbcVolunteerApplications.Importer
 				foreach(string str in dlg.FileNames)
 				{
 					FileInfo file = new FileInfo(str);
-					Console.WriteLine(string.Format("Importing file: {0} (not really, soon though!)", file.Name));
+					ConsoleX.WriteLine(string.Format("Importing file: {0} (not really, soon though!)", file.Name));
 					var reader = new S82Reader(str);
 					if(!reader.ReadSuccessful)
 					{
@@ -43,19 +48,19 @@ namespace RbcVolunteerApplications.Importer
 			}
 			
 			// TODO List files that failed to import.
-			Console.WriteLine("The following files could not be imported for the reasons stated.");
-			Console.WriteLine("Please correct problems and try again");
+			ConsoleX.WriteWarning("The following files could not be imported for the reasons stated.");
+			ConsoleX.WriteLine("Please correct problems and try again");
 			
 			foreach(var item in failures)
 			{
-				Console.WriteLine("File: " + item.Key);
-				Console.WriteLine("Problems:");
-				foreach(var problem in item.Value) Console.WriteLine(" * " + problem);
+				ConsoleX.WriteLine("File: " + item.Key);
+				ConsoleX.WriteLine("Problems:");
+				foreach(var problem in item.Value) ConsoleX.WriteWarning(" * " + problem);
 			}
 			
-			Console.WriteLine("Process complete.");
+			ConsoleX.WriteLine("Process complete.");
 			
-			Console.Write("Press any key to close...");
+			ConsoleX.WriteLine("Press any key to close...");
 			Console.ReadKey(true);
 		}
 	}
