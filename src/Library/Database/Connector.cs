@@ -46,36 +46,6 @@ namespace RbcVolunteerApplications.Library.Database
 		
 		#endregion
 		
-		public static void SelectTest(Action<string> outputLine, Action<string> outputWarning)
-		{
-			try
-			{
-				var connector = new Connector("SELECT ID, FirstName, MiddleName, Surname FROM Volunteers");
-				var table = connector.ExecuteDataTable();
-				connector = null;
-				
-				var count = 0;
-				foreach(DataRow row in table.Rows)
-				{
-					count++;
-					outputLine("Record #" + count.ToString());
-					string outputRecord = "";
-					foreach(DataColumn col in table.Columns)
-					{
-						if(outputRecord != "") outputRecord += ", ";
-						outputRecord += col.ColumnName + ": " + row[col.ColumnName].ToString();
-					}
-					outputLine(outputRecord);
-				}
-			}
-			catch (Exception ex)
-			{
-				outputWarning("Error! " + ex.Message);
-				outputLine("Exception type: " + ex.GetType().ToString());
-				outputLine("Stack trace: " + ex.StackTrace);
-			}
-		}
-		
 		public void ExecuteNonQuery()
 		{
 			this.OpenConnection();

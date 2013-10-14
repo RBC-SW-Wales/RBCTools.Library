@@ -42,11 +42,17 @@ namespace RbcVolunteerApplications.Importer
 		
 		public static string WriteQuery(string text)
 		{
-			Console.WriteLine("    " + text);
-			Console.WriteLine(" ");
-			var input =  Console.ReadLine();
-			Console.WriteLine(" ");
-			Console.WriteLine("Thanks.");
+			ConsoleX.WriteLine("    " + text);
+			var input =  ConsoleX.ReadPromt();
+			ConsoleX.WriteLine("Thanks.");
+			return input;
+		}
+		
+		public static string ReadPromt()
+		{
+			var input = "";
+			Console.Write(" >> ");
+			input = Console.ReadLine();
 			Console.WriteLine(" ");
 			return input;
 		}

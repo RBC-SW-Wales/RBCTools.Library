@@ -58,7 +58,9 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="ApplicationKind.cs" />
+    <Compile Include="Database\Congregations.cs" />
     <Compile Include="Database\Connector.cs" />
+    <Compile Include="Database\Volunteers.cs" />
     <Compile Include="FormOfServiceKinds.cs" />
     <Compile Include="GenderKind.cs" />
     <Compile Include="PriviledgeKinds.cs" />
