@@ -1,6 +1,7 @@
 ﻿
 using System;
 using System.Collections.Generic;
+using RbcVolunteerApplications.Library.Database;
 
 namespace RbcVolunteerApplications.Library
 {

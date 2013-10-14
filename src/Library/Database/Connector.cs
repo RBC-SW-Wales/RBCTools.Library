@@ -4,7 +4,7 @@ using System.Data.Odbc;
 using System.Data.OleDb;
 using System.IO;
 
-namespace RbcVolunteerApplications.Library
+namespace RbcVolunteerApplications.Library.Database
 {
 	public class Connector
 	{

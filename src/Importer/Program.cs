@@ -4,6 +4,7 @@ using System.IO;
 using System.Windows.Forms;
 using System.Collections.Generic;
 using RbcVolunteerApplications.Library;
+using RbcVolunteerApplications.Library.Database;
 
 namespace RbcVolunteerApplications.Importer
 {
