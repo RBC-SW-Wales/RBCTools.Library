@@ -45,7 +45,10 @@ namespace RbcVolunteerApplications.Library.Database
 			DataTable table = null;
 			try
 			{
-				var connector = new Connector("SELECT ID, FirstName, MiddleName, Surname, CongregationName FROM Volunteers WHERE Surname LIKE 'A%'");
+				var connector = new Connector("SELECT ID, FirstName, MiddleName, Surname, CongregationName " +
+				                              "FROM Volunteers " +
+				                              "WHERE Surname LIKE 'A%'" +
+				                              "ORDER BY Surname");
 				table = connector.ExecuteDataTable();
 				connector = null;
 			}
