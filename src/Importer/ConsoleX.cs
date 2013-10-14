@@ -4,16 +4,19 @@ namespace RbcVolunteerApplications.Importer
 {
 	public static class ConsoleX
 	{
-		public static void WriteLine(string text)
+		
+		public static void WriteLine(string text){ ConsoleX.WriteLine(text, blankAfter: true); }
+		
+		public static void WriteLine(string text, bool blankAfter = true)
 		{
 			Console.WriteLine("    " + text);
-			Console.WriteLine(" ");
+			if(blankAfter) Console.WriteLine(" ");
 		}
 		
 		public static void WriteWarning(string text)
 		{
 			Console.ForegroundColor = ConsoleColor.Yellow;
-			ConsoleX.WriteLine("    " + text);
+			ConsoleX.WriteLine(text);
 			Console.ResetColor();
 		}
 		
@@ -34,26 +37,32 @@ namespace RbcVolunteerApplications.Importer
 			return input;
 		}
 		
-		public static void WriteTitle(string intro)
+		private static void WriteHeading(string text, ConsoleColor color)
 		{
 			Console.WriteLine(" ");
 			Console.WriteLine(" ");
-			Console.ForegroundColor = ConsoleColor.Green;
-			Console.WriteLine("    " + intro);
-			Console.Write(new string('-', Console.WindowWidth));
-			Console.WriteLine(" ");
+			Console.ForegroundColor = color;
+			ConsoleX.WriteLine(text, blankAfter:false);
+			ConsoleX.WriteHorizontalRule();
 			Console.ResetColor();
 		}
 		
-		public static void WriteIntro(string intro)
+		public static void WriteTitle(string text)
 		{
+			ConsoleX.WriteHeading(text, ConsoleColor.Green);
+		}
+		
+		public static void WriteIntro(string text)
+		{
+			ConsoleX.WriteHeading(text, ConsoleColor.Blue);
+		}
+		
+		public static void WriteHorizontalRule()
+		{
+			Console.Write(" "); // space
+			Console.Write(new string('-', Console.WindowWidth - 2)); // width minus 2 spaces.
+			Console.Write(" "); // space
 			Console.WriteLine(" ");
-			Console.WriteLine(" ");
-			Console.ForegroundColor = ConsoleColor.Blue;
-			Console.WriteLine("    " + intro);
-			Console.Write(new string('-', Console.WindowWidth));
-			Console.WriteLine(" ");
-			Console.ResetColor();
 		}
 		
 	}

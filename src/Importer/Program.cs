@@ -16,6 +16,7 @@ namespace RbcVolunteerApplications.Importer
 		{
 			// Get size right
 			Console.SetWindowSize(Console.LargestWindowWidth - 2, Console.LargestWindowHeight);
+			Console.BufferWidth = Console.WindowWidth;
 			
 			// Display application title
 			ConsoleX.WriteTitle("RBC Application Form (S82) Importer");
@@ -65,6 +66,7 @@ namespace RbcVolunteerApplications.Importer
 			ConsoleX.WriteLine("import-files");
 			ConsoleX.WriteLine("help");
 			ConsoleX.WriteLine("exit");
+			ConsoleX.WriteHorizontalRule();
 		}
 		
 		private static void OpenFilesAndProcess()
@@ -104,6 +106,7 @@ namespace RbcVolunteerApplications.Importer
 			}
 			
 			ConsoleX.WriteLine("All files completed!");
+			ConsoleX.WriteHorizontalRule();
 			
 		}
 		
@@ -111,7 +114,7 @@ namespace RbcVolunteerApplications.Importer
 		{
 			ConsoleX.WriteIntro("Test Database Connection, SELECT data");
 			Volunteers.DisplayAllVolunteers(ConsoleX.WriteLine, ConsoleX.WriteWarning);
-			ConsoleX.WriteLine("Database select completed.");
+			ConsoleX.WriteHorizontalRule();
 		}
 		
 		private static void InsertTestVolunteer()
@@ -133,6 +136,7 @@ namespace RbcVolunteerApplications.Importer
 				ConsoleX.WriteWarning("Error! " + ex.Message);
 				throw;
 			}
+			ConsoleX.WriteHorizontalRule();
 		}
 		
 		private static void ShowCongregationName()
@@ -157,6 +161,7 @@ namespace RbcVolunteerApplications.Importer
 			}
 			
 			ConsoleX.WriteLine("Congregation lookup finished");
+			ConsoleX.WriteHorizontalRule();
 		}
 		
 	}
