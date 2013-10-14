@@ -58,6 +58,11 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Commands\CongregationLookup.cs" />
+    <Compile Include="Commands\HelpCommand.cs" />
+    <Compile Include="Commands\ImportFiles.cs" />
+    <Compile Include="Commands\CommandBase.cs" />
+    <Compile Include="Commands\QueryVolunteers.cs" />
     <Compile Include="ConsoleX.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -70,6 +75,9 @@
       <Project>{B756777A-A247-47B2-B2ED-8A9121EC787D}</Project>
       <Name>RbcVolunteerApplications.Library</Name>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Commands" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
