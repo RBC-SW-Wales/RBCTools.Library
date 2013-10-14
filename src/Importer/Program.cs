@@ -88,7 +88,7 @@ namespace RbcVolunteerApplications.Importer
 				{
 					var reader = new S82Reader(str);
 					
-					var application = reader.BuildVolunteerApplication(ConsoleX.WriteQuery);
+					var application = reader.BuildVolunteerApplication(ConsoleX.WriteWarning, ConsoleX.WriteQuery);
 					
 					ConsoleX.WriteLine("Read the file. Here's the summary.");
 					ConsoleX.WriteLine("Last Name: " + application.LastName);

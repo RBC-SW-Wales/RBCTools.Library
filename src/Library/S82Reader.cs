@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using iTextSharp.text.pdf;
 
 namespace RbcVolunteerApplications.Library
@@ -32,7 +33,7 @@ namespace RbcVolunteerApplications.Library
 		
 		#endregion
 		
-		public VolunteerApplication BuildVolunteerApplication(Func<string, string> queryCallback)
+		public VolunteerApplication BuildVolunteerApplication(Action<string> outputWarning, Func<string, string> queryCallback)
 		{
 			var volunteer = new VolunteerApplication();
 			
@@ -56,9 +57,19 @@ namespace RbcVolunteerApplications.Library
 			}
 			else
 			{
-				lastName = queryCallback("I don't understand the \"Last Name\" field. Please can you tell me their Last Name?");
-				middleNames = queryCallback("I don't understand the \"Middle Names\" field. Please can you tell me their Middles Names?");
-				firstName = queryCallback("I don't understand the \"First Name\" field. Please can you tell me their First Name?");
+				outputWarning("I'm having problems understanding the 'names' field. I need your help. I'll open the file for you now.");
+				
+				var process = Process.Start(this.FilePath);
+				
+				lastName = queryCallback("Please can you tell me their 'Last Name'?");
+				middleNames = queryCallback("Please can you tell me if they have any 'Middles Names'?");
+				firstName = queryCallback("Please can you tell me their 'First Name'?");
+				
+				try
+				{
+					process.Kill();
+				}
+				catch (Exception){}
 			}
 			
 			volunteer.LastName = lastName;
