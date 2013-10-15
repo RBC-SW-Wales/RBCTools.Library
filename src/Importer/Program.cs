@@ -43,17 +43,24 @@ namespace RbcVolunteerApplications.Importer
 				input = ConsoleX.ReadPromt();
 				if(input != "exit")
 				{
-					var commandFound = false;
-					foreach(var command in Program.CommandList)
+					try
 					{
-						if(command.Slug == input)
+						var commandFound = false;
+						foreach(var command in Program.CommandList)
 						{
-							commandFound = true;
-							command.Run();
+							if(command.Slug == input)
+							{
+								commandFound = true;
+								command.Run();
+							}
 						}
+						if(!commandFound)
+							new HelpCommand().Run();
 					}
-					if(!commandFound)
-						new HelpCommand().Run();
+					catch (Exception ex)
+					{
+						ConsoleX.WriteException(ex);
+					}
 				}
 			}
 			
