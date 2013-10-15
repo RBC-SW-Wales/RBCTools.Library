@@ -17,10 +17,11 @@ namespace RbcVolunteerApplications.Importer
 		private static List<CommandBase> BuildCommandList()
 		{
 			var list = new List<CommandBase>();
-			Program.CommandList.Add(new ImportFiles());
-			Program.CommandList.Add(new CongregationLookup());
-			Program.CommandList.Add(new QueryVolunteers());
-			Program.CommandList.Add(new HelpCommand());
+			list.Add(new ImportFiles());
+			list.Add(new CongregationLookup());
+			list.Add(new QueryVolunteers());
+			list.Add(new QueryDepartments());
+			list.Add(new HelpCommand());
 			return list;
 		}
 		
