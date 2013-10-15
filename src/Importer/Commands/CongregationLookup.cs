@@ -26,7 +26,7 @@ namespace RbcVolunteerApplications.Importer.Commands
 				{
 					int congregationId;
 					if(int.TryParse(input, out congregationId))
-						ConsoleX.WriteLine("Name: " + Congregations.GetNameById(congregationId));
+						ConsoleX.WriteDataTable(Congregations.GetById(congregationId));
 					else
 						ConsoleX.WriteWarning("Input didn't parse as an integer!");
 				}
