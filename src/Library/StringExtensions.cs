@@ -15,5 +15,13 @@ namespace RbcVolunteerApplications.Library
 			
 			return source;
 		}
+		
+		public static string TruncateIfTooLong(this string source, int maxLength, string trailingString = "")
+		{
+			if(source.Length > maxLength)
+				source = source.Substring(0, maxLength - trailingString.Length) + trailingString;
+			
+			return source;
+		}
 	}
 }
