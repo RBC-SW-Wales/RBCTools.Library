@@ -12,13 +12,16 @@ namespace RbcVolunteerApplications.Importer.Commands
 		public QueryVolunteers()
 		{
 			base.Slug = "query-volunteers";
-			base.Description = "Query the Volunteers database";
+			base.Description = "Query the Volunteers in the database";
 		}
 		
 		public override void Run()
 		{
-			ConsoleX.WriteIntro("Test Database Connection, SELECT data");
-			Volunteers.DisplayAllVolunteers(ConsoleX.WriteLine, ConsoleX.WriteWarning);
+			ConsoleX.WriteIntro("Query Volunteers");
+			
+			var table = Volunteers.GetAllVolunteers();
+			ConsoleX.WriteDataTable(table);
+			
 			ConsoleX.WriteHorizontalRule();
 		}
 	}
