@@ -41,7 +41,7 @@ namespace RbcVolunteerApplications.Importer
 			var input = "";
 			while(input != "exit")
 			{
-				input = ConsoleX.ReadPromt();
+				input = ConsoleX.ReadPromt(Program.CommandList.ListSlugs());
 				if(input != "exit")
 				{
 					try

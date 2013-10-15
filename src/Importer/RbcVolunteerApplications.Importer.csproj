@@ -58,6 +58,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Commands\CommandExtentions.cs" />
     <Compile Include="Commands\CongregationLookup.cs" />
     <Compile Include="Commands\HelpCommand.cs" />
     <Compile Include="Commands\ImportFiles.cs" />
