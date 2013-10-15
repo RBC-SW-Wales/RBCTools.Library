@@ -1,4 +1,7 @@
 ﻿using System;
+using System.Data;
+
+using RbcVolunteerApplications.Library;
 
 namespace RbcVolunteerApplications.Importer
 {
@@ -37,6 +40,14 @@ namespace RbcVolunteerApplications.Importer
 			return input;
 		}
 		
+		public static void WriteHorizontalRule()
+		{
+			Console.Write(" "); // space
+			Console.Write(new string('-', Console.WindowWidth - 2)); // width minus 2 spaces.
+			Console.Write(" "); // space
+			Console.WriteLine(" ");
+		}
+		
 		private static void WriteHeading(string text, ConsoleColor color)
 		{
 			Console.WriteLine(" ");
@@ -57,13 +68,48 @@ namespace RbcVolunteerApplications.Importer
 			ConsoleX.WriteHeading(text, ConsoleColor.Blue);
 		}
 		
-		public static void WriteHorizontalRule()
+		public static void WriteException(Exception ex)
 		{
-			Console.Write(" "); // space
-			Console.Write(new string('-', Console.WindowWidth - 2)); // width minus 2 spaces.
-			Console.Write(" "); // space
-			Console.WriteLine(" ");
+			Console.ForegroundColor = ConsoleColor.Red;
+			ConsoleX.WriteLine("Error: " + ex.Message);
+			ConsoleX.WriteLine("Type: " + ex.GetType().ToString());
+			ConsoleX.WriteLine("Stack Trace: " + ex.StackTrace);
+			Console.ResetColor();
 		}
 		
+		public static void WriteDataTable(DataTable table, int columnWidth = 20)
+		{
+			if(table != null)
+			{
+				var tableWidth = (table.Columns.Count * (columnWidth + 3)) + 1;
+				var cellFormat = "| {0,-" + columnWidth + "} ";
+				
+				ConsoleX.WriteLine(new string('-', tableWidth), blankAfter:false);
+				
+				string line = "";
+				foreach(DataColumn column in table.Columns)
+				{
+					line += string.Format(cellFormat, column.ColumnName.TruncateIfTooLong(columnWidth, "..."));
+				}
+				line += "|";
+				
+				ConsoleX.WriteLine(line, blankAfter:false);
+				
+				ConsoleX.WriteLine(new string('-', tableWidth), blankAfter:false);
+				
+				foreach(DataRow row in table.Rows)
+				{
+					line = "";
+					foreach(DataColumn col in table.Columns)
+					{
+						line += string.Format(cellFormat, row[col.ColumnName].ToString().TruncateIfTooLong(columnWidth, "..."));
+					}
+					line += "|";
+					ConsoleX.WriteLine(line, blankAfter:false);
+				}
+				
+				ConsoleX.WriteLine(new string('-', tableWidth));
+			}
+		}
 	}
 }
