@@ -16,6 +16,8 @@ namespace RbcVolunteerApplications.Library
 		
 		#region Properties
 		
+		public int ID { get; set; }
+		
 		public ApplicationKind ApplicationKind { get; set; }
 		
 		public FormOfServiceKinds FormsOfService { get; set; }

@@ -40,6 +40,37 @@ namespace RbcVolunteerApplications.Library.Database
 			return table;
 		}
 		
+		public static VolunteerApplication GetByID(int volunteerId)
+		{
+			VolunteerApplication volunteer = null;
+			
+			var connector = new Connector(BasicQuery +
+			                              " WHERE Volunteers.ID = @VolunteerID " +
+			                              " ORDER BY Volunteers.Surname ");
+			
+			connector.AddParameter("@VolunteerID", volunteerId);
+			
+			var table = connector.ExecuteDataTable();
+			connector = null;
+			
+			if(table.Rows.Count == 1)
+			{
+				volunteer = BuildFromDataRow(table.Rows[0]);
+			}
+			
+			return volunteer;
+		}
+		
+		private static VolunteerApplication BuildFromDataRow(DataRow row)
+		{
+			var volunteer = new VolunteerApplication();
+			volunteer.ID = (int)row["ID"];
+			volunteer.FirstName = row["FirstName"] as string;
+			volunteer.MiddleNames = row["MiddleName"] as string;
+			volunteer.LastName = row["Surname"] as string;
+			return volunteer;
+		}
+		
 		private static string BasicQuery
 		{
 			get

@@ -37,7 +37,6 @@ namespace RbcVolunteerApplications.Importer
 			
 			// Display application title
 			ConsoleX.WriteTitle("RBC Application Form (S82) Importer");
-			
 			ConsoleX.WriteLine("Enter a command to start (e.g. 'help')");
 			
 			// Enter into loop that takes commands.

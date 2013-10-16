@@ -55,6 +55,8 @@ namespace RbcVolunteerApplications.Library.Database
 		
 		public DataTable ExecuteDataTable()
 		{
+			//Console.WriteLine(this.Query);
+			
 			this.OpenConnection();
 			
 			var adapter = new OleDbDataAdapter();

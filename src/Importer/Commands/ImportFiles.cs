@@ -52,9 +52,19 @@ namespace RbcVolunteerApplications.Importer.Commands
 						int inputId;
 						if(int.TryParse(input, out inputId))
 						{
-							ConsoleX.WriteWarning("TODO Get record from db.");
-							existingVolunteer = new VolunteerApplication();
 							// TODO Get record from db.
+							ConsoleX.WriteWarning("TODO Get record from db.");
+							existingVolunteer = Volunteers.GetByID(inputId);
+							
+							if(existingVolunteer != null)
+							{
+							ConsoleX.WriteWarning(string.Format("ID: {0}, FirstName: {1}, LastName {2}",
+							                                    existingVolunteer.ID,
+							                                    existingVolunteer.FirstName,
+							                                    existingVolunteer.LastName));
+							}
+							else
+								ConsoleX.WriteWarning("No one found with that ID");
 						}
 					}
 					
