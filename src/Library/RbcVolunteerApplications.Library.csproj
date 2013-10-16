@@ -64,6 +64,7 @@
     <Compile Include="Database\Volunteers.cs" />
     <Compile Include="FormOfServiceKinds.cs" />
     <Compile Include="GenderKind.cs" />
+    <Compile Include="IConsoleX.cs" />
     <Compile Include="PriviledgeKinds.cs" />
     <Compile Include="S82Reader.cs" />
     <Compile Include="StringExtensions.cs" />

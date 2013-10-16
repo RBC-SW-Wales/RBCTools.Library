@@ -6,25 +6,26 @@ using RbcVolunteerApplications.Library;
 
 namespace RbcVolunteerApplications.Importer
 {
-	public static class ConsoleX
+	public class ConsoleX : IConsoleX
 	{
+		public ConsoleX(){}
 		
-		public static void WriteLine(string text){ ConsoleX.WriteLine(text, blankAfter: true); }
+		public void WriteLine(string text){ this.WriteLine(text, blankAfter: true); }
 		
-		public static void WriteLine(string text, bool blankAfter = true)
+		public void WriteLine(string text, bool blankAfter = true)
 		{
 			Console.WriteLine("    " + text);
 			if(blankAfter) Console.WriteLine(" ");
 		}
 		
-		public static void WriteWarning(string text)
+		public void WriteWarning(string text)
 		{
 			Console.ForegroundColor = ConsoleColor.Yellow;
-			ConsoleX.WriteLine(text);
+			this.WriteLine(text);
 			Console.ResetColor();
 		}
 		
-		public static string ReadPromt(List<string> tabPossibilities = null)
+		public string ReadPromt(List<string> tabPossibilities = null)
 		{
 			var input = string.Empty;
 			Console.Write(" >> ");
@@ -39,7 +40,7 @@ namespace RbcVolunteerApplications.Importer
 			return input;
 		}
 
-		private static string ReadInputWithTabCompletion(string input, List<string> tabPossibilities)
+		private string ReadInputWithTabCompletion(string input, List<string> tabPossibilities)
 		{
 			ConsoleKeyInfo key;
 			// Loop until ENTER key is hit
@@ -87,15 +88,15 @@ namespace RbcVolunteerApplications.Importer
 			return input;
 		}
 		
-		public static string WriteQuery(string text)
+		public string WriteQuery(string text)
 		{
-			ConsoleX.WriteLine(text);
-			var input =  ConsoleX.ReadPromt();
-			ConsoleX.WriteLine("Thanks.");
+			this.WriteLine(text);
+			var input = this.ReadPromt();
+			this.WriteLine("Thanks.");
 			return input;
 		}
 		
-		public static void WriteHorizontalRule()
+		public void WriteHorizontalRule()
 		{
 			Console.Write(" "); // space
 			Console.Write(new string('-', Console.WindowWidth - 2)); // width minus 2 spaces.
@@ -103,43 +104,43 @@ namespace RbcVolunteerApplications.Importer
 			Console.WriteLine(" ");
 		}
 		
-		private static void WriteHeading(string text, ConsoleColor color)
+		private void WriteHeading(string text, ConsoleColor color)
 		{
 			Console.WriteLine(" ");
 			Console.WriteLine(" ");
 			Console.ForegroundColor = color;
-			ConsoleX.WriteLine(text, blankAfter:false);
-			ConsoleX.WriteHorizontalRule();
+			this.WriteLine(text, blankAfter:false);
+			this.WriteHorizontalRule();
 			Console.ResetColor();
 		}
 		
-		public static void WriteTitle(string text)
+		public void WriteTitle(string text)
 		{
-			ConsoleX.WriteHeading(text, ConsoleColor.Green);
+			this.WriteHeading(text, ConsoleColor.Green);
 		}
 		
-		public static void WriteIntro(string text)
+		public void WriteIntro(string text)
 		{
-			ConsoleX.WriteHeading(text, ConsoleColor.Blue);
+			this.WriteHeading(text, ConsoleColor.Blue);
 		}
 		
-		public static void WriteException(Exception ex)
+		public void WriteException(Exception ex)
 		{
 			Console.ForegroundColor = ConsoleColor.Red;
-			ConsoleX.WriteLine("Error: " + ex.Message);
-			ConsoleX.WriteLine("Type: " + ex.GetType().ToString());
-			ConsoleX.WriteLine("Stack Trace: " + ex.StackTrace);
+			this.WriteLine("Error: " + ex.Message);
+			this.WriteLine("Type: " + ex.GetType().ToString());
+			this.WriteLine("Stack Trace: " + ex.StackTrace);
 			Console.ResetColor();
 		}
 		
-		public static void WriteDataTable(DataTable table, int columnWidth = 20)
+		public void WriteDataTable(DataTable table, int columnWidth = 20)
 		{
 			if(table != null)
 			{
 				var tableWidth = (table.Columns.Count * (columnWidth + 3)) + 1;
 				var cellFormat = "| {0,-" + columnWidth + "} ";
 				
-				ConsoleX.WriteLine(new string('-', tableWidth), blankAfter:false);
+				this.WriteLine(new string('-', tableWidth), blankAfter:false);
 				
 				string line = "";
 				foreach(DataColumn column in table.Columns)
@@ -148,9 +149,9 @@ namespace RbcVolunteerApplications.Importer
 				}
 				line += "|";
 				
-				ConsoleX.WriteLine(line, blankAfter:false);
+				this.WriteLine(line, blankAfter:false);
 				
-				ConsoleX.WriteLine(new string('-', tableWidth), blankAfter:false);
+				this.WriteLine(new string('-', tableWidth), blankAfter:false);
 				
 				foreach(DataRow row in table.Rows)
 				{
@@ -160,10 +161,10 @@ namespace RbcVolunteerApplications.Importer
 						line += string.Format(cellFormat, row[col.ColumnName].ToString().TruncateIfTooLong(columnWidth, "..."));
 					}
 					line += "|";
-					ConsoleX.WriteLine(line, blankAfter:false);
+					this.WriteLine(line, blankAfter:false);
 				}
 				
-				ConsoleX.WriteLine(new string('-', tableWidth));
+				this.WriteLine(new string('-', tableWidth));
 			}
 		}
 	}

@@ -14,6 +14,8 @@ namespace RbcVolunteerApplications.Importer
 	{
 		public static List<CommandBase> CommandList = BuildCommandList();
 		
+		public static ConsoleX ConsoleX = new ConsoleX();
+		
 		private static List<CommandBase> BuildCommandList()
 		{
 			var list = new List<CommandBase>();
