@@ -15,7 +15,7 @@ namespace RbcVolunteerApplications.Importer.Commands
 		
 		public override void Run()
 		{
-			ConsoleX.WriteIntro("Open and fields in files");
+			ConsoleX.WriteIntro(base.Description);
 			
 			ConsoleX.WriteLine("First you will need to choose the S82 PDF files that you wish to import.");
 			ConsoleX.WriteLine("Press any key to continue to select files...");
@@ -37,7 +37,9 @@ namespace RbcVolunteerApplications.Importer.Commands
 					
 					var newApplication = reader.GetVolunteerName(ConsoleX);
 					
-					ConsoleX.WriteLine("Step #2 Match with existing record", ConsoleColor.Green);
+					ConsoleX.WriteLine(string.Format("Volunteer's name is {0} {1}", newApplication.FirstName, newApplication.LastName));
+					
+					ConsoleX.WriteLine("Step #2 Search for existing records", ConsoleColor.Green);
 					
 					ConsoleX.WriteLine(string.Format("Looking up '{0} {1}'...", newApplication.FirstName, newApplication.LastName));
 					
@@ -47,31 +49,52 @@ namespace RbcVolunteerApplications.Importer.Commands
 					
 					if(matchesFound)
 					{
-						var input = ConsoleX.WriteQuery("Do you want to update an existing record? If so, please enter the ID, or press ENTER");
+						ConsoleX.WriteLine("Step #2.1 Select an existing record to update", ConsoleColor.Green);
+						ConsoleX.WriteLine("Do you want to update an existing record?");
 						
-						int inputId;
-						if(int.TryParse(input, out inputId))
+						var input = string.Empty;
+						
+						do
 						{
-							// TODO Get record from db.
-							ConsoleX.WriteWarning("TODO Get record from db.");
-							existingVolunteer = Volunteers.GetByID(inputId);
+							input = ConsoleX.WriteQuery("Enter a valid ID, or press ENTER to skip:");
 							
-							if(existingVolunteer != null)
+							int possibleID;
+							if(int.TryParse(input, out possibleID))
 							{
-							ConsoleX.WriteWarning(string.Format("ID: {0}, FirstName: {1}, LastName {2}",
-							                                    existingVolunteer.ID,
-							                                    existingVolunteer.FirstName,
-							                                    existingVolunteer.LastName));
+								var vol = Volunteers.GetByID(possibleID);
+								if(vol != null)
+								{
+									ConsoleX.WriteLine(string.Format("You have selected {0} - {1} {2}.",
+									                                 vol.ID,
+									                                 vol.FirstName,
+									                                 vol.LastName));
+									
+									var confirm = ConsoleX.WriteQuery("Is this correct? Enter 'yes' to confirm, ENTER to try again.").ToLower();
+									
+									if(confirm == "yes")
+									{
+										input = string.Empty; // So that we can leave loop.
+										existingVolunteer = vol;
+										ConsoleX.WriteWarning("TODO Update the existing record, using the data from file.");
+										// TODO Update the existing record, using the data from file.
+									}
+								}
+								else
+								{
+									ConsoleX.WriteWarning("ID Incorrect, please try again.");
+								}
 							}
-							else
-								ConsoleX.WriteWarning("No one found with that ID");
-						}
+						} while(!string.IsNullOrEmpty(input));
+						
+						
 					}
 					
 					if(existingVolunteer == null)
 					{
-						ConsoleX.WriteWarning("TODO Do insert and return record from db for further updates.");
-						// TODO Do insert and return record from db for further updates.
+						ConsoleX.WriteLine("Creating a new record in the database...");
+						newApplication.InsertIntoDatabase();
+						ConsoleX.WriteWarning("TODO Create a new record, using the data from file.");
+						// TODO Create a new record, using the data from file.
 					}
 					
 					//ConsoleX.WriteLine("Read the file, and ready to save into database! Press any key to continue.");
