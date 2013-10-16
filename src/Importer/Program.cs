@@ -25,6 +25,7 @@ namespace RbcVolunteerApplications.Importer
 			list.Add(new QueryVolunteers());
 //			list.Add(new QueryDepartments());
 			list.Add(new HelpCommand());
+			list.Add(new ClearCommand());
 			return list;
 		}
 		
