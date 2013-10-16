@@ -49,17 +49,20 @@ namespace RbcVolunteerApplications.Importer
 				{
 					try
 					{
-						var commandFound = false;
-						foreach(var command in Program.CommandList)
+						if(!string.IsNullOrEmpty(input))
 						{
-							if(command.Slug == input)
+							var commandFound = false;
+							foreach(var command in Program.CommandList)
 							{
-								commandFound = true;
-								command.Run();
+								if(command.Slug == input)
+								{
+									commandFound = true;
+									command.Run();
+								}
 							}
+							if(!commandFound)
+								ConsoleX.WriteLine("Command not found. Please try again.");
 						}
-						if(!commandFound)
-							new HelpCommand().Run();
 					}
 					catch (Exception ex)
 					{
