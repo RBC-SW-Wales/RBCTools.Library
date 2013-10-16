@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Windows.Forms;
 using RbcVolunteerApplications.Library;
+using RbcVolunteerApplications.Library.Database;
 
 namespace RbcVolunteerApplications.Importer.Commands
 {
@@ -28,19 +29,47 @@ namespace RbcVolunteerApplications.Importer.Commands
 			{
 				foreach (string str in dlg.FileNames)
 				{
+					ConsoleX.WriteLine(string.Format("Reading '{0}' file...", str));
+					
 					var reader = new S82Reader(str);
 					
-					var application = reader.BuildVolunteerApplication(ConsoleX.WriteWarning, ConsoleX.WriteQuery);
+					ConsoleX.WriteLine("Step #1 Get name", ConsoleColor.Green);
 					
-					ConsoleX.WriteLine("Read the file. Here's the summary.");
-					ConsoleX.WriteLine("Last Name: " + application.LastName);
-					ConsoleX.WriteLine("First Name: " + application.FirstName);
-					ConsoleX.WriteLine("Middle Names: " + application.MiddleNames);
-					ConsoleX.WriteLine("Read the file, and ready to save into database! Press any key to continue.");
-					Console.ReadKey(true);
+					var newApplication = reader.GetVolunteerName(ConsoleX);
 					
-					ConsoleX.WriteLine("Inserting into database");
-					application.InsertIntoDatabase();
+					ConsoleX.WriteLine("Step #2 Match with existing record", ConsoleColor.Green);
+					
+					ConsoleX.WriteLine(string.Format("Looking up '{0} {1}'...", newApplication.FirstName, newApplication.LastName));
+					
+					bool matchesFound = VolunteerLookup.TrySearchForNames(newApplication.FirstName, newApplication.LastName, ConsoleX);
+					
+					VolunteerApplication existingVolunteer = null;
+					
+					if(matchesFound)
+					{
+						var input = ConsoleX.WriteQuery("Do you want to update an existing record? If so, please enter the ID, or press ENTER");
+						
+						int inputId;
+						if(int.TryParse(input, out inputId))
+						{
+							ConsoleX.WriteWarning("TODO Get record from db.");
+							existingVolunteer = new VolunteerApplication();
+							// TODO Get record from db.
+						}
+					}
+					
+					if(existingVolunteer == null)
+					{
+						ConsoleX.WriteWarning("TODO Do insert and return record from db for further updates.");
+						// TODO Do insert and return record from db for further updates.
+					}
+					
+					//ConsoleX.WriteLine("Read the file, and ready to save into database! Press any key to continue.");
+					//Console.ReadKey(true);
+					
+					//ConsoleX.WriteLine("Inserting into database");
+					//application.InsertIntoDatabase();
+					
 					ConsoleX.WriteLine("Complete.");
 					
 					//reader.ShowFields(ConsoleX.WriteLine);

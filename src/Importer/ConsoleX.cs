@@ -25,6 +25,13 @@ namespace RbcVolunteerApplications.Importer
 			Console.ResetColor();
 		}
 		
+		public void WriteLine(string text, ConsoleColor color)
+		{
+			Console.ForegroundColor = color;
+			this.WriteLine(text);
+			Console.ResetColor();
+		}
+		
 		public string ReadPromt(List<string> tabPossibilities = null)
 		{
 			var input = string.Empty;
@@ -92,7 +99,6 @@ namespace RbcVolunteerApplications.Importer
 		{
 			this.WriteLine(text);
 			var input = this.ReadPromt();
-			this.WriteLine("Thanks.");
 			return input;
 		}
 		

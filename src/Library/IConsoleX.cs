@@ -11,6 +11,7 @@ namespace RbcVolunteerApplications.Library
 		void WriteLine(string text);
 		void WriteLine(string text, bool blankAfter);
 		void WriteWarning(string text);
+		void WriteLine(string text, ConsoleColor color);
 		string ReadPromt(List<string> tabPossibilities = null);
 		string WriteQuery(string text);
 		void WriteHorizontalRule();

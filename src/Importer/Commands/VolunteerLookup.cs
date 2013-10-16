@@ -17,27 +17,36 @@ namespace RbcVolunteerApplications.Importer.Commands
 			var firstName = ConsoleX.WriteQuery("Please enter First Name:");
 			var lastName = ConsoleX.WriteQuery("Please enter Last Name:");
 			
-			ConsoleX.WriteLine("Searching...");
+			TrySearchForNames(firstName, lastName, ConsoleX);
+			
+			ConsoleX.WriteHorizontalRule();
+		}
+		
+		public static bool TrySearchForNames(string firstName, string lastName, ConsoleX consoleX)
+		{
+			bool matchesFound = true;
+			
+			consoleX.WriteLine("Searching for matches on both First and Last name...");
 			
 			var table = Volunteers.GetByNames(firstName, lastName);
 			
 			if(table.Rows.Count == 0)
 			{
-				ConsoleX.WriteLine("No matched found on both First Name and Last Name! Trying just Last Name...");
+				consoleX.WriteLine("No matched found on both First and Last name! Trying just Last name...");
 				table = Volunteers.GetByLastName(lastName);
 			}
 			
 			if(table.Rows.Count > 0)
 			{
-				ConsoleX.WriteLine(table.Rows.Count > 1 ? "The following matches where found:" : "The following match was found");
-				ConsoleX.WriteDataTable(table);
+				consoleX.WriteLine(table.Rows.Count > 1 ? "The following matches where found:" : "The following match was found");
+				consoleX.WriteDataTable(table);
 			}
 			else
 			{
-				ConsoleX.WriteLine("No matches found!");
+				matchesFound = false;
+				consoleX.WriteLine("No matches found!");
 			}
-			
-			ConsoleX.WriteHorizontalRule();
+			return matchesFound;
 		}
 	}
 }

@@ -33,7 +33,7 @@ namespace RbcVolunteerApplications.Library
 		
 		#endregion
 		
-		public VolunteerApplication BuildVolunteerApplication(Action<string> outputWarning, Func<string, string> queryCallback)
+		public VolunteerApplication GetVolunteerName(IConsoleX consoleX)
 		{
 			var volunteer = new VolunteerApplication();
 			
@@ -57,13 +57,13 @@ namespace RbcVolunteerApplications.Library
 			}
 			else
 			{
-				outputWarning("I'm having problems understanding the 'names' field. I need your help. I'll open the file for you now.");
+				consoleX.WriteWarning("I'm having problems understanding the 'names' field. I need your help. I'll open the file for you now.");
 				
 				var process = Process.Start(this.FilePath);
 				
-				lastName = queryCallback("Please can you tell me their 'Last Name'?");
-				middleNames = queryCallback("Please can you tell me if they have any 'Middles Names'?");
-				firstName = queryCallback("Please can you tell me their 'First Name'?");
+				lastName = consoleX.WriteQuery("Please can you tell me their 'Last Name'?");
+				middleNames = consoleX.WriteQuery("Please can you tell me if they have any 'Middles Names'?");
+				firstName = consoleX.WriteQuery("Please can you tell me their 'First Name'?");
 				
 				try
 				{
