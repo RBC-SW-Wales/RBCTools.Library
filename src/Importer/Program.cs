@@ -19,6 +19,7 @@ namespace RbcVolunteerApplications.Importer
 			var list = new List<CommandBase>();
 			list.Add(new ImportFiles());
 			list.Add(new CongregationLookup());
+			list.Add(new VolunteerLookup());
 			list.Add(new QueryVolunteers());
 			list.Add(new QueryDepartments());
 			list.Add(new HelpCommand());

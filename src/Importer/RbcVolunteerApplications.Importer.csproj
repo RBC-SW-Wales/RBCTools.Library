@@ -65,6 +65,7 @@
     <Compile Include="Commands\CommandBase.cs" />
     <Compile Include="Commands\QueryDepartments.cs" />
     <Compile Include="Commands\QueryVolunteers.cs" />
+    <Compile Include="Commands\VolunteerLookup.cs" />
     <Compile Include="ConsoleX.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
