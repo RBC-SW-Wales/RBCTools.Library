@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics;
+using System.Linq;
+
 using iTextSharp.text.pdf;
 
 namespace RbcVolunteerApplications.Library
@@ -23,86 +24,39 @@ namespace RbcVolunteerApplications.Library
 		
 		#region Fields
 		
-		private string FilePath;
-		
 		private AcroFields AcroFields;
 		
 		#endregion
 		
 		#region Properties
 		
-		#endregion
+		public string FilePath { get; set; }
 		
-		public VolunteerApplication GetVolunteerName(IConsoleX consoleX)
+		public string this[string fieldName]
 		{
-			var volunteer = new VolunteerApplication();
-			
-			// Get Surname, FirstName and MiddleName
-			
-			string pdfValue = GetPdfValue("Text2");
-			
-			string lastName, firstName, middleNames = "";
-			
-			var names = pdfValue.Split(' ');
-			if(names.Length == 3)
+			get
 			{
-				lastName = names[0];
-				firstName = names[1];
-				middleNames = names[2];
+				return GetPdfValue(fieldName);
 			}
-			else if(names.Length == 2)
-			{
-				lastName = names[0];
-				firstName = names[1];
-			}
-			else
-			{
-				consoleX.WriteWarning("I'm having problems understanding the 'names' field. I need your help. I'll open the file for you now.");
-				
-				var process = Process.Start(this.FilePath);
-				
-				lastName = consoleX.WriteQuery("Please can you tell me their 'Last Name'?");
-				middleNames = consoleX.WriteQuery("Please can you tell me if they have any 'Middles Names'?");
-				firstName = consoleX.WriteQuery("Please can you tell me their 'First Name'?");
-				
-				try
-				{
-					process.Kill();
-				}
-				catch (Exception){}
-			}
-			
-			volunteer.LastName = lastName;
-			volunteer.MiddleNames = middleNames;
-			volunteer.FirstName = firstName;
-			
-			return volunteer;
 		}
+		
+		public List<string> Keys
+		{
+			get
+			{
+				var query = (from entry in this.AcroFields.Fields
+				             select entry.Key);
+				
+				return query.ToList();
+			}
+		}
+		
+		#endregion
 		
 		private string GetPdfValue(string key)
 		{
 			return this.AcroFields.GetField(key).Trim().TrimInnerWhitespace();
 		}
 		
-		public void ShowFields(Action<string> outputLine)
-		{
-			outputLine("Reading fields from " + this.FilePath);
-			try
-			{
-				foreach(var entry in this.AcroFields.Fields)
-				{
-					var key = entry.Key;
-					// Get the value for the key, and tidy it up a little.
-					var val = this.AcroFields.GetField(entry.Key).Trim().TrimInnerWhitespace();
-					
-					outputLine("Field= \"" + key + "\", Value = " + val);
-				}
-			}
-			catch (Exception ex)
-			{
-				outputLine("Error: " + ex.Message);
-				throw;
-			}
-		}
 	}
 }

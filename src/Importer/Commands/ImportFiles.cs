@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 using System.Windows.Forms;
 using RbcVolunteerApplications.Library;
 using RbcVolunteerApplications.Library.Database;
@@ -35,7 +36,7 @@ namespace RbcVolunteerApplications.Importer.Commands
 					
 					ConsoleX.WriteLine("Step #1 Get name", ConsoleColor.Green);
 					
-					var newApplication = reader.GetVolunteerName(ConsoleX);
+					var newApplication = this.GetVolunteerName(reader);
 					
 					ConsoleX.WriteLine(string.Format("Volunteer's name is {0} {1}", newApplication.FirstName, newApplication.LastName));
 					
@@ -112,5 +113,63 @@ namespace RbcVolunteerApplications.Importer.Commands
 			ConsoleX.WriteLine("All files completed!");
 			ConsoleX.WriteHorizontalRule();
 		}
+		
+		private VolunteerApplication GetVolunteerName(S82Reader reader)
+		{
+			var volunteer = new VolunteerApplication();
+			
+			// Get Surname, FirstName and MiddleName
+			
+			string pdfValue = reader["Text2"];
+			
+			string lastName, firstName, middleNames = "";
+			
+			var names = pdfValue.Split(' ');
+			if(names.Length == 3)
+			{
+				lastName = names[0];
+				firstName = names[1];
+				middleNames = names[2];
+			}
+			else if(names.Length == 2)
+			{
+				lastName = names[0];
+				firstName = names[1];
+			}
+			else
+			{
+				ConsoleX.WriteWarning("I'm having problems understanding the 'names' field. I need your help. I'll open the file for you now.");
+				
+				var process = Process.Start(reader.FilePath);
+				
+				lastName = ConsoleX.WriteQuery("Please can you tell me their 'Last Name'?");
+				middleNames = ConsoleX.WriteQuery("Please can you tell me if they have any 'Middles Names'?");
+				firstName = ConsoleX.WriteQuery("Please can you tell me their 'First Name'?");
+				
+				try
+				{
+					process.Kill();
+				}
+				catch (Exception){}
+			}
+			
+			volunteer.LastName = lastName;
+			volunteer.MiddleNames = middleNames;
+			volunteer.FirstName = firstName;
+			
+			return volunteer;
+		}
+		
+		public void ShowFields(S82Reader reader)
+		{
+			ConsoleX.WriteLine("Reading fields from " + reader.FilePath);
+			foreach(var key in reader.Keys)
+			{
+				// Get the value for the key, and tidy it up a little.
+				var val = reader[key];
+				ConsoleX.WriteLine("Field= \"" + key + "\", Value = " + val);
+			}
+		}
+		
 	}
 }
