@@ -34,11 +34,17 @@ namespace RbcVolunteerApplications.Importer.Commands
 					
 					var reader = new S82Reader(str);
 					
+					#region Step #1 Get Name
+					
 					ConsoleX.WriteLine("Step #1 Get name", ConsoleColor.Green);
 					
 					var newApplication = this.GetVolunteerName(reader);
 					
 					ConsoleX.WriteLine(string.Format("Volunteer's name is {0} {1}", newApplication.FirstName, newApplication.LastName));
+					
+					#endregion
+					
+					#region Step #2 Search for existing records (use existing or create new)
 					
 					ConsoleX.WriteLine("Step #2 Search for existing records", ConsoleColor.Green);
 					
@@ -97,6 +103,8 @@ namespace RbcVolunteerApplications.Importer.Commands
 						ConsoleX.WriteWarning("TODO Create a new record, using the data from file.");
 						// TODO Create a new record, using the data from file.
 					}
+					
+					#endregion
 					
 					//ConsoleX.WriteLine("Read the file, and ready to save into database! Press any key to continue.");
 					//Console.ReadKey(true);
