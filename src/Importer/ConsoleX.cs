@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Data;
+using System.Globalization;
 using System.Linq;
 using RbcVolunteerApplications.Library;
 
@@ -131,7 +132,7 @@ namespace RbcVolunteerApplications.Importer
 				var input = this.ReadPromt();
 				
 				DateTime parsedDate;
-				if(DateTime.TryParse(input, out parsedDate))
+				if(DateTime.TryParseExact(input, "dd MM yyyy", CultureInfo.CurrentCulture, DateTimeStyles.None, out parsedDate))
 					returnDate = parsedDate;
 				
 			}

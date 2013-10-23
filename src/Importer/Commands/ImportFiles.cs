@@ -337,7 +337,7 @@ namespace RbcVolunteerApplications.Importer.Commands
 				ConsoleX.WriteWarning("I don't understand the volunteer's date of baptism. I need your help");
 				this.OpenFileForHelp();
 				
-				birthDate = ConsoleX.WriteDateTimeQuery("Please can you tell me their Date of Baptism?");
+				baptismDate = ConsoleX.WriteDateTimeQuery("Please can you tell me their Date of Baptism?");
 			}
 			
 			this.CurrentVolunteer.DateOfBirth = birthDate;
