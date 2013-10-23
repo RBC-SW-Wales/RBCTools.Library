@@ -17,6 +17,8 @@ namespace RbcVolunteerApplications.Importer.Commands
 		private Volunteer CurrentVolunteer;
 		private S82Reader CurrentReader;
 		
+		private Process OpenFileProcess;
+		
 		public override void Run()
 		{
 			ConsoleX.WriteIntro(base.Description);
@@ -102,7 +104,7 @@ namespace RbcVolunteerApplications.Importer.Commands
 					else
 					{
 						if(this.CurrentVolunteer.ID == 0)
-							ConsoleX.WriteWarning("TODO Insert a new record to the database, using the data from the file");
+							ConsoleX.WriteLine("DONE: Inserted a new record to the database, using the data from the file!", ConsoleColor.Magenta);
 						else
 							ConsoleX.WriteWarning("TODO Update the record to the database, using the data from the file");
 						
@@ -115,6 +117,7 @@ namespace RbcVolunteerApplications.Importer.Commands
 					
 					this.CurrentReader = null;
 					this.CurrentVolunteer = null;
+					this.CloseFileIfOpen();
 					
 				}
 			}
@@ -135,6 +138,9 @@ namespace RbcVolunteerApplications.Importer.Commands
 			if(maleInput == femaleInput)
 			{
 				ConsoleX.WriteWarning("I can't determine the volunteers gender. I need your help");
+				
+				this.OpenFileForHelp();
+				
 				if(ConsoleX.WriteBooleanQuery("Is the volunteer male?"))
 					this.CurrentVolunteer.Gender = GenderKind.Male;
 				else
@@ -171,19 +177,13 @@ namespace RbcVolunteerApplications.Importer.Commands
 			}
 			else
 			{
-				ConsoleX.WriteWarning("I'm having problems understanding the 'names' field. I need your help. I'll open the file for you now.");
+				ConsoleX.WriteWarning("I'm having problems understanding the 'names' field. I need your help.");
 				
-				var process = Process.Start(this.CurrentReader.FilePath);
+				this.OpenFileForHelp();
 				
 				lastName = ConsoleX.WriteQuery("Please can you tell me their 'Last Name'?");
 				middleNames = ConsoleX.WriteQuery("Please can you tell me their 'Middles Names'? (Leave blank if they don't have any)");
 				firstName = ConsoleX.WriteQuery("Please can you tell me their 'First Name'?");
-				
-				try
-				{
-					process.Kill();
-				}
-				catch (Exception){}
 			}
 			
 			this.CurrentVolunteer.LastName = lastName;
@@ -312,6 +312,29 @@ namespace RbcVolunteerApplications.Importer.Commands
 				files = dlg.FileNames;
 			}
 			return files;
+		}
+		
+		public void OpenFileForHelp()
+		{
+			if(this.OpenFileProcess == null)
+			{
+				ConsoleX.WriteWarning("I'll open the file for you now.");
+				this.OpenFileProcess = Process.Start(this.CurrentReader.FilePath);
+			}
+		}
+		
+		public void CloseFileIfOpen()
+		{
+			if(this.OpenFileProcess != null)
+			{
+				var process = this.OpenFileProcess;
+				this.OpenFileProcess = null;
+				try
+				{
+					process.Kill();
+				}
+				catch (Exception) {}
+			}
 		}
 		
 		#endregion
