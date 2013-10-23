@@ -77,8 +77,8 @@ namespace RbcVolunteerApplications.Library
 			{
 				// INSERT into database
 				query = ("INSERT INTO Volunteers " +
-				         "(Surname, FirstName, MiddleName, TypeOfApplication) " +
-				         "VALUES (@Surname, @FirstName, @MiddleName, @ApplicationKind)");
+				         "(Surname, FirstName, MiddleName, TypeOfApplication, KingdomAssemblyHallConstruction, DisasterRelief) " +
+				         "VALUES (@Surname, @FirstName, @MiddleName, @ApplicationKind, @HallConstruction, @DisasterRelief)");
 			}
 			else
 			{
@@ -96,6 +96,8 @@ namespace RbcVolunteerApplications.Library
 			connector.AddParameter("@FirstName", this.FirstName);
 			connector.AddParameter("@MiddleName", this.MiddleNames);
 			connector.AddParameter("@ApplicationKind", this.ApplicationKind.GetName());
+			connector.AddParameter("@HallConstruction", this.FormsOfService.HasFlag(FormOfServiceKinds.HallConstruction));
+			connector.AddParameter("@DisasterRelief", this.FormsOfService.HasFlag(FormOfServiceKinds.DisasterRelief));
 			connector.AddParameter("@ID", this.ID);
 			connector.ExecuteNonQuery();
 			connector = null;

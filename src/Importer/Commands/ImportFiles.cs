@@ -21,8 +21,8 @@ namespace RbcVolunteerApplications.Importer.Commands
 		{
 			ConsoleX.WriteIntro(base.Description);
 			
-//			this.RunImportFiles();
-			this.ShowFields();
+			this.RunImportFiles();
+//			this.ShowFields();
 			
 			ConsoleX.WriteHorizontalRule();
 		}
@@ -61,6 +61,7 @@ namespace RbcVolunteerApplications.Importer.Commands
 					if(!skipProcessing)
 					{
 						this.Step3_ApplicationKind();
+						this.Step3_FormsOfService();
 						
 						// TODO Read the rest of the file
 						ConsoleX.WriteWarning("TODO Read the rest of the file");
@@ -217,6 +218,25 @@ namespace RbcVolunteerApplications.Importer.Commands
 				this.CurrentVolunteer.ApplicationKind = ApplicationKind.NewApplication;
 			
 			ConsoleX.WriteLine(string.Format("Application Kind = {0}", this.CurrentVolunteer.ApplicationKind.GetName()));
+		}
+		
+		private void Step3_FormsOfService()
+		{
+			var constructionInput = this.CurrentReader["Check Box3"];
+			var disasterInput = this.CurrentReader["Check Box4"];
+			
+			if(constructionInput == "Yes")
+				this.CurrentVolunteer.FormsOfService = this.CurrentVolunteer.FormsOfService | FormOfServiceKinds.HallConstruction;
+			
+			if(disasterInput == "Yes")
+				this.CurrentVolunteer.FormsOfService = this.CurrentVolunteer.FormsOfService | FormOfServiceKinds.DisasterRelief;
+			
+			ConsoleX.WriteLine("Forms of service: ", false);
+			if(this.CurrentVolunteer.FormsOfService.HasFlag(FormOfServiceKinds.HallConstruction))
+				ConsoleX.WriteLine("* Hall Construction", false);
+			if(this.CurrentVolunteer.FormsOfService.HasFlag(FormOfServiceKinds.DisasterRelief))
+				ConsoleX.WriteLine("* Disaster Relief", false);
+			ConsoleX.WriteLine("", false);
 		}
 		
 		public void ShowFields()
