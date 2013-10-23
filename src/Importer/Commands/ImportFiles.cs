@@ -14,121 +14,86 @@ namespace RbcVolunteerApplications.Importer.Commands
 			base.Description = "Import S82 files (PDF) into the RBC SharePoint database";
 		}
 		
+		private VolunteerApplication CurrentVolunteer;
+		private S82Reader CurrentReader;
+		
 		public override void Run()
 		{
 			ConsoleX.WriteIntro(base.Description);
 			
-			ConsoleX.WriteLine("First you will need to choose the S82 PDF files that you wish to import.");
-			ConsoleX.WriteLine("Press any key to continue to select files...");
-			Console.ReadKey(true);
+			this.RunImportFiles();
+//			this.ShowFields();
 			
-			OpenFileDialog dlg = new OpenFileDialog();
-			dlg.Multiselect = true;
-			dlg.Title = "Choose S82 PDF files";
-			dlg.Filter = "PDF Files|*.pdf";
-			if (dlg.ShowDialog() == DialogResult.OK)
+			ConsoleX.WriteHorizontalRule();
+		}
+		
+		public void RunImportFiles()
+		{
+			var fileNames = this.GetFiles();
+			if (fileNames != null)
 			{
-				foreach (string str in dlg.FileNames)
+				foreach (string fileName in fileNames)
 				{
-					ConsoleX.WriteLine(string.Format("Reading '{0}' file...", str));
 					
-					var reader = new S82Reader(str);
+					ConsoleX.WriteLine(string.Format("Reading '{0}' file...", fileName), ConsoleColor.Green);
+					
+					this.CurrentReader = new S82Reader(fileName);
+					this.CurrentVolunteer = new VolunteerApplication();
+					
+					bool skipProcessing = false;
 					
 					#region Step #1 Get Name
 					
 					ConsoleX.WriteLine("Step #1 Get name", ConsoleColor.Green);
 					
-					var newApplication = this.GetVolunteerName(reader);
-					
-					ConsoleX.WriteLine(string.Format("Volunteer's name is {0} {1}", newApplication.FirstName, newApplication.LastName));
+					this.Step1_Name();
 					
 					#endregion
 					
 					#region Step #2 Search for existing records (use existing or create new)
 					
-					ConsoleX.WriteLine("Step #2 Search for existing records", ConsoleColor.Green);
+					this.Step2_SelectRecord(ref skipProcessing);
 					
-					ConsoleX.WriteLine(string.Format("Looking up '{0} {1}'...", newApplication.FirstName, newApplication.LastName));
+					#endregion
 					
-					bool matchesFound = VolunteerLookup.TrySearchForNames(newApplication.FirstName, newApplication.LastName, ConsoleX);
+					#region Step #3 Read the rest of the form
 					
-					VolunteerApplication existingVolunteer = null;
-					
-					if(matchesFound)
+					if(!skipProcessing)
 					{
-						ConsoleX.WriteLine("Step #2.1 Select an existing record to update", ConsoleColor.Green);
-						ConsoleX.WriteLine("Do you want to update an existing record?");
-						
-						var input = string.Empty;
-						
-						do
-						{
-							input = ConsoleX.WriteQuery("Enter a valid ID, or press ENTER to skip:");
-							
-							int possibleID;
-							if(int.TryParse(input, out possibleID))
-							{
-								var vol = Volunteers.GetByID(possibleID);
-								if(vol != null)
-								{
-									ConsoleX.WriteLine(string.Format("You have selected {0} - {1} {2}.",
-									                                 vol.ID,
-									                                 vol.FirstName,
-									                                 vol.LastName));
-									
-									var confirm = ConsoleX.WriteQuery("Is this correct? Enter 'yes' to confirm, ENTER to try again.").ToLower();
-									
-									if(confirm == "yes")
-									{
-										input = string.Empty; // So that we can leave loop.
-										existingVolunteer = vol;
-										ConsoleX.WriteWarning("TODO Update the existing record, using the data from file.");
-										// TODO Update the existing record, using the data from file.
-									}
-								}
-								else
-								{
-									ConsoleX.WriteWarning("ID Incorrect, please try again.");
-								}
-							}
-						} while(!string.IsNullOrEmpty(input));
-						
-						
-					}
-					
-					if(existingVolunteer == null)
-					{
-//						ConsoleX.WriteLine("Creating a new record in the database...");
-//						newApplication.SaveToDatabase();
-						ConsoleX.WriteWarning("TODO Create a new record, using the data from file.");
-						// TODO Create a new record, using the data from file.
+						// TODO Read the rest of the file
+						ConsoleX.WriteWarning("TODO Read the rest of the file");
 					}
 					
 					#endregion
 					
-					//ConsoleX.WriteLine("Read the file, and ready to save into database! Press any key to continue.");
-					//Console.ReadKey(true);
+					if(skipProcessing)
+					{
+						ConsoleX.WriteLine(string.Format("Skipping '{0}'", fileName), ConsoleColor.Red);
+					}
+					else
+					{
+						if(this.CurrentVolunteer.ID == 0)
+							ConsoleX.WriteWarning("TODO Insert a new record to the database, using the data from the file");
+						else
+							ConsoleX.WriteWarning("TODO Update the record to the database, using the data from the file");
+						
+						// TODO Save to database
+//						this.CurrentVolunteer.SaveToDatabase();
+						
+						ConsoleX.WriteLine(string.Format("Finished '{0}'", fileName));
+					}
 					
-					//ConsoleX.WriteLine("Inserting into database");
-					//application.InsertIntoDatabase();
-					
-					ConsoleX.WriteLine("Complete.");
-					
-					//reader.ShowFields(ConsoleX.WriteLine);
 				}
 			}
 			
 			ConsoleX.WriteLine("All files completed!");
-			ConsoleX.WriteHorizontalRule();
 		}
 		
-		private VolunteerApplication GetVolunteerName(S82Reader reader)
+		private void Step1_Name()
 		{
-			var volunteer = new VolunteerApplication();
-			
 			// Get Surname, FirstName and MiddleName
 			
-			string pdfValue = reader["Text2"];
+			string pdfValue = this.CurrentReader["Text2"];
 			
 			string lastName, firstName, middleNames = "";
 			
@@ -148,7 +113,7 @@ namespace RbcVolunteerApplications.Importer.Commands
 			{
 				ConsoleX.WriteWarning("I'm having problems understanding the 'names' field. I need your help. I'll open the file for you now.");
 				
-				var process = Process.Start(reader.FilePath);
+				var process = Process.Start(this.CurrentReader.FilePath);
 				
 				lastName = ConsoleX.WriteQuery("Please can you tell me their 'Last Name'?");
 				middleNames = ConsoleX.WriteQuery("Please can you tell me if they have any 'Middles Names'?");
@@ -161,22 +126,101 @@ namespace RbcVolunteerApplications.Importer.Commands
 				catch (Exception){}
 			}
 			
-			volunteer.LastName = lastName;
-			volunteer.MiddleNames = middleNames;
-			volunteer.FirstName = firstName;
+			this.CurrentVolunteer.LastName = lastName;
+			this.CurrentVolunteer.MiddleNames = middleNames;
+			this.CurrentVolunteer.FirstName = firstName;
 			
-			return volunteer;
+			ConsoleX.WriteLine(string.Format("Volunteer's name is {0} {1}", this.CurrentVolunteer.FirstName, this.CurrentVolunteer.LastName));
 		}
 		
-		public void ShowFields(S82Reader reader)
+		private void Step2_SelectRecord(ref bool skipProcessing)
 		{
-			ConsoleX.WriteLine("Reading fields from " + reader.FilePath);
-			foreach(var key in reader.Keys)
+			ConsoleX.WriteLine("Step #2 Search for existing records", ConsoleColor.Green);
+			
+			ConsoleX.WriteLine(string.Format("Looking up '{0} {1}'...", this.CurrentVolunteer.FirstName, this.CurrentVolunteer.LastName));
+			
+			bool matchesFound = VolunteerLookup.TrySearchForNames(this.CurrentVolunteer.FirstName, this.CurrentVolunteer.LastName, ConsoleX);
+			
+			if(matchesFound)
 			{
-				// Get the value for the key, and tidy it up a little.
-				var val = reader[key];
-				ConsoleX.WriteLine("Field= \"" + key + "\", Value = " + val);
+				ConsoleX.WriteLine("Step #2.1 Select an existing record to update", ConsoleColor.Green);
+				ConsoleX.WriteLine("Do you want to update an existing record?");
+				
+				var input = string.Empty;
+				
+				do
+				{
+					input = ConsoleX.WriteQuery("Enter a valid ID, or press ENTER to skip:");
+					
+					int possibleID;
+					if(int.TryParse(input, out possibleID))
+					{
+						var existingVolunteer = Volunteers.GetByID(possibleID);
+						if(existingVolunteer != null)
+						{
+							ConsoleX.WriteLine(string.Format("You have selected {0} - {1} {2}.",
+							                                 existingVolunteer.ID,
+							                                 existingVolunteer.FirstName,
+							                                 existingVolunteer.LastName));
+							
+							var confirm = ConsoleX.WriteQuery("Is this correct? Enter 'yes' to confirm, ENTER to try again.").ToLower();
+							
+							if(confirm == "yes")
+							{
+								input = string.Empty; // So that we can leave loop.
+								this.CurrentVolunteer.ID = existingVolunteer.ID;
+								ConsoleX.WriteLine(string.Format("Using record ID {0}", this.CurrentVolunteer.ID));
+							}
+						}
+						else
+						{
+							ConsoleX.WriteWarning("ID Incorrect, please try again.");
+						}
+					}
+				} while(!string.IsNullOrEmpty(input));
 			}
+			
+			if(this.CurrentVolunteer.ID == 0)
+			{
+				ConsoleX.WriteLine("Step #2.2 Confirm this is a new record", ConsoleColor.Green);
+				ConsoleX.WriteLine("Continuing will create a NEW record.");
+				var confirm = ConsoleX.WriteQuery("Is this correct? Enter 'yes' to confirm, or anything else to skip this file.").ToLower();
+				if(confirm != "yes")
+					skipProcessing = true;
+			}
+		}
+		
+		public void ShowFields()
+		{
+			ConsoleX.WriteLine("Press any key to select the S82 PDF files...");
+			Console.ReadKey(true);
+			var fileNames = GetFiles();
+			foreach(var fileName in fileNames)
+			{
+				var reader = new S82Reader(fileName);
+				ConsoleX.WriteLine("Reading fields from " + reader.FilePath, ConsoleColor.Green);
+				foreach(var key in reader.Keys)
+				{
+					// Get the value for the key, and tidy it up a little.
+					var val = reader[key];
+					ConsoleX.WriteLine("Field= \"" + key + "\", Value = " + val);
+				}
+				ConsoleX.WriteLine("Finished", ConsoleColor.Green);
+			}
+		}
+		
+		public string[] GetFiles()
+		{
+			string[] files = null;
+			OpenFileDialog dlg = new OpenFileDialog();
+			dlg.Multiselect = true;
+			dlg.Title = "Choose S82 PDF files";
+			dlg.Filter = "PDF Files|*.pdf";
+			if (dlg.ShowDialog() == DialogResult.OK)
+			{
+				files = dlg.FileNames;
+			}
+			return files;
 		}
 		
 	}
