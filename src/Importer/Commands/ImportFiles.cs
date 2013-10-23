@@ -31,8 +31,6 @@ namespace RbcVolunteerApplications.Importer.Commands
 		
 		public void ShowFields()
 		{
-			ConsoleX.WriteLine("Press any key to select the S82 PDF files...");
-			Console.ReadKey(true);
 			var fileNames = GetFiles();
 			foreach(var fileName in fileNames)
 			{
@@ -349,6 +347,9 @@ namespace RbcVolunteerApplications.Importer.Commands
 		
 		public string[] GetFiles()
 		{
+			ConsoleX.WriteLine("Press any key to select the S82 PDF files...");
+			Console.ReadKey();
+			
 			string[] files = null;
 			OpenFileDialog dlg = new OpenFileDialog();
 			dlg.Multiselect = true;
