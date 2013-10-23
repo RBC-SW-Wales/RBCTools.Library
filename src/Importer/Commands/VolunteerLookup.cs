@@ -24,6 +24,7 @@ namespace RbcVolunteerApplications.Importer.Commands
 		
 		public static bool TrySearchForNames(string firstName, string lastName, ConsoleX consoleX)
 		{
+			// TODO Get Gender also, and use it to help with match.
 			bool matchesFound = true;
 			
 			consoleX.WriteLine("Searching for matches on both First and Last name...");

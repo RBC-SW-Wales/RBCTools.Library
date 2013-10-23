@@ -70,28 +70,34 @@ namespace RbcVolunteerApplications.Library
 		
 		public void SaveToDatabase()
 		{
+			// TODO Save to database
+			
 			var query = "";
 			if(this.ID == 0)
 			{
-				// INSERT
+				// INSERT into database
 				query = ("INSERT INTO Volunteers " +
-				         "(Surname, FirstName, MiddleName) " +
-				         "VALUES (@Surname, @FirstName, @MiddleName)");
+				         "(Surname, FirstName, MiddleName, TypeOfApplication) " +
+				         "VALUES (@Surname, @FirstName, @MiddleName, @ApplicationKind)");
 			}
 			else
 			{
-				// UPDATE
-				query = ("UPDATE Volunteers " +
-				         "SET Surname = @Surname, FirstName = @FirstName, MiddleName = @MiddleName " +
-				         "WHERE ID = @ID");
+				// TODO UPDATE database
+//				query = ("UPDATE Volunteers SET " +
+//				         " Surname = @Surname, " +
+//				         " FirstName = @FirstName, " +
+//				         " MiddleName = @MiddleName, " +
+//				         " TypeOfApplication = @ApplicationKind" +
+//				         "WHERE ID = @ID");
 			}
 			
 			var connector = new Connector(query);
 			connector.AddParameter("@Surname", "AAA TEST " + this.LastName);
 			connector.AddParameter("@FirstName", this.FirstName);
 			connector.AddParameter("@MiddleName", this.MiddleNames);
+			connector.AddParameter("@ApplicationKind", this.ApplicationKind.GetName());
 			connector.AddParameter("@ID", this.ID);
-//			connector.ExecuteNonQuery();
+			connector.ExecuteNonQuery();
 			connector = null;
 		}
 		

@@ -60,6 +60,8 @@ namespace RbcVolunteerApplications.Importer.Commands
 					
 					if(!skipProcessing)
 					{
+						this.Step3_ApplicationKind();
+						
 						// TODO Read the rest of the file
 						ConsoleX.WriteWarning("TODO Read the rest of the file");
 					}
@@ -77,11 +79,13 @@ namespace RbcVolunteerApplications.Importer.Commands
 						else
 							ConsoleX.WriteWarning("TODO Update the record to the database, using the data from the file");
 						
-						// TODO Save to database
-//						this.CurrentVolunteer.SaveToDatabase();
+						this.CurrentVolunteer.SaveToDatabase();
 						
 						ConsoleX.WriteLine(string.Format("Finished '{0}'", fileName));
 					}
+					
+					this.CurrentReader = null;
+					this.CurrentVolunteer = null;
 					
 				}
 			}
@@ -190,6 +194,31 @@ namespace RbcVolunteerApplications.Importer.Commands
 			}
 		}
 		
+		private void Step3_ApplicationKind()
+		{
+			var newApplicationInput = this.CurrentReader["Check Box1"];
+			var updateApplicationInput = this.CurrentReader["Check Box2"];
+			
+			bool isUpdate = false;
+			
+			if(string.IsNullOrEmpty(updateApplicationInput) && string.IsNullOrEmpty(newApplicationInput))
+			{
+				if(this.CurrentVolunteer.ID != 0)
+					isUpdate = true;
+			}
+			else if(updateApplicationInput == "Yes")
+			{
+				isUpdate = true;
+			}
+			
+			if(isUpdate)
+				this.CurrentVolunteer.ApplicationKind = ApplicationKind.UpdateOfPersonalData;
+			else
+				this.CurrentVolunteer.ApplicationKind = ApplicationKind.NewApplication;
+			
+			ConsoleX.WriteLine(string.Format("Application Kind = {0}", this.CurrentVolunteer.ApplicationKind.GetName()));
+		}
+		
 		public void ShowFields()
 		{
 			ConsoleX.WriteLine("Press any key to select the S82 PDF files...");
@@ -206,6 +235,7 @@ namespace RbcVolunteerApplications.Importer.Commands
 					ConsoleX.WriteLine("Field= \"" + key + "\", Value = " + val);
 				}
 				ConsoleX.WriteLine("Finished", ConsoleColor.Green);
+				reader = null;
 			}
 		}
 		
