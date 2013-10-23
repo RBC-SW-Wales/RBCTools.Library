@@ -146,8 +146,6 @@ namespace RbcVolunteerApplications.Importer
 				var tableWidth = (table.Columns.Count * (columnWidth + 3)) + 1;
 				var cellFormat = "| {0,-" + columnWidth + "} ";
 				
-				this.WriteLine(string.Format("Record count: {0}", table.Rows.Count), blankAfter: false);
-				
 				this.WriteLine(new string('-', tableWidth), blankAfter:false);
 				
 				string line = "";
@@ -172,7 +170,10 @@ namespace RbcVolunteerApplications.Importer
 					this.WriteLine(line, blankAfter:false);
 				}
 				
-				this.WriteLine(new string('-', tableWidth));
+				this.WriteLine(new string('-', tableWidth), blankAfter: false);
+				
+				this.WriteLine(string.Format("Record count: {0}", table.Rows.Count));
+				
 			}
 		}
 	}
