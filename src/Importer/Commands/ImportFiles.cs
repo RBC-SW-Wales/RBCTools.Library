@@ -21,10 +21,30 @@ namespace RbcVolunteerApplications.Importer.Commands
 		{
 			ConsoleX.WriteIntro(base.Description);
 			
-			this.RunImportFiles();
 //			this.ShowFields();
+			this.RunImportFiles();
 			
 			ConsoleX.WriteHorizontalRule();
+		}
+		
+		public void ShowFields()
+		{
+			ConsoleX.WriteLine("Press any key to select the S82 PDF files...");
+			Console.ReadKey(true);
+			var fileNames = GetFiles();
+			foreach(var fileName in fileNames)
+			{
+				var reader = new S82Reader(fileName);
+				ConsoleX.WriteLine("Reading fields from " + reader.FilePath, ConsoleColor.Green);
+				foreach(var key in reader.Keys)
+				{
+					// Get the value for the key, and tidy it up a little.
+					var val = reader[key];
+					ConsoleX.WriteLine("Field= \"" + key + "\", Value = " + val);
+				}
+				ConsoleX.WriteLine("Finished", ConsoleColor.Green);
+				reader = null;
+			}
 		}
 		
 		public void RunImportFiles()
@@ -69,6 +89,8 @@ namespace RbcVolunteerApplications.Importer.Commands
 					
 					#endregion
 					
+					#region Finish
+					
 					if(skipProcessing)
 					{
 						ConsoleX.WriteLine(string.Format("Skipping '{0}'", fileName), ConsoleColor.Red);
@@ -80,10 +102,12 @@ namespace RbcVolunteerApplications.Importer.Commands
 						else
 							ConsoleX.WriteWarning("TODO Update the record to the database, using the data from the file");
 						
-						this.CurrentVolunteer.SaveToDatabase();
+//						this.CurrentVolunteer.SaveToDatabase();
 						
 						ConsoleX.WriteLine(string.Format("Finished '{0}'", fileName));
 					}
+					
+					#endregion
 					
 					this.CurrentReader = null;
 					this.CurrentVolunteer = null;
@@ -93,6 +117,8 @@ namespace RbcVolunteerApplications.Importer.Commands
 			
 			ConsoleX.WriteLine("All files completed!");
 		}
+		
+		#region Step Methods
 		
 		private void Step1_Name()
 		{
@@ -239,25 +265,9 @@ namespace RbcVolunteerApplications.Importer.Commands
 			ConsoleX.WriteLine("", false);
 		}
 		
-		public void ShowFields()
-		{
-			ConsoleX.WriteLine("Press any key to select the S82 PDF files...");
-			Console.ReadKey(true);
-			var fileNames = GetFiles();
-			foreach(var fileName in fileNames)
-			{
-				var reader = new S82Reader(fileName);
-				ConsoleX.WriteLine("Reading fields from " + reader.FilePath, ConsoleColor.Green);
-				foreach(var key in reader.Keys)
-				{
-					// Get the value for the key, and tidy it up a little.
-					var val = reader[key];
-					ConsoleX.WriteLine("Field= \"" + key + "\", Value = " + val);
-				}
-				ConsoleX.WriteLine("Finished", ConsoleColor.Green);
-				reader = null;
-			}
-		}
+		#endregion
+		
+		#region Reusable Methods
 		
 		public string[] GetFiles()
 		{
@@ -272,6 +282,8 @@ namespace RbcVolunteerApplications.Importer.Commands
 			}
 			return files;
 		}
+		
+		#endregion
 		
 	}
 }
