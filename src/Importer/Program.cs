@@ -1,5 +1,6 @@
 ﻿
 using System;
+using System.Diagnostics;
 using System.IO;
 using System.Threading;
 using System.Windows.Forms;
@@ -67,6 +68,18 @@ namespace RbcVolunteerApplications.Importer
 					catch (Exception ex)
 					{
 						ConsoleX.WriteException(ex);
+						if(ConsoleX.WriteBooleanQuery("Would you like to report this error?"))
+						{
+							ConsoleX.WriteLine("Ok. I'll compose an email for you.");
+							ConsoleX.WriteLine("This should open in your default email client. Please send the email.");
+							string mailto = "mailto:itsupport@rbcwales.org?subject=Error report: {0}&body={1}";
+							string body = "Error: " + ex.Message + Environment.NewLine;
+							body += "Type: " + ex.GetType().ToString() + Environment.NewLine;
+							body += "Stack Trace: " + Environment.NewLine + ex.StackTrace;
+							mailto = string.Format(mailto, ex.Message, body);
+							mailto = Uri.EscapeUriString(mailto);
+							Process.Start(mailto);
+						}
 					}
 				}
 			}
