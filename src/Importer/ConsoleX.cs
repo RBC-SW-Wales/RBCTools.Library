@@ -18,18 +18,16 @@ namespace RbcVolunteerApplications.Importer
 			if(blankAfter) Console.WriteLine(" ");
 		}
 		
-		public void WriteWarning(string text)
-		{
-			Console.ForegroundColor = ConsoleColor.Yellow;
-			this.WriteLine(text);
-			Console.ResetColor();
-		}
-		
 		public void WriteLine(string text, ConsoleColor color)
 		{
 			Console.ForegroundColor = color;
 			this.WriteLine(text);
 			Console.ResetColor();
+		}
+		
+		public void WriteWarning(string text)
+		{
+			this.WriteLine(text, ConsoleColor.Yellow);
 		}
 		
 		public string ReadPromt(List<string> tabPossibilities = null)
