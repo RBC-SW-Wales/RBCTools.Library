@@ -161,8 +161,7 @@ namespace RbcVolunteerApplications.Importer.Commands
 			
 			if(maleInput == femaleInput)
 			{
-				ConsoleX.WriteWarning("I can't determine the volunteer's gender. I need your help");
-				this.OpenFileForHelp();
+				this.INeedYourHelp("Gender");
 				
 				if(ConsoleX.WriteBooleanQuery("Is the volunteer male?"))
 					this.CurrentVolunteer.Gender = GenderKind.Male;
@@ -200,9 +199,7 @@ namespace RbcVolunteerApplications.Importer.Commands
 			}
 			else
 			{
-				ConsoleX.WriteWarning("I can't understand the volunteer's name. I need your help.");
-				
-				this.OpenFileForHelp();
+				this.INeedYourHelp("Name");
 				
 				lastName = ConsoleX.WriteQuery("Please can you tell me their 'Last Name'?");
 				middleNames = ConsoleX.WriteQuery("Please can you tell me their 'Middles Names'? (Leave blank if they don't have any)");
@@ -326,16 +323,14 @@ namespace RbcVolunteerApplications.Importer.Commands
 			
 			if(birthDate == DateTime.MinValue)
 			{
-				ConsoleX.WriteWarning("I don't understand the volunteer's date of birth. I need your help");
-				this.OpenFileForHelp();
+				this.INeedYourHelp("Date of Birth");
 				
 				birthDate = ConsoleX.WriteDateTimeQuery("Please can you tell me their Date of Birth?");
 			}
 			
 			if(baptismDate == DateTime.MinValue)
 			{
-				ConsoleX.WriteWarning("I don't understand the volunteer's date of baptism. I need your help");
-				this.OpenFileForHelp();
+				this.INeedYourHelp("Date of Baptism");
 				
 				baptismDate = ConsoleX.WriteDateTimeQuery("Please can you tell me their Date of Baptism?");
 			}
@@ -364,6 +359,12 @@ namespace RbcVolunteerApplications.Importer.Commands
 				files = dlg.FileNames;
 			}
 			return files;
+		}
+		
+		public void INeedYourHelp(string fieldName)
+		{
+			ConsoleX.WriteWarning(string.Format("I'm having trouble with the field: '{0}'. I need your help. ", fieldName));
+			this.OpenFileForHelp();
 		}
 		
 		public void OpenFileForHelp()
