@@ -100,6 +100,26 @@ namespace RbcVolunteerApplications.Importer
 			return input;
 		}
 		
+		public bool WriteBooleanQuery(string text)
+		{
+			this.WriteLine(text, false);
+			
+			bool? boolean = null;
+			
+			do
+			{
+				this.WriteLine("Please reply \"yes\" or \"no\".", ConsoleColor.Gray);
+				var input = this.ReadPromt();
+				if(input == "yes")
+					boolean = true;
+				else if(input == "no")
+					boolean = false;
+			}
+			while(!boolean.HasValue);
+			
+			return boolean.Value;
+		}
+		
 		public void WriteHorizontalRule()
 		{
 			Console.Write(" "); // space
