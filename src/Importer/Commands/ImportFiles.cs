@@ -14,15 +14,15 @@ namespace RbcVolunteerApplications.Importer.Commands
 			base.Description = "Import S82 files (PDF) into the RBC SharePoint database";
 		}
 		
-		private VolunteerApplication CurrentVolunteer;
+		private Volunteer CurrentVolunteer;
 		private S82Reader CurrentReader;
 		
 		public override void Run()
 		{
 			ConsoleX.WriteIntro(base.Description);
 			
-			this.RunImportFiles();
-//			this.ShowFields();
+//			this.RunImportFiles();
+			this.ShowFields();
 			
 			ConsoleX.WriteHorizontalRule();
 		}
@@ -38,7 +38,7 @@ namespace RbcVolunteerApplications.Importer.Commands
 					ConsoleX.WriteLine(string.Format("Reading '{0}' file...", fileName), ConsoleColor.Green);
 					
 					this.CurrentReader = new S82Reader(fileName);
-					this.CurrentVolunteer = new VolunteerApplication();
+					this.CurrentVolunteer = new Volunteer();
 					
 					bool skipProcessing = false;
 					

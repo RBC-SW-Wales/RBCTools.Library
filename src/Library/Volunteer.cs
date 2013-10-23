@@ -9,10 +9,10 @@ namespace RbcVolunteerApplications.Library
 	///  A representation of the RBC Volunteer Application form.
 	///  Based on S-82-E Bi 5/12
 	/// </summary>
-	public class VolunteerApplication
+	public class Volunteer
 	{
 		
-		public VolunteerApplication(){}
+		public Volunteer(){}
 		
 		#region Properties
 		
