@@ -108,7 +108,7 @@ namespace RbcVolunteerApplications.Importer
 			
 			do
 			{
-				this.WriteLine("Please reply \"yes\" or \"no\".", ConsoleColor.Gray);
+				this.WriteLine("Please reply \"yes\" or \"no\".", ConsoleColor.DarkGray);
 				var input = this.ReadPromt();
 				if(input == "yes")
 					boolean = true;
@@ -118,6 +118,26 @@ namespace RbcVolunteerApplications.Importer
 			while(!boolean.HasValue);
 			
 			return boolean.Value;
+		}
+		
+		public DateTime WriteDateTimeQuery(string text)
+		{
+			this.WriteLine(text, false);
+			DateTime returnDate = DateTime.MinValue;
+			
+			do
+			{
+				this.WriteLine("Please enter date (DD MM YYYY):", ConsoleColor.DarkGray);
+				var input = this.ReadPromt();
+				
+				DateTime parsedDate;
+				if(DateTime.TryParse(input, out parsedDate))
+					returnDate = parsedDate;
+				
+			}
+			while(returnDate == DateTime.MinValue);
+			
+			return returnDate;
 		}
 		
 		public void WriteHorizontalRule()

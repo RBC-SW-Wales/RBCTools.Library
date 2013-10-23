@@ -38,13 +38,34 @@ namespace RbcVolunteerApplications.Importer.Commands
 			{
 				var reader = new S82Reader(fileName);
 				ConsoleX.WriteLine("Reading fields from " + reader.FilePath, ConsoleColor.Green);
+				
 				foreach(var key in reader.Keys)
 				{
 					// Get the value for the key, and tidy it up a little.
 					var val = reader[key];
 					ConsoleX.WriteLine("Field= \"" + key + "\", Value = " + val);
 				}
+				
+//				var key = "Text3";
+//				var val = reader[key];
+//				ConsoleX.WriteLine("Field= \"" + key + "\", Value = " + val);
+//				ConsoleX.WriteLine("Parsed as: " + reader.GetDateTimeValue(key).ToLongDateString());
+//				
+//				key = "Text4";
+//				val = reader[key];
+//				ConsoleX.WriteLine("Field= \"" + key + "\", Value = " + val);
+//				ConsoleX.WriteLine("Parsed as: " + reader.GetDateTimeValue(key).ToLongDateString());
+//				
+//				key = "Text15";
+//				val = reader[key];
+//				ConsoleX.WriteLine("Field= \"" + key + "\", Value = " + val);
+//				ConsoleX.WriteLine("Parsed as: " + reader.GetDateTimeValue(key).ToLongDateString());
+				
 				ConsoleX.WriteLine("Finished", ConsoleColor.Green);
+				
+				ConsoleX.WriteLine("Key to continue...");
+				Console.ReadKey();
+				
 				reader = null;
 			}
 		}
@@ -88,6 +109,7 @@ namespace RbcVolunteerApplications.Importer.Commands
 						
 						this.Step3_ApplicationKind();
 						this.Step3_FormsOfService();
+						this.Step3_Dates();
 						
 						// TODO Read the rest of the file
 						ConsoleX.WriteWarning("TODO Read the rest of the file");
@@ -103,14 +125,16 @@ namespace RbcVolunteerApplications.Importer.Commands
 					}
 					else
 					{
-						if(this.CurrentVolunteer.ID == 0)
-							ConsoleX.WriteLine("DONE: Inserted a new record to the database, using the data from the file!", ConsoleColor.Magenta);
-						else
-							ConsoleX.WriteWarning("TODO Update the record to the database, using the data from the file");
-						
-//						this.CurrentVolunteer.SaveToDatabase();
-						
-						ConsoleX.WriteLine(string.Format("Finished '{0}'", fileName));
+						if(ConsoleX.WriteBooleanQuery("Shall I save to the database?"))
+						{
+							this.CurrentVolunteer.SaveToDatabase();
+							
+							if(this.CurrentVolunteer.ID == 0)
+								ConsoleX.WriteLine("DONE: Inserted a new record to the database, using the data from the file!", ConsoleColor.Magenta);
+							else
+								ConsoleX.WriteWarning("TODO Update the record to the database, using the data from the file");
+						}
+						ConsoleX.WriteLine(string.Format("Finished '{0}'", fileName), ConsoleColor.Green);
 					}
 					
 					#endregion
@@ -137,8 +161,7 @@ namespace RbcVolunteerApplications.Importer.Commands
 			
 			if(maleInput == femaleInput)
 			{
-				ConsoleX.WriteWarning("I can't determine the volunteers gender. I need your help");
-				
+				ConsoleX.WriteWarning("I can't determine the volunteer's gender. I need your help");
 				this.OpenFileForHelp();
 				
 				if(ConsoleX.WriteBooleanQuery("Is the volunteer male?"))
@@ -177,7 +200,7 @@ namespace RbcVolunteerApplications.Importer.Commands
 			}
 			else
 			{
-				ConsoleX.WriteWarning("I'm having problems understanding the 'names' field. I need your help.");
+				ConsoleX.WriteWarning("I can't understand the volunteer's name. I need your help.");
 				
 				this.OpenFileForHelp();
 				
@@ -294,6 +317,35 @@ namespace RbcVolunteerApplications.Importer.Commands
 			if(this.CurrentVolunteer.FormsOfService.HasFlag(FormOfServiceKinds.DisasterRelief))
 				ConsoleX.WriteLine("* Disaster Relief", false);
 			ConsoleX.WriteLine("", false);
+		}
+		
+		private void Step3_Dates()
+		{
+			var birthDate = this.CurrentReader.GetDateTimeValue("Text3");
+			var baptismDate = this.CurrentReader.GetDateTimeValue("Text4");
+			
+			if(birthDate == DateTime.MinValue)
+			{
+				ConsoleX.WriteWarning("I don't understand the volunteer's date of birth. I need your help");
+				this.OpenFileForHelp();
+				
+				birthDate = ConsoleX.WriteDateTimeQuery("Please can you tell me their Date of Birth?");
+			}
+			
+			if(baptismDate == DateTime.MinValue)
+			{
+				ConsoleX.WriteWarning("I don't understand the volunteer's date of baptism. I need your help");
+				this.OpenFileForHelp();
+				
+				birthDate = ConsoleX.WriteDateTimeQuery("Please can you tell me their Date of Baptism?");
+			}
+			
+			this.CurrentVolunteer.DateOfBirth = birthDate;
+			this.CurrentVolunteer.DateOfBaptism = baptismDate;
+			
+			ConsoleX.WriteLine("Date of birth: " + this.CurrentVolunteer.DateOfBirth.ToLongDateString());
+			ConsoleX.WriteLine("Date of baptism: " + this.CurrentVolunteer.DateOfBaptism.ToLongDateString());
+			
 		}
 		
 		#endregion

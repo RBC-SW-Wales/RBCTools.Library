@@ -63,5 +63,16 @@ namespace RbcVolunteerApplications.Library
 			return GetPdfValue(key) == "Yes";
 		}
 		
+		public DateTime GetDateTimeValue(string key)
+		{
+			var text = GetPdfValue(key);
+			
+			DateTime returnDate;
+			
+			DateTime.TryParse(text, out returnDate);
+			
+			return returnDate;
+		}
+		
 	}
 }
