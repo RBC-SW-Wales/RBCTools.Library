@@ -62,15 +62,17 @@ namespace RbcVolunteerApplications.Importer.Commands
 					
 					bool skipProcessing = false;
 					
-					#region Step #1 Get Name
+					#region Step #1 Get name and gender
 					
-					ConsoleX.WriteLine("Step #1 Get name", ConsoleColor.Green);
+					ConsoleX.WriteLine("Step #1 Get name and gender", ConsoleColor.Green);
 					
-					this.Step1_Name();
+					this.Step1_NameAndGender();
 					
 					#endregion
 					
 					#region Step #2 Search for existing records (use existing or create new)
+					
+					ConsoleX.WriteLine("Step #2 Search for existing records", ConsoleColor.Green);
 					
 					this.Step2_SelectRecord(ref skipProcessing);
 					
@@ -80,6 +82,8 @@ namespace RbcVolunteerApplications.Importer.Commands
 					
 					if(!skipProcessing)
 					{
+						ConsoleX.WriteLine("Step #3 Read the rest of the file", ConsoleColor.Green);
+						
 						this.Step3_ApplicationKind();
 						this.Step3_FormsOfService();
 						
@@ -120,8 +124,33 @@ namespace RbcVolunteerApplications.Importer.Commands
 		
 		#region Step Methods
 		
-		private void Step1_Name()
+		private void Step1_NameAndGender()
 		{
+			
+			#region Gender
+			
+			var maleInput = this.CurrentReader.GetCheckBoxValue("Check Box5");
+			var femaleInput = this.CurrentReader.GetCheckBoxValue("Check Box6");
+			
+			if(maleInput == femaleInput)
+			{
+				ConsoleX.WriteWarning("I can't determine the volunteers gender. I need your help");
+				if(ConsoleX.WriteBooleanQuery("Is the volunteer male?"))
+					this.CurrentVolunteer.Gender = GenderKind.Male;
+				else
+					this.CurrentVolunteer.Gender = GenderKind.Female;
+			}
+			else
+			{
+				this.CurrentVolunteer.Gender = maleInput ? GenderKind.Male : GenderKind.Female;
+			}
+			
+			ConsoleX.WriteLine("Volunteer's Gender: " + this.CurrentVolunteer.Gender.ToString());
+			
+			#endregion
+			
+			#region Names
+			
 			// Get Surname, FirstName and MiddleName
 			
 			string pdfValue = this.CurrentReader["Text2"];
@@ -147,7 +176,7 @@ namespace RbcVolunteerApplications.Importer.Commands
 				var process = Process.Start(this.CurrentReader.FilePath);
 				
 				lastName = ConsoleX.WriteQuery("Please can you tell me their 'Last Name'?");
-				middleNames = ConsoleX.WriteQuery("Please can you tell me if they have any 'Middles Names'?");
+				middleNames = ConsoleX.WriteQuery("Please can you tell me their 'Middles Names'? (Leave blank if they don't have any)");
 				firstName = ConsoleX.WriteQuery("Please can you tell me their 'First Name'?");
 				
 				try
@@ -161,12 +190,14 @@ namespace RbcVolunteerApplications.Importer.Commands
 			this.CurrentVolunteer.MiddleNames = middleNames;
 			this.CurrentVolunteer.FirstName = firstName;
 			
-			ConsoleX.WriteLine(string.Format("Volunteer's name is {0} {1}", this.CurrentVolunteer.FirstName, this.CurrentVolunteer.LastName));
+			ConsoleX.WriteLine(string.Format("Volunteer's Name: {0} {1}", this.CurrentVolunteer.FirstName, this.CurrentVolunteer.LastName));
+			
+			#endregion
+			
 		}
 		
 		private void Step2_SelectRecord(ref bool skipProcessing)
 		{
-			ConsoleX.WriteLine("Step #2 Search for existing records", ConsoleColor.Green);
 			
 			ConsoleX.WriteLine(string.Format("Looking up '{0} {1}'...", this.CurrentVolunteer.FirstName, this.CurrentVolunteer.LastName));
 			
@@ -223,17 +254,17 @@ namespace RbcVolunteerApplications.Importer.Commands
 		
 		private void Step3_ApplicationKind()
 		{
-			var newApplicationInput = this.CurrentReader["Check Box1"];
-			var updateApplicationInput = this.CurrentReader["Check Box2"];
+			var newApplicationInput = this.CurrentReader.GetCheckBoxValue("Check Box1");
+			var updateApplicationInput = this.CurrentReader.GetCheckBoxValue("Check Box2");
 			
 			bool isUpdate = false;
 			
-			if(string.IsNullOrEmpty(updateApplicationInput) && string.IsNullOrEmpty(newApplicationInput))
+			if(!newApplicationInput && !updateApplicationInput)
 			{
 				if(this.CurrentVolunteer.ID != 0)
 					isUpdate = true;
 			}
-			else if(updateApplicationInput == "Yes")
+			else if(updateApplicationInput)
 			{
 				isUpdate = true;
 			}
@@ -248,13 +279,13 @@ namespace RbcVolunteerApplications.Importer.Commands
 		
 		private void Step3_FormsOfService()
 		{
-			var constructionInput = this.CurrentReader["Check Box3"];
-			var disasterInput = this.CurrentReader["Check Box4"];
+			var constructionInput = this.CurrentReader.GetCheckBoxValue("Check Box3");
+			var disasterInput = this.CurrentReader.GetCheckBoxValue("Check Box4");
 			
-			if(constructionInput == "Yes")
+			if(constructionInput)
 				this.CurrentVolunteer.FormsOfService = this.CurrentVolunteer.FormsOfService | FormOfServiceKinds.HallConstruction;
 			
-			if(disasterInput == "Yes")
+			if(disasterInput)
 				this.CurrentVolunteer.FormsOfService = this.CurrentVolunteer.FormsOfService | FormOfServiceKinds.DisasterRelief;
 			
 			ConsoleX.WriteLine("Forms of service: ", false);

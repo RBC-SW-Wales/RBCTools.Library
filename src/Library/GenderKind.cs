@@ -7,6 +7,6 @@ namespace RbcVolunteerApplications.Library
 	{
 		NoneSpecified = 0,
 		Male = 1,
-		Femail = 2
+		Female = 2
 	}
 }

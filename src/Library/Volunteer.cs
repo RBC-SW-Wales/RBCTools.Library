@@ -77,8 +77,8 @@ namespace RbcVolunteerApplications.Library
 			{
 				// INSERT into database
 				query = ("INSERT INTO Volunteers " +
-				         "(Surname, FirstName, MiddleName, TypeOfApplication, KingdomAssemblyHallConstruction, DisasterRelief) " +
-				         "VALUES (@Surname, @FirstName, @MiddleName, @ApplicationKind, @HallConstruction, @DisasterRelief)");
+				         "(TypeOfApplication, KingdomAssemblyHallConstruction, DisasterRelief, Surname, FirstName, MiddleName, Gender) " +
+				         "VALUES (@ApplicationKind, @HallConstruction, @DisasterRelief, @Surname, @FirstName, @MiddleName, @Gender) ");
 			}
 			else
 			{
@@ -92,12 +92,13 @@ namespace RbcVolunteerApplications.Library
 			}
 			
 			var connector = new Connector(query);
-			connector.AddParameter("@Surname", "AAA TEST " + this.LastName);
-			connector.AddParameter("@FirstName", this.FirstName);
-			connector.AddParameter("@MiddleName", this.MiddleNames);
 			connector.AddParameter("@ApplicationKind", this.ApplicationKind.GetName());
 			connector.AddParameter("@HallConstruction", this.FormsOfService.HasFlag(FormOfServiceKinds.HallConstruction));
 			connector.AddParameter("@DisasterRelief", this.FormsOfService.HasFlag(FormOfServiceKinds.DisasterRelief));
+			connector.AddParameter("@Surname", "AAA TEST " + this.LastName);
+			connector.AddParameter("@FirstName", this.FirstName);
+			connector.AddParameter("@MiddleName", this.MiddleNames);
+			connector.AddParameter("@Gender", this.Gender.ToString());
 			connector.AddParameter("@ID", this.ID);
 			connector.ExecuteNonQuery();
 			connector = null;
