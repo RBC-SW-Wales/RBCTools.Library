@@ -58,5 +58,10 @@ namespace RbcVolunteerApplications.Library
 			return this.AcroFields.GetField(key).Trim().TrimInnerWhitespace();
 		}
 		
+		public bool GetCheckBoxValue(string key)
+		{
+			return GetPdfValue(key) == "Yes";
+		}
+		
 	}
 }
