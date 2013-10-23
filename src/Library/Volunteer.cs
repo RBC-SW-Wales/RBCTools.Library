@@ -85,19 +85,24 @@ namespace RbcVolunteerApplications.Library
 			else
 			{
 				// TODO UPDATE database
-//				query = ("UPDATE Volunteers SET " +
-//				         " Surname = @Surname, " +
-//				         " FirstName = @FirstName, " +
-//				         " MiddleName = @MiddleName, " +
-//				         " TypeOfApplication = @ApplicationKind" +
-//				         "WHERE ID = @ID");
+				query = ("UPDATE Volunteers SET " +
+				         " TypeOfApplication = @ApplicationKind, " +
+				         " KingdomAssemblyHallConstruction = @HallConstruction," + 
+				         " DisasterRelief = @DisasterRelief," + 
+				         " Surname = @Surname, " +
+				         " FirstName = @FirstName, " +
+				         " MiddleName = @MiddleName, " +
+				         " Gender = @Gender, " +
+				         " DateOfBirth = @DateOfBirth, " +
+				         " DateOfBaptism = @DateOfBaptism " +
+				         " WHERE ID = @ID");
 			}
 			
 			var connector = new Connector(query);
 			connector.AddParameter("@ApplicationKind", this.ApplicationKind.GetName());
 			connector.AddParameter("@HallConstruction", this.FormsOfService.HasFlag(FormOfServiceKinds.HallConstruction));
 			connector.AddParameter("@DisasterRelief", this.FormsOfService.HasFlag(FormOfServiceKinds.DisasterRelief));
-			connector.AddParameter("@Surname", "AAA TEST " + this.LastName);
+			connector.AddParameter("@Surname", "AAA DONT DELETE " + this.LastName);
 			connector.AddParameter("@FirstName", this.FirstName);
 			connector.AddParameter("@MiddleName", this.MiddleNames);
 			connector.AddParameter("@Gender", this.Gender.ToString());
