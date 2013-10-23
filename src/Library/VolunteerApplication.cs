@@ -68,16 +68,30 @@ namespace RbcVolunteerApplications.Library
 		
 		#region Methods
 		
-		public void InsertIntoDatabase()
+		public void SaveToDatabase()
 		{
-			var connector = new Connector("INSERT INTO Volunteers " + 
-			                              "(Surname, FirstName, MiddleName) " +
-			                              "VALUES (@Surname, @FirstName, @MiddleName)");
+			var query = "";
+			if(this.ID == 0)
+			{
+				// INSERT
+				query = ("INSERT INTO Volunteers " +
+				         "(Surname, FirstName, MiddleName) " +
+				         "VALUES (@Surname, @FirstName, @MiddleName)");
+			}
+			else
+			{
+				// UPDATE
+				query = ("UPDATE Volunteers " +
+				         "SET Surname = @Surname, FirstName = @FirstName, MiddleName = @MiddleName " +
+				         "WHERE ID = @ID");
+			}
 			
+			var connector = new Connector(query);
 			connector.AddParameter("@Surname", "AAA TEST " + this.LastName);
 			connector.AddParameter("@FirstName", this.FirstName);
 			connector.AddParameter("@MiddleName", this.MiddleNames);
-			connector.ExecuteNonQuery();
+			connector.AddParameter("@ID", this.ID);
+//			connector.ExecuteNonQuery();
 			connector = null;
 		}
 		

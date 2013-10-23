@@ -98,8 +98,8 @@ namespace RbcVolunteerApplications.Importer.Commands
 					
 					if(existingVolunteer == null)
 					{
-						ConsoleX.WriteLine("Creating a new record in the database...");
-						newApplication.InsertIntoDatabase();
+//						ConsoleX.WriteLine("Creating a new record in the database...");
+//						newApplication.SaveToDatabase();
 						ConsoleX.WriteWarning("TODO Create a new record, using the data from file.");
 						// TODO Create a new record, using the data from file.
 					}
