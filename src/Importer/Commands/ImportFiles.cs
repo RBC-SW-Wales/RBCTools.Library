@@ -23,54 +23,14 @@ namespace RbcVolunteerApplications.Importer.Commands
 		{
 			ConsoleX.WriteIntro(base.Description);
 			
-//			this.ShowFields();
 			this.RunImportFiles();
 			
 			ConsoleX.WriteHorizontalRule();
 		}
 		
-		public void ShowFields()
-		{
-			var fileNames = GetFiles();
-			foreach(var fileName in fileNames)
-			{
-				var reader = new S82Reader(fileName);
-				ConsoleX.WriteLine("Reading fields from " + reader.FilePath, ConsoleColor.Green);
-				
-				foreach(var key in reader.Keys)
-				{
-					// Get the value for the key, and tidy it up a little.
-					var val = reader[key];
-					ConsoleX.WriteLine("Field= \"" + key + "\", Value = " + val);
-				}
-				
-//				var key = "Text3";
-//				var val = reader[key];
-//				ConsoleX.WriteLine("Field= \"" + key + "\", Value = " + val);
-//				ConsoleX.WriteLine("Parsed as: " + reader.GetDateTimeValue(key).ToLongDateString());
-//				
-//				key = "Text4";
-//				val = reader[key];
-//				ConsoleX.WriteLine("Field= \"" + key + "\", Value = " + val);
-//				ConsoleX.WriteLine("Parsed as: " + reader.GetDateTimeValue(key).ToLongDateString());
-//				
-//				key = "Text15";
-//				val = reader[key];
-//				ConsoleX.WriteLine("Field= \"" + key + "\", Value = " + val);
-//				ConsoleX.WriteLine("Parsed as: " + reader.GetDateTimeValue(key).ToLongDateString());
-				
-				ConsoleX.WriteLine("Finished", ConsoleColor.Green);
-				
-				ConsoleX.WriteLine("Key to continue...");
-				Console.ReadKey();
-				
-				reader = null;
-			}
-		}
-		
 		public void RunImportFiles()
 		{
-			var fileNames = this.GetFiles();
+			var fileNames = ImportFiles.GetFiles(base.ConsoleX);
 			if (fileNames != null)
 			{
 				foreach (string fileName in fileNames)
@@ -345,9 +305,9 @@ namespace RbcVolunteerApplications.Importer.Commands
 		
 		#region Reusable Methods
 		
-		public string[] GetFiles()
+		public static string[] GetFiles(IConsoleX consoleX)
 		{
-			ConsoleX.WriteLine("Press any key to select the S82 PDF files...");
+			consoleX.WriteLine("Press any key to select the S82 PDF files...");
 			Console.ReadKey();
 			
 			string[] files = null;
