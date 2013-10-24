@@ -75,10 +75,10 @@ namespace RbcVolunteerApplications.Library
 				query = ("INSERT INTO Volunteers " +
 				         "(TypeOfApplication, KingdomAssemblyHallConstruction, DisasterRelief, " +
 				         " Surname, FirstName, MiddleName, Gender, DateOfBirth, DateOfBaptism, " +
-				         " Address) " +
+				         " Address, EMailAddress) " +
 				         "VALUES (@ApplicationKind, @HallConstruction, @DisasterRelief, " +
 				         " @Surname, @FirstName, @MiddleName, @Gender, @DateOfBirth, @DateOfBaptism, " +
-				         " @Address) ");
+				         " @Address, @EmailAddress) ");
 			}
 			else
 			{
@@ -93,7 +93,8 @@ namespace RbcVolunteerApplications.Library
 				         " Gender = @Gender, " +
 				         " DateOfBirth = @DateOfBirth, " +
 				         " DateOfBaptism = @DateOfBaptism, " +
-				         " Address = @Address " +
+				         " Address = @Address," +
+				         " EMailAddress = @EmailAddress" +
 				         " WHERE ID = @ID");
 			}
 			
@@ -108,6 +109,7 @@ namespace RbcVolunteerApplications.Library
 			connector.AddParameter("@DateOfBirth", this.DateOfBirth);
 			connector.AddParameter("@DateOfBaptism", this.DateOfBaptism);
 			connector.AddParameter("@Address", this.Address);
+			connector.AddParameter("@EmailAddress", this.EmailAddress);
 			connector.AddParameter("@ID", this.ID);
 			connector.ExecuteNonQuery();
 			connector = null;

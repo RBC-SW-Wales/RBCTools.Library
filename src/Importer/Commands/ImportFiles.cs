@@ -69,6 +69,7 @@ namespace RbcVolunteerApplications.Importer.Commands
 						this.Step3_FormsOfService();
 						this.Step3_Dates();
 						this.Step3_PostalAddress();
+						this.Step3_EmailAddress();
 						
 						// TODO Read the rest of the file
 						ConsoleX.WriteWarning("TODO Read the rest of the file");
@@ -307,7 +308,15 @@ namespace RbcVolunteerApplications.Importer.Commands
 			var address = this.CurrentReader["Text5"];
 			this.CurrentVolunteer.Address = address;
 			
-			ConsoleX.WriteLine("Address: " + this.CurrentVolunteer.Address);
+			ConsoleX.WriteLine("Postal Address: " + this.CurrentVolunteer.Address);
+		}
+		
+		private void Step3_EmailAddress()
+		{
+			var email = this.CurrentReader["Text6"];
+			this.CurrentVolunteer.EmailAddress = email;
+			
+			ConsoleX.WriteLine("Email Address: " + this.CurrentVolunteer.EmailAddress);
 		}
 		
 		#endregion
