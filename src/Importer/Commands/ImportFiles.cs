@@ -70,6 +70,7 @@ namespace RbcVolunteerApplications.Importer.Commands
 						this.Step3_Dates();
 						this.Step3_PostalAddress();
 						this.Step3_EmailAddress();
+						this.Step3_TelephoneNumbers();
 						
 						// TODO Read the rest of the file
 						ConsoleX.WriteWarning("TODO Read the rest of the file");
@@ -317,6 +318,23 @@ namespace RbcVolunteerApplications.Importer.Commands
 			this.CurrentVolunteer.EmailAddress = email;
 			
 			ConsoleX.WriteLine("Email Address: " + this.CurrentVolunteer.EmailAddress);
+		}
+		
+		private void Step3_TelephoneNumbers()
+		{
+			var home = this.CurrentReader["Text7"];
+			var work = this.CurrentReader["Text8"];
+			var mobile = this.CurrentReader["Text9"];
+			
+			// TODO Better telephone validation
+			
+			this.CurrentVolunteer.PhoneNumberHome = home;
+			this.CurrentVolunteer.PhoneNumberWork = work;
+			this.CurrentVolunteer.PhoneNumberMobile = mobile;
+			
+			ConsoleX.WriteLine("Home Phone: " + this.CurrentVolunteer.PhoneNumberHome);
+			ConsoleX.WriteLine("Work Phone: " + this.CurrentVolunteer.PhoneNumberWork);
+			ConsoleX.WriteLine("Mobile Phone: " + this.CurrentVolunteer.PhoneNumberMobile);
 		}
 		
 		#endregion

@@ -66,8 +66,6 @@ namespace RbcVolunteerApplications.Library
 		
 		public void SaveToDatabase()
 		{
-			// TODO Save to database
-			
 			var query = "";
 			if(this.ID == 0)
 			{
@@ -75,14 +73,14 @@ namespace RbcVolunteerApplications.Library
 				query = ("INSERT INTO Volunteers " +
 				         "(TypeOfApplication, KingdomAssemblyHallConstruction, DisasterRelief, " +
 				         " Surname, FirstName, MiddleName, Gender, DateOfBirth, DateOfBaptism, " +
-				         " Address, EMailAddress) " +
+				         " Address, EMailAddress, HomePhoneNo, WorkPhoneNo, MobilePhoneNo) " +
 				         "VALUES (@ApplicationKind, @HallConstruction, @DisasterRelief, " +
 				         " @Surname, @FirstName, @MiddleName, @Gender, @DateOfBirth, @DateOfBaptism, " +
-				         " @Address, @EmailAddress) ");
+				         " @Address, @EmailAddress, @PhoneNumberHome, @PhoneNumberWork, @PhoneNumberMobile) ");
 			}
 			else
 			{
-				// TODO UPDATE database
+				// UPDATE database
 				query = ("UPDATE Volunteers SET " +
 				         " TypeOfApplication = @ApplicationKind, " +
 				         " KingdomAssemblyHallConstruction = @HallConstruction," + 
@@ -94,7 +92,10 @@ namespace RbcVolunteerApplications.Library
 				         " DateOfBirth = @DateOfBirth, " +
 				         " DateOfBaptism = @DateOfBaptism, " +
 				         " Address = @Address," +
-				         " EMailAddress = @EmailAddress" +
+				         " EMailAddress = @EmailAddress," +
+				         " HomePhoneNo = @PhoneNumberHome," +
+				         " WorkPhoneNo = @PhoneNumberWork," +
+				         " MobilePhoneNo = @PhoneNumberMobile" +
 				         " WHERE ID = @ID");
 			}
 			
@@ -110,6 +111,9 @@ namespace RbcVolunteerApplications.Library
 			connector.AddParameter("@DateOfBaptism", this.DateOfBaptism);
 			connector.AddParameter("@Address", this.Address);
 			connector.AddParameter("@EmailAddress", this.EmailAddress);
+			connector.AddParameter("@PhoneNumberHome", this.PhoneNumberHome);
+			connector.AddParameter("@PhoneNumberWork", this.PhoneNumberWork);
+			connector.AddParameter("@PhoneNumberMobile", this.PhoneNumberMobile);
 			connector.AddParameter("@ID", this.ID);
 			connector.ExecuteNonQuery();
 			connector = null;
