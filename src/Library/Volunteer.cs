@@ -34,11 +34,7 @@ namespace RbcVolunteerApplications.Library
 		
 		public DateTime DateOfBaptism { get; set; }
 		
-		public string AddressStreetAndNumber { get; set; }
-		
-		public string AddressTown { get; set; }
-		
-		public string PostCode { get; set; }
+		public string Address { get; set; }
 		
 		public string EmailAddress { get; set; }
 		
@@ -78,9 +74,11 @@ namespace RbcVolunteerApplications.Library
 				// INSERT into database
 				query = ("INSERT INTO Volunteers " +
 				         "(TypeOfApplication, KingdomAssemblyHallConstruction, DisasterRelief, " +
-				         " Surname, FirstName, MiddleName, Gender, DateOfBirth, DateOfBaptism) " +
+				         " Surname, FirstName, MiddleName, Gender, DateOfBirth, DateOfBaptism, " +
+				         " Address) " +
 				         "VALUES (@ApplicationKind, @HallConstruction, @DisasterRelief, " +
-				         " @Surname, @FirstName, @MiddleName, @Gender, @DateOfBirth, @DateOfBaptism) ");
+				         " @Surname, @FirstName, @MiddleName, @Gender, @DateOfBirth, @DateOfBaptism, " +
+				         " @Address) ");
 			}
 			else
 			{
@@ -94,7 +92,8 @@ namespace RbcVolunteerApplications.Library
 				         " MiddleName = @MiddleName, " +
 				         " Gender = @Gender, " +
 				         " DateOfBirth = @DateOfBirth, " +
-				         " DateOfBaptism = @DateOfBaptism " +
+				         " DateOfBaptism = @DateOfBaptism, " +
+				         " Address = @Address " +
 				         " WHERE ID = @ID");
 			}
 			
@@ -108,6 +107,7 @@ namespace RbcVolunteerApplications.Library
 			connector.AddParameter("@Gender", this.Gender.ToString());
 			connector.AddParameter("@DateOfBirth", this.DateOfBirth);
 			connector.AddParameter("@DateOfBaptism", this.DateOfBaptism);
+			connector.AddParameter("@Address", this.Address);
 			connector.AddParameter("@ID", this.ID);
 			connector.ExecuteNonQuery();
 			connector = null;
