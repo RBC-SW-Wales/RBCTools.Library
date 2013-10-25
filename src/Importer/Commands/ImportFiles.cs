@@ -65,45 +65,41 @@ namespace RbcVolunteerApplications.Importer.Commands
 					
 					#endregion
 					
-					#region Step #3 Read the rest of the form
-					
 					if(!skipProcessing)
 					{
-						ConsoleX.WriteLine("Step #3 Read the rest of the file", ConsoleColor.Green);
 						
-						this.Step3_ApplicationKind();
-						this.Step3_FormsOfService();
-						this.Step3_Dates();
+						#region Step #3 Read the rest of the form
 						
-						// Postal Address
-						this.CurrentVolunteer.Address = this.CurrentReader["Text5"];
+						if(!skipProcessing)
+						{
+							ConsoleX.WriteLine("Step #3 Read the rest of the file", ConsoleColor.Green);
+							
+							this.Step3_ApplicationKind();
+							this.Step3_FormsOfService();
+							this.Step3_Dates();
+							
+							// Postal Address
+							this.CurrentVolunteer.Address = this.CurrentReader["Text5"];
+							
+							// Email Address
+							this.CurrentVolunteer.EmailAddress = this.CurrentReader["Text6"];
+							
+							this.Step3_TelephoneNumbers();
+							
+							this.Step3_Privileges();
+							
+							// Name Of Mate
+							this.CurrentVolunteer.NameOfMate = this.CurrentReader["Text10"];
+							
+							this.Step3_WorkBackground();
+							
+							// TODO Read the rest of the file
+							ConsoleX.WriteWarning("TODO Read the rest of the file");
+						}
 						
-						// Email Address
-						this.CurrentVolunteer.EmailAddress = this.CurrentReader["Text6"];
+						#endregion
 						
-						this.Step3_TelephoneNumbers();
-						
-						this.Step3_Privileges();
-						
-						// Name Of Mate
-						this.CurrentVolunteer.NameOfMate = this.CurrentReader["Text10"];
-						
-						this.Step3_WorkBackground();
-						
-						// TODO Read the rest of the file
-						ConsoleX.WriteWarning("TODO Read the rest of the file");
-					}
-					
-					#endregion
-					
-					#region Step #4 Display details and confirm
-					
-					if(skipProcessing)
-					{
-						ConsoleX.WriteLine(string.Format("Skipping '{0}'", fileName), ConsoleColor.Red);
-					}
-					else
-					{
+						#region Step #4 Display details and confirm
 						
 						ConsoleX.WriteLine("Step #4 Display collected details and confirm save", ConsoleColor.Green);
 						
@@ -123,10 +119,17 @@ namespace RbcVolunteerApplications.Importer.Commands
 							ConsoleX.WriteLine("UNSAVED: This record was not saved.", ConsoleColor.Magenta);
 						}
 						
+						#endregion
+						
 						ConsoleX.WriteLine(string.Format("Finished '{0}'", fileName), ConsoleColor.Green);
+						
+					}
+					else // Skipped file
+					{
+						ConsoleX.WriteLine(string.Format("Skipping '{0}'", fileName), ConsoleColor.Red);
 					}
 					
-					#endregion
+					ConsoleX.WriteHorizontalRule();
 					
 					this.CurrentReader = null;
 					this.CurrentVolunteer = null;
