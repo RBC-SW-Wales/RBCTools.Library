@@ -71,6 +71,7 @@ namespace RbcVolunteerApplications.Importer.Commands
 						this.Step3_PostalAddress();
 						this.Step3_EmailAddress();
 						this.Step3_TelephoneNumbers();
+						this.Step3_Privileges();
 						
 						// TODO Read the rest of the file
 						ConsoleX.WriteWarning("TODO Read the rest of the file");
@@ -269,12 +270,18 @@ namespace RbcVolunteerApplications.Importer.Commands
 			if(disasterInput)
 				this.CurrentVolunteer.FormsOfService = this.CurrentVolunteer.FormsOfService | FormOfServiceKinds.DisasterRelief;
 			
-			ConsoleX.WriteLine("Forms of service: ", false);
+			var message = "Forms of service: ";
+			
 			if(this.CurrentVolunteer.FormsOfService.HasFlag(FormOfServiceKinds.HallConstruction))
-				ConsoleX.WriteLine("* Hall Construction", false);
+				message += " * Hall Construction ";
+			
 			if(this.CurrentVolunteer.FormsOfService.HasFlag(FormOfServiceKinds.DisasterRelief))
-				ConsoleX.WriteLine("* Disaster Relief", false);
-			ConsoleX.WriteLine("", false);
+				message += " * Disaster Relief ";
+			
+			if(this.CurrentVolunteer.FormsOfService == FormOfServiceKinds.NoneSpecified)
+				message += " None Specified ";
+			
+			ConsoleX.WriteLine(message);
 		}
 		
 		private void Step3_Dates()
@@ -335,6 +342,37 @@ namespace RbcVolunteerApplications.Importer.Commands
 			ConsoleX.WriteLine("Home Phone: " + this.CurrentVolunteer.PhoneNumberHome);
 			ConsoleX.WriteLine("Work Phone: " + this.CurrentVolunteer.PhoneNumberWork);
 			ConsoleX.WriteLine("Mobile Phone: " + this.CurrentVolunteer.PhoneNumberMobile);
+		}
+		
+		private void Step3_Privileges()
+		{
+			var elder = this.CurrentReader.GetCheckBoxValue("Check Box7.0");
+			var servant = this.CurrentReader.GetCheckBoxValue("Check Box7.1");
+			var pioneer = this.CurrentReader.GetCheckBoxValue("Check Box7.2");
+			
+			var message = "Current Privileges: ";
+			
+			if(elder)
+			{
+				this.CurrentVolunteer.CongregationPrivileges |= CongregationPrivilegeKinds.Elder;
+				message += " * Elder ";
+			}
+			else if(servant)
+			{
+				this.CurrentVolunteer.CongregationPrivileges |= CongregationPrivilegeKinds.MinisterialServant;
+				message += " * Ministerial Servant ";
+			}
+			
+			if(pioneer)
+			{
+				this.CurrentVolunteer.RegularPioneer = true;
+				message += " * Regular Pioneer ";
+			}
+			
+			if(!elder && !servant && !pioneer)
+				message += " None Specified ";
+			
+			ConsoleX.WriteLine(message);
 		}
 		
 		#endregion

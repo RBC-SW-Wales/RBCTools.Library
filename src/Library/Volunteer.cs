@@ -44,7 +44,9 @@ namespace RbcVolunteerApplications.Library
 		
 		public string PhoneNumberMobile { get; set; }
 		
-		public PriviledgeKinds CurrentPriviledges { get; set; }
+		public CongregationPrivilegeKinds CongregationPrivileges { get; set; }
+		
+		public bool RegularPioneer { get; set; }
 		
 		public string NameOfMate { get; set; }
 		
@@ -73,18 +75,20 @@ namespace RbcVolunteerApplications.Library
 				query = ("INSERT INTO Volunteers " +
 				         "(TypeOfApplication, KingdomAssemblyHallConstruction, DisasterRelief, " +
 				         " Surname, FirstName, MiddleName, Gender, DateOfBirth, DateOfBaptism, " +
-				         " Address, EMailAddress, HomePhoneNo, WorkPhoneNo, MobilePhoneNo) " +
+				         " Address, EMailAddress, HomePhoneNo, WorkPhoneNo, MobilePhoneNo, " +
+				         " CongPrivilege, RegularPioneer) " +
 				         "VALUES (@ApplicationKind, @HallConstruction, @DisasterRelief, " +
 				         " @Surname, @FirstName, @MiddleName, @Gender, @DateOfBirth, @DateOfBaptism, " +
-				         " @Address, @EmailAddress, @PhoneNumberHome, @PhoneNumberWork, @PhoneNumberMobile) ");
+				         " @Address, @EmailAddress, @PhoneNumberHome, @PhoneNumberWork, @PhoneNumberMobile, " +
+				         " @CongPrivilege, @RegularPioneer) ");
 			}
 			else
 			{
 				// UPDATE database
 				query = ("UPDATE Volunteers SET " +
 				         " TypeOfApplication = @ApplicationKind, " +
-				         " KingdomAssemblyHallConstruction = @HallConstruction," + 
-				         " DisasterRelief = @DisasterRelief," + 
+				         " KingdomAssemblyHallConstruction = @HallConstruction," +
+				         " DisasterRelief = @DisasterRelief," +
 				         " Surname = @Surname, " +
 				         " FirstName = @FirstName, " +
 				         " MiddleName = @MiddleName, " +
@@ -95,7 +99,9 @@ namespace RbcVolunteerApplications.Library
 				         " EMailAddress = @EmailAddress," +
 				         " HomePhoneNo = @PhoneNumberHome," +
 				         " WorkPhoneNo = @PhoneNumberWork," +
-				         " MobilePhoneNo = @PhoneNumberMobile" +
+				         " MobilePhoneNo = @PhoneNumberMobile," +
+				         " CongPrivilege = @CongPrivilege," +
+				         " RegularPioneer = @RegularPioneer" +
 				         " WHERE ID = @ID");
 			}
 			
@@ -114,6 +120,8 @@ namespace RbcVolunteerApplications.Library
 			connector.AddParameter("@PhoneNumberHome", this.PhoneNumberHome);
 			connector.AddParameter("@PhoneNumberWork", this.PhoneNumberWork);
 			connector.AddParameter("@PhoneNumberMobile", this.PhoneNumberMobile);
+			connector.AddParameter("@CongPrivilege", this.CongregationPrivileges.GetName());
+			connector.AddParameter("@RegularPioneer", this.RegularPioneer);
 			connector.AddParameter("@ID", this.ID);
 			connector.ExecuteNonQuery();
 			connector = null;
