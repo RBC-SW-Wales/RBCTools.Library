@@ -407,6 +407,13 @@ namespace RbcVolunteerApplications.Importer.Commands
 			
 			ConsoleX.WriteLine(message);
 			
+			// Names and Gender
+			
+			ConsoleX.WriteLine("First name:" + this.CurrentVolunteer.FirstName);
+			ConsoleX.WriteLine("Middle name(s):" + this.CurrentVolunteer.MiddleNames);
+			ConsoleX.WriteLine("Last name:" + this.CurrentVolunteer.LastName);
+			ConsoleX.WriteLine("Gender: " + this.CurrentVolunteer.Gender.ToString());
+			
 			// Dates
 			ConsoleX.WriteLine("Date of birth: " + this.CurrentVolunteer.DateOfBirth.ToLongDateString());
 			ConsoleX.WriteLine("Date of baptism: " + this.CurrentVolunteer.DateOfBaptism.ToLongDateString());
