@@ -168,6 +168,9 @@ namespace RbcVolunteerApplications.Importer.Commands
 			
 			string pdfValue = this.CurrentReader["Text2"];
 			
+			// Remove any periods or commas (.,)
+			pdfValue = pdfValue.Replace(".", "").Replace(",", "");
+			
 			string lastName, firstName, middleNames = "";
 			
 			var names = pdfValue.Split(' ');
