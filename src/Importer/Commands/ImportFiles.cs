@@ -43,6 +43,10 @@ namespace RbcVolunteerApplications.Importer.Commands
 					this.CurrentReader = new S82Reader(fileName);
 					this.CurrentVolunteer = new Volunteer();
 					
+					ConsoleX.WriteLine("I'll open the file for you to check the data as we go.");
+					
+					this.OpenFileForHelp();
+					
 					bool skipProcessing = false;
 					
 					#region Step #1 Get name and gender
@@ -505,14 +509,12 @@ namespace RbcVolunteerApplications.Importer.Commands
 		public void INeedYourHelp(string fieldName)
 		{
 			ConsoleX.WriteWarning(string.Format("I'm having trouble with the field: '{0}'. I need your help. ", fieldName));
-			this.OpenFileForHelp();
 		}
 		
 		public void OpenFileForHelp()
 		{
 			if(this.OpenFileProcess == null)
 			{
-				ConsoleX.WriteWarning("I'll open the file for you now.");
 				this.OpenFileProcess = Process.Start(this.CurrentReader.FilePath);
 			}
 		}
