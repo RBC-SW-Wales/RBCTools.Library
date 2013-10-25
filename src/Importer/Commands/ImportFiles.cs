@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Data;
 using System.Diagnostics;
 using System.Windows.Forms;
 using RbcVolunteerApplications.Library;
@@ -68,10 +70,21 @@ namespace RbcVolunteerApplications.Importer.Commands
 						this.Step3_ApplicationKind();
 						this.Step3_FormsOfService();
 						this.Step3_Dates();
-						this.Step3_PostalAddress();
-						this.Step3_EmailAddress();
+						
+						// Postal Address
+						this.CurrentVolunteer.Address = this.CurrentReader["Text5"];
+						
+						// Email Address
+						this.CurrentVolunteer.EmailAddress = this.CurrentReader["Text6"];
+						
 						this.Step3_TelephoneNumbers();
+						
 						this.Step3_Privileges();
+						
+						// Name Of Mate
+						this.CurrentVolunteer.NameOfMate = this.CurrentReader["Text10"];
+						
+						this.Step3_WorkBackground();
 						
 						// TODO Read the rest of the file
 						ConsoleX.WriteWarning("TODO Read the rest of the file");
@@ -79,7 +92,7 @@ namespace RbcVolunteerApplications.Importer.Commands
 					
 					#endregion
 					
-					#region Finish
+					#region Step #4 Display details and confirm
 					
 					if(skipProcessing)
 					{
@@ -87,15 +100,25 @@ namespace RbcVolunteerApplications.Importer.Commands
 					}
 					else
 					{
+						
+						ConsoleX.WriteLine("Step #4 Display collected details and confirm save", ConsoleColor.Green);
+						
+						this.Step4_DisplayDetails();
+						
 						if(ConsoleX.WriteBooleanQuery("Shall I save to the database?"))
 						{
 							this.CurrentVolunteer.SaveToDatabase();
 							
 							if(this.CurrentVolunteer.ID == 0)
-								ConsoleX.WriteLine("DONE: Inserted a new record to the database, using the data from the file!", ConsoleColor.Magenta);
+								ConsoleX.WriteLine("DONE: Inserted a new record to the database!", ConsoleColor.Magenta);
 							else
-								ConsoleX.WriteWarning("TODO Update the record to the database, using the data from the file");
+								ConsoleX.WriteLine("DONE: Updated the record in the database!", ConsoleColor.Magenta);
 						}
+						else
+						{
+							ConsoleX.WriteLine("UNSAVED: This record was not saved.", ConsoleColor.Magenta);
+						}
+						
 						ConsoleX.WriteLine(string.Format("Finished '{0}'", fileName), ConsoleColor.Green);
 					}
 					
@@ -256,7 +279,6 @@ namespace RbcVolunteerApplications.Importer.Commands
 			else
 				this.CurrentVolunteer.ApplicationKind = ApplicationKind.NewApplication;
 			
-			ConsoleX.WriteLine(string.Format("Application Kind = {0}", this.CurrentVolunteer.ApplicationKind.GetName()));
 		}
 		
 		private void Step3_FormsOfService()
@@ -265,23 +287,10 @@ namespace RbcVolunteerApplications.Importer.Commands
 			var disasterInput = this.CurrentReader.GetCheckBoxValue("Check Box4");
 			
 			if(constructionInput)
-				this.CurrentVolunteer.FormsOfService = this.CurrentVolunteer.FormsOfService | FormOfServiceKinds.HallConstruction;
+				this.CurrentVolunteer.FormsOfService |= FormOfServiceKinds.HallConstruction;
 			
 			if(disasterInput)
-				this.CurrentVolunteer.FormsOfService = this.CurrentVolunteer.FormsOfService | FormOfServiceKinds.DisasterRelief;
-			
-			var message = "Forms of service: ";
-			
-			if(this.CurrentVolunteer.FormsOfService.HasFlag(FormOfServiceKinds.HallConstruction))
-				message += " * Hall Construction ";
-			
-			if(this.CurrentVolunteer.FormsOfService.HasFlag(FormOfServiceKinds.DisasterRelief))
-				message += " * Disaster Relief ";
-			
-			if(this.CurrentVolunteer.FormsOfService == FormOfServiceKinds.NoneSpecified)
-				message += " None Specified ";
-			
-			ConsoleX.WriteLine(message);
+				this.CurrentVolunteer.FormsOfService |= FormOfServiceKinds.DisasterRelief;
 		}
 		
 		private void Step3_Dates()
@@ -305,26 +314,6 @@ namespace RbcVolunteerApplications.Importer.Commands
 			
 			this.CurrentVolunteer.DateOfBirth = birthDate;
 			this.CurrentVolunteer.DateOfBaptism = baptismDate;
-			
-			ConsoleX.WriteLine("Date of birth: " + this.CurrentVolunteer.DateOfBirth.ToLongDateString());
-			ConsoleX.WriteLine("Date of baptism: " + this.CurrentVolunteer.DateOfBaptism.ToLongDateString());
-			
-		}
-		
-		private void Step3_PostalAddress()
-		{
-			var address = this.CurrentReader["Text5"];
-			this.CurrentVolunteer.Address = address;
-			
-			ConsoleX.WriteLine("Postal Address: " + this.CurrentVolunteer.Address);
-		}
-		
-		private void Step3_EmailAddress()
-		{
-			var email = this.CurrentReader["Text6"];
-			this.CurrentVolunteer.EmailAddress = email;
-			
-			ConsoleX.WriteLine("Email Address: " + this.CurrentVolunteer.EmailAddress);
 		}
 		
 		private void Step3_TelephoneNumbers()
@@ -338,41 +327,148 @@ namespace RbcVolunteerApplications.Importer.Commands
 			this.CurrentVolunteer.PhoneNumberHome = home;
 			this.CurrentVolunteer.PhoneNumberWork = work;
 			this.CurrentVolunteer.PhoneNumberMobile = mobile;
-			
-			ConsoleX.WriteLine("Home Phone: " + this.CurrentVolunteer.PhoneNumberHome);
-			ConsoleX.WriteLine("Work Phone: " + this.CurrentVolunteer.PhoneNumberWork);
-			ConsoleX.WriteLine("Mobile Phone: " + this.CurrentVolunteer.PhoneNumberMobile);
 		}
 		
 		private void Step3_Privileges()
 		{
+			
 			var elder = this.CurrentReader.GetCheckBoxValue("Check Box7.0");
 			var servant = this.CurrentReader.GetCheckBoxValue("Check Box7.1");
 			var pioneer = this.CurrentReader.GetCheckBoxValue("Check Box7.2");
 			
-			var message = "Current Privileges: ";
-			
 			if(elder)
-			{
 				this.CurrentVolunteer.CongregationPrivileges |= CongregationPrivilegeKinds.Elder;
-				message += " * Elder ";
-			}
 			else if(servant)
-			{
 				this.CurrentVolunteer.CongregationPrivileges |= CongregationPrivilegeKinds.MinisterialServant;
-				message += " * Ministerial Servant ";
-			}
 			
 			if(pioneer)
-			{
 				this.CurrentVolunteer.RegularPioneer = true;
-				message += " * Regular Pioneer ";
-			}
 			
-			if(!elder && !servant && !pioneer)
+		}
+		
+		private void Step3_WorkBackground()
+		{
+			this.CurrentVolunteer.WorkBackgroundList = new List<WorkBackground>();
+			
+			Action<int, string, string, string> createBackground = delegate(int row, string field1, string field2, string field3)
+			{
+				var bg = new WorkBackground();
+				this.CurrentVolunteer.WorkBackgroundList.Add(bg);
+				
+				bg.TradeOrProfession = this.CurrentReader[field1];
+				bg.TypeOfExprience = this.CurrentReader[field2];
+				
+				string yearsStr = this.CurrentReader[field3];
+				if(!string.IsNullOrEmpty(yearsStr))
+				{
+					int years;
+					if(int.TryParse(yearsStr, out years))
+					{
+						bg.Years = years;
+					}
+					else
+					{
+						this.INeedYourHelp(string.Format("Work Background {0} - Years", row));
+						
+						ConsoleX.WriteLine(string.Format("The years experience fields says '{0}', but I don't understand this.", yearsStr));
+						
+						bg.Years = ConsoleX.WriteIntegerQuery("Please can you tell me the number of years experience?");
+					}
+				}
+			};
+			
+			createBackground(1, "Text11.0.0", "Text11.0.1", "Text12.0.0");
+			createBackground(2, "Text11.1.0", "Text11.1.1", "Text12.0.1");
+			createBackground(3, "Text11.2.0", "Text11.2.1", "Text12.0.2");
+			createBackground(4, "Text11.3.0", "Text11.3.1", "Text12.0.3");
+		}
+		
+		private void Step4_DisplayDetails()
+		{
+			ConsoleX.WriteLine("The following details were collected:", ConsoleColor.Green);
+			
+			// Application Kind
+			ConsoleX.WriteLine(string.Format("Application Kind = {0}", this.CurrentVolunteer.ApplicationKind.GetName()));
+			
+			// Forms of service
+			var message = "Forms of service: ";
+			
+			if(this.CurrentVolunteer.FormsOfService.HasFlag(FormOfServiceKinds.HallConstruction))
+				message += " * Hall Construction ";
+			
+			if(this.CurrentVolunteer.FormsOfService.HasFlag(FormOfServiceKinds.DisasterRelief))
+				message += " * Disaster Relief ";
+			
+			if(this.CurrentVolunteer.FormsOfService == FormOfServiceKinds.NoneSpecified)
 				message += " None Specified ";
 			
 			ConsoleX.WriteLine(message);
+			
+			// Dates
+			ConsoleX.WriteLine("Date of birth: " + this.CurrentVolunteer.DateOfBirth.ToLongDateString());
+			ConsoleX.WriteLine("Date of baptism: " + this.CurrentVolunteer.DateOfBaptism.ToLongDateString());
+			
+			// Postal Address
+			ConsoleX.WriteLine("Postal Address: " + this.CurrentVolunteer.Address);
+			
+			// Email Address
+			ConsoleX.WriteLine("Email Address: " + this.CurrentVolunteer.EmailAddress);
+			
+			// Phone numbers
+			ConsoleX.WriteLine("Home Phone: " + this.CurrentVolunteer.PhoneNumberHome);
+			ConsoleX.WriteLine("Work Phone: " + this.CurrentVolunteer.PhoneNumberWork);
+			ConsoleX.WriteLine("Mobile Phone: " + this.CurrentVolunteer.PhoneNumberMobile);
+			
+			// Current privileges
+			message = "Current Privileges: ";
+			
+			if(this.CurrentVolunteer.CongregationPrivileges.HasFlag(CongregationPrivilegeKinds.Elder))
+			{
+				message += " * Elder ";
+			}
+			else if(this.CurrentVolunteer.CongregationPrivileges.HasFlag(CongregationPrivilegeKinds.MinisterialServant))
+			{
+				message += " * Ministerial Servant ";
+			}
+			
+			if(this.CurrentVolunteer.RegularPioneer)
+			{
+				message += " * Regular Pioneer ";
+			}
+			
+			if(!this.CurrentVolunteer.RegularPioneer && this.CurrentVolunteer.CongregationPrivileges == CongregationPrivilegeKinds.NoneSpecified)
+				message += " None Specified ";
+			
+			ConsoleX.WriteLine(message);
+			
+			// Name of Mate
+			ConsoleX.WriteLine("Name of mate: " + this.CurrentVolunteer.NameOfMate);
+			
+			// Work background
+			ConsoleX.WriteLine("Work background:");
+			DataTable table = new DataTable();
+			table.Columns.Add("Trade or profession");
+			table.Columns.Add("Type of experience");
+			table.Columns.Add("Years");
+			
+			Action<int> displayBackground = delegate(int index)
+			{
+				var row = table.NewRow();
+				var bg = this.CurrentVolunteer.WorkBackgroundList[index];
+				row[0] = bg.TradeOrProfession;
+				row[1] = bg.TypeOfExprience;
+				row[2] = bg.Years;
+				table.Rows.Add(row);
+			};
+			
+			displayBackground(0);
+			displayBackground(1);
+			displayBackground(2);
+			displayBackground(3);
+			
+			ConsoleX.WriteDataTable(table);
+			
+			
 		}
 		
 		#endregion

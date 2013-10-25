@@ -141,6 +141,27 @@ namespace RbcVolunteerApplications.Importer
 			return returnDate;
 		}
 		
+		public int WriteIntegerQuery(string text)
+		{
+			this.WriteLine(text, false);
+			
+			int number;
+			bool parsed = false;
+			
+			do
+			{
+				this.WriteLine("Please enter a number:", ConsoleColor.DarkGray);
+				var input = this.ReadPromt();
+				if(int.TryParse(input, out number))
+				{
+					parsed = true;
+				}
+			}
+			while(!parsed);
+			
+			return number;
+		}
+		
 		public void WriteHorizontalRule()
 		{
 			Console.Write(" "); // space

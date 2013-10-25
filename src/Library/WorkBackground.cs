@@ -7,6 +7,6 @@ namespace RbcVolunteerApplications.Library
 	{
 		public string TradeOrProfession { get; set; }
 		public string TypeOfExprience { get; set; }
-		public string Years { get; set; }
+		public int Years { get; set; }
 	}
 }

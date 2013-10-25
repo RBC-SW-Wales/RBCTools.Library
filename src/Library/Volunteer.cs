@@ -76,11 +76,19 @@ namespace RbcVolunteerApplications.Library
 				         "(TypeOfApplication, KingdomAssemblyHallConstruction, DisasterRelief, " +
 				         " Surname, FirstName, MiddleName, Gender, DateOfBirth, DateOfBaptism, " +
 				         " Address, EMailAddress, HomePhoneNo, WorkPhoneNo, MobilePhoneNo, " +
-				         " CongPrivilege, RegularPioneer) " +
+				         " CongPrivilege, RegularPioneer, NameOfMate, " +
+				         " Trade1, Experience1, Years1, " +
+				         " Trade2, Experience2, Years2, " +
+				         " Trade3, Experience3, Years3, " +
+				         " Trade4, Experience4, Years4) " +
 				         "VALUES (@ApplicationKind, @HallConstruction, @DisasterRelief, " +
 				         " @Surname, @FirstName, @MiddleName, @Gender, @DateOfBirth, @DateOfBaptism, " +
 				         " @Address, @EmailAddress, @PhoneNumberHome, @PhoneNumberWork, @PhoneNumberMobile, " +
-				         " @CongPrivilege, @RegularPioneer) ");
+				         " @CongPrivilege, @RegularPioneer, @NameOfMate, " +
+				         " @Trade1, @Experience1, @Years1, " +
+				         " @Trade2, @Experience2, @Years2, " +
+				         " @Trade3, @Experience3, @Years3, " +
+				         " @Trade4, @Experience4, @Years4) ");
 			}
 			else
 			{
@@ -96,12 +104,23 @@ namespace RbcVolunteerApplications.Library
 				         " DateOfBirth = @DateOfBirth, " +
 				         " DateOfBaptism = @DateOfBaptism, " +
 				         " Address = @Address," +
-				         " EMailAddress = @EmailAddress," +
-				         " HomePhoneNo = @PhoneNumberHome," +
-				         " WorkPhoneNo = @PhoneNumberWork," +
-				         " MobilePhoneNo = @PhoneNumberMobile," +
-				         " CongPrivilege = @CongPrivilege," +
-				         " RegularPioneer = @RegularPioneer" +
+				         " EMailAddress = @EmailAddress, " +
+				         " HomePhoneNo = @PhoneNumberHome, " +
+				         " WorkPhoneNo = @PhoneNumberWork, " +
+				         " MobilePhoneNo = @PhoneNumberMobile, " +
+				         " CongPrivilege = @CongPrivilege, " +
+				         " RegularPioneer = @RegularPioneer, " +
+				         " NameOfMate = @NameOfMate, " +
+				         " Trade1 = @Trade1, Experience1 = @Experience1, Years1 = @Years1, " +
+				         " Trade2 = @Trade2, " +
+				         " Experience2 = @Experience2, " +
+				         " Years2 = @Years2, " +
+				         " Trade3 = @Trade3, " +
+				         " Experience3 = @Experience3, " +
+				         " Years3 = @Years3, " +
+				         " Trade4 = @Trade4, " +
+				         " Experience4 = @Experience4, " +
+				         " Years4 = @Years4 " +
 				         " WHERE ID = @ID");
 			}
 			
@@ -122,6 +141,24 @@ namespace RbcVolunteerApplications.Library
 			connector.AddParameter("@PhoneNumberMobile", this.PhoneNumberMobile);
 			connector.AddParameter("@CongPrivilege", this.CongregationPrivileges.GetName());
 			connector.AddParameter("@RegularPioneer", this.RegularPioneer);
+			connector.AddParameter("@NameOfMate", this.NameOfMate);
+			
+			connector.AddParameter("@Trade1", this.WorkBackgroundList[0].TradeOrProfession);
+			connector.AddParameter("@Experience1", this.WorkBackgroundList[0].TypeOfExprience);
+			connector.AddParameter("@Years1", this.WorkBackgroundList[0].Years);
+			
+			connector.AddParameter("@Trade2", this.WorkBackgroundList[1].TradeOrProfession);
+			connector.AddParameter("@Experience2", this.WorkBackgroundList[1].TypeOfExprience);
+			connector.AddParameter("@Years2", this.WorkBackgroundList[1].Years);
+			
+			connector.AddParameter("@Trade3", this.WorkBackgroundList[2].TradeOrProfession);
+			connector.AddParameter("@Experience3", this.WorkBackgroundList[2].TypeOfExprience);
+			connector.AddParameter("@Years3", this.WorkBackgroundList[2].Years);
+			
+			connector.AddParameter("@Trade4", this.WorkBackgroundList[3].TradeOrProfession);
+			connector.AddParameter("@Experience4", this.WorkBackgroundList[3].TypeOfExprience);
+			connector.AddParameter("@Years4", this.WorkBackgroundList[3].Years);
+			
 			connector.AddParameter("@ID", this.ID);
 			connector.ExecuteNonQuery();
 			connector = null;
