@@ -51,11 +51,46 @@ namespace RbcVolunteerApplications.Library
 			}
 		}
 		
+		public bool IsReadable
+		{
+			get
+			{
+				bool fileValid = false;
+				
+				try
+				{
+					var text = GetPdfValue("Text12.0.3"); // Use a field name (reasonably) xunique to the S82 PDF file.
+					fileValid = true;
+				}
+				catch (NullReferenceException){}
+				
+				return fileValid;
+			}
+		}
+		
 		#endregion
+		
+		
 		
 		private string GetPdfValue(string key)
 		{
 			return this.AcroFields.GetField(key).Trim().TrimInnerWhitespace();
+		}
+		
+		public bool GetCheckBoxValue(string key)
+		{
+			return GetPdfValue(key) == "Yes";
+		}
+		
+		public DateTime GetDateTimeValue(string key)
+		{
+			var text = GetPdfValue(key);
+			
+			DateTime returnDate;
+			
+			DateTime.TryParse(text, out returnDate);
+			
+			return returnDate;
 		}
 		
 	}

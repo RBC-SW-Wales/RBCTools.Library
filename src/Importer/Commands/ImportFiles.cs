@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Data;
 using System.Diagnostics;
 using System.Windows.Forms;
 using RbcVolunteerApplications.Library;
@@ -14,121 +16,171 @@ namespace RbcVolunteerApplications.Importer.Commands
 			base.Description = "Import S82 files (PDF) into the RBC SharePoint database";
 		}
 		
+		#region Fields
+		
+		private Volunteer CurrentVolunteer;
+		private S82Reader CurrentReader;
+		private Process OpenFileProcess;
+		private bool SkipFile = false;
+		
+		#endregion
+		
 		public override void Run()
 		{
 			ConsoleX.WriteIntro(base.Description);
 			
-			ConsoleX.WriteLine("First you will need to choose the S82 PDF files that you wish to import.");
-			ConsoleX.WriteLine("Press any key to continue to select files...");
-			Console.ReadKey(true);
+			this.RunImportFiles();
 			
-			OpenFileDialog dlg = new OpenFileDialog();
-			dlg.Multiselect = true;
-			dlg.Title = "Choose S82 PDF files";
-			dlg.Filter = "PDF Files|*.pdf";
-			if (dlg.ShowDialog() == DialogResult.OK)
-			{
-				foreach (string str in dlg.FileNames)
-				{
-					ConsoleX.WriteLine(string.Format("Reading '{0}' file...", str));
-					
-					var reader = new S82Reader(str);
-					
-					#region Step #1 Get Name
-					
-					ConsoleX.WriteLine("Step #1 Get name", ConsoleColor.Green);
-					
-					var newApplication = this.GetVolunteerName(reader);
-					
-					ConsoleX.WriteLine(string.Format("Volunteer's name is {0} {1}", newApplication.FirstName, newApplication.LastName));
-					
-					#endregion
-					
-					#region Step #2 Search for existing records (use existing or create new)
-					
-					ConsoleX.WriteLine("Step #2 Search for existing records", ConsoleColor.Green);
-					
-					ConsoleX.WriteLine(string.Format("Looking up '{0} {1}'...", newApplication.FirstName, newApplication.LastName));
-					
-					bool matchesFound = VolunteerLookup.TrySearchForNames(newApplication.FirstName, newApplication.LastName, ConsoleX);
-					
-					VolunteerApplication existingVolunteer = null;
-					
-					if(matchesFound)
-					{
-						ConsoleX.WriteLine("Step #2.1 Select an existing record to update", ConsoleColor.Green);
-						ConsoleX.WriteLine("Do you want to update an existing record?");
-						
-						var input = string.Empty;
-						
-						do
-						{
-							input = ConsoleX.WriteQuery("Enter a valid ID, or press ENTER to skip:");
-							
-							int possibleID;
-							if(int.TryParse(input, out possibleID))
-							{
-								var vol = Volunteers.GetByID(possibleID);
-								if(vol != null)
-								{
-									ConsoleX.WriteLine(string.Format("You have selected {0} - {1} {2}.",
-									                                 vol.ID,
-									                                 vol.FirstName,
-									                                 vol.LastName));
-									
-									var confirm = ConsoleX.WriteQuery("Is this correct? Enter 'yes' to confirm, ENTER to try again.").ToLower();
-									
-									if(confirm == "yes")
-									{
-										input = string.Empty; // So that we can leave loop.
-										existingVolunteer = vol;
-										ConsoleX.WriteWarning("TODO Update the existing record, using the data from file.");
-										// TODO Update the existing record, using the data from file.
-									}
-								}
-								else
-								{
-									ConsoleX.WriteWarning("ID Incorrect, please try again.");
-								}
-							}
-						} while(!string.IsNullOrEmpty(input));
-						
-						
-					}
-					
-					if(existingVolunteer == null)
-					{
-						ConsoleX.WriteLine("Creating a new record in the database...");
-						newApplication.InsertIntoDatabase();
-						ConsoleX.WriteWarning("TODO Create a new record, using the data from file.");
-						// TODO Create a new record, using the data from file.
-					}
-					
-					#endregion
-					
-					//ConsoleX.WriteLine("Read the file, and ready to save into database! Press any key to continue.");
-					//Console.ReadKey(true);
-					
-					//ConsoleX.WriteLine("Inserting into database");
-					//application.InsertIntoDatabase();
-					
-					ConsoleX.WriteLine("Complete.");
-					
-					//reader.ShowFields(ConsoleX.WriteLine);
-				}
-			}
-			
-			ConsoleX.WriteLine("All files completed!");
 			ConsoleX.WriteHorizontalRule();
 		}
 		
-		private VolunteerApplication GetVolunteerName(S82Reader reader)
+		public void RunImportFiles()
 		{
-			var volunteer = new VolunteerApplication();
+			var fileNames = ImportFiles.GetFiles(base.ConsoleX);
+			
+			if(fileNames != null)
+			{
+				foreach (string fileName in fileNames)
+				{
+					this.OpenS82Reader(fileName);
+				}
+				ConsoleX.WriteLine("All files completed!");
+			}
+			else
+				ConsoleX.WriteWarning("No files selected!");
+		}
+		
+		private void OpenS82Reader(string fileName)
+		{
+			ConsoleX.WriteLine(string.Format("Reading '{0}' file...", fileName), ConsoleColor.Green);
+			
+			this.SkipFile = false;
+			
+			this.CurrentReader = new S82Reader(fileName);
+			
+			if(this.CurrentReader.IsReadable)
+			{
+				this.ProcessVolunteer();
+			}
+			else
+			{
+				ConsoleX.WriteWarning("File is not readable. Perhaps it is not in the correct format.");
+				ConsoleX.WriteLine("Press any key to continue.");
+				Console.ReadKey();
+				this.SkipFile = true;
+			}
+			
+			this.CurrentReader = null;
+			
+			if(this.SkipFile)
+				ConsoleX.WriteLine(string.Format("Skipping '{0}'", fileName), ConsoleColor.Red);
+			else
+				ConsoleX.WriteLine(string.Format("Finished '{0}'", fileName), ConsoleColor.Green);
+			
+			ConsoleX.WriteHorizontalRule();
+			
+		}
+		
+		private void ProcessVolunteer()
+		{
+			this.CurrentVolunteer = new Volunteer();
+			
+			ConsoleX.WriteLine("I'll open the file for you to check the data as we go.");
+			
+			this.OpenFileInNewProcess();
+			
+			#region Step #1 Get name and gender
+			
+			ConsoleX.WriteLine("Step #1 Get name and gender", ConsoleColor.Green);
+			
+			this.Step1_NameAndGender();
+			
+			#endregion
+			
+			#region Step #2 Search for existing records (use existing or create new)
+			
+			ConsoleX.WriteLine("Step #2 Search for existing records", ConsoleColor.Green);
+			
+			this.Step2_SelectRecord();
+			
+			#endregion
+			
+			if(!this.SkipFile)
+			{
+				
+				#region Step #3 Read the rest of the form
+				
+				ConsoleX.WriteLine("Step #3 Read the rest of the file", ConsoleColor.Green);
+				
+				this.Step3_ReadFileData();
+				
+				#endregion
+				
+				#region Step #4 Display details and confirm
+				
+				ConsoleX.WriteLine("Step #4 Display collected details and confirm save", ConsoleColor.Green);
+				
+				this.Step4_DisplayDetails();
+				
+				if(ConsoleX.WriteBooleanQuery("Shall I save to the database?"))
+				{
+					this.CurrentVolunteer.SaveToDatabase();
+					
+					if(this.CurrentVolunteer.ID == 0)
+						ConsoleX.WriteLine("DONE: Inserted a new record to the database!", ConsoleColor.Magenta);
+					else
+						ConsoleX.WriteLine("DONE: Updated the record in the database!", ConsoleColor.Magenta);
+				}
+				else
+				{
+					ConsoleX.WriteLine("UNSAVED: This record was not saved.", ConsoleColor.Magenta);
+				}
+				
+				#endregion
+				
+			}
+			
+			this.CloseFileIfProcessOpen();
+			
+			this.CurrentVolunteer = null;
+		}
+		
+		#region Step Methods
+		
+		private void Step1_NameAndGender()
+		{
+			
+			#region Gender
+			
+			var maleInput = this.CurrentReader.GetCheckBoxValue("Check Box5");
+			var femaleInput = this.CurrentReader.GetCheckBoxValue("Check Box6");
+			
+			if(maleInput == femaleInput)
+			{
+				this.INeedYourHelp("Gender");
+				
+				if(ConsoleX.WriteBooleanQuery("Is the volunteer male?"))
+					this.CurrentVolunteer.Gender = GenderKind.Male;
+				else
+					this.CurrentVolunteer.Gender = GenderKind.Female;
+			}
+			else
+			{
+				this.CurrentVolunteer.Gender = maleInput ? GenderKind.Male : GenderKind.Female;
+			}
+			
+			ConsoleX.WriteLine("Volunteer's Gender: " + this.CurrentVolunteer.Gender.ToString());
+			
+			#endregion
+			
+			#region Names
 			
 			// Get Surname, FirstName and MiddleName
 			
-			string pdfValue = reader["Text2"];
+			string pdfValue = this.CurrentReader["Text2"];
+			
+			// Remove any periods or commas (.,)
+			pdfValue = pdfValue.Replace(".", "").Replace(",", "");
 			
 			string lastName, firstName, middleNames = "";
 			
@@ -146,38 +198,376 @@ namespace RbcVolunteerApplications.Importer.Commands
 			}
 			else
 			{
-				ConsoleX.WriteWarning("I'm having problems understanding the 'names' field. I need your help. I'll open the file for you now.");
-				
-				var process = Process.Start(reader.FilePath);
+				this.INeedYourHelp("Name");
 				
 				lastName = ConsoleX.WriteQuery("Please can you tell me their 'Last Name'?");
-				middleNames = ConsoleX.WriteQuery("Please can you tell me if they have any 'Middles Names'?");
+				middleNames = ConsoleX.WriteQuery("Please can you tell me their 'Middles Names'? (Leave blank if they don't have any)");
 				firstName = ConsoleX.WriteQuery("Please can you tell me their 'First Name'?");
+			}
+			
+			this.CurrentVolunteer.LastName = lastName;
+			this.CurrentVolunteer.MiddleNames = middleNames;
+			this.CurrentVolunteer.FirstName = firstName;
+			
+			ConsoleX.WriteLine(string.Format("Volunteer's Name: {0} {1}", this.CurrentVolunteer.FirstName, this.CurrentVolunteer.LastName));
+			
+			#endregion
+			
+		}
+		
+		private void Step2_SelectRecord()
+		{
+			
+			ConsoleX.WriteLine(string.Format("Looking up '{0} {1}'...", this.CurrentVolunteer.FirstName, this.CurrentVolunteer.LastName));
+			
+			bool matchesFound = VolunteerLookup.TrySearchForNames(this.CurrentVolunteer.FirstName, this.CurrentVolunteer.LastName, ConsoleX);
+			
+			if(matchesFound)
+			{
+				ConsoleX.WriteLine("Step #2.1 Select an existing record to update", ConsoleColor.Green);
+				ConsoleX.WriteLine("Do you want to update an existing record?");
 				
+				var input = string.Empty;
+				
+				do
+				{
+					input = ConsoleX.WriteQuery("Enter a valid ID, or press ENTER to skip:");
+					
+					int possibleID;
+					if(int.TryParse(input, out possibleID))
+					{
+						var existingVolunteer = Volunteers.GetByID(possibleID);
+						if(existingVolunteer != null)
+						{
+							ConsoleX.WriteLine(string.Format("You have selected {0} - {1} {2}.",
+							                                 existingVolunteer.ID,
+							                                 existingVolunteer.FirstName,
+							                                 existingVolunteer.LastName));
+							
+							var confirm = ConsoleX.WriteQuery("Is this correct? Enter 'yes' to confirm, ENTER to try again.").ToLower();
+							
+							if(confirm == "yes")
+							{
+								input = string.Empty; // So that we can leave loop.
+								this.CurrentVolunteer.ID = existingVolunteer.ID;
+								ConsoleX.WriteLine(string.Format("Using record ID {0}", this.CurrentVolunteer.ID));
+							}
+						}
+						else
+						{
+							ConsoleX.WriteWarning("ID Incorrect, please try again.");
+						}
+					}
+				} while(!string.IsNullOrEmpty(input));
+			}
+			
+			if(this.CurrentVolunteer.ID == 0)
+			{
+				ConsoleX.WriteLine("Step #2.2 Confirm this is a new record", ConsoleColor.Green);
+				ConsoleX.WriteLine("Continuing will create a NEW record.");
+				var confirm = ConsoleX.WriteQuery("Is this correct? Enter 'yes' to confirm, or anything else to skip this file.").ToLower();
+				if(confirm != "yes")
+					this.SkipFile = true;
+			}
+		}
+		
+		private void Step3_ReadFileData()
+		{
+			
+			this.Step3_ApplicationKind();
+			this.Step3_FormsOfService();
+			this.Step3_Dates();
+			
+			// Postal Address
+			this.CurrentVolunteer.Address = this.CurrentReader["Text5"];
+			
+			// Email Address
+			this.CurrentVolunteer.EmailAddress = this.CurrentReader["Text6"];
+			
+			this.Step3_TelephoneNumbers();
+			
+			this.Step3_Privileges();
+			
+			// Name Of Mate
+			this.CurrentVolunteer.NameOfMate = this.CurrentReader["Text10"];
+			
+			this.Step3_WorkBackground();
+			
+			// TODO Read the rest of the file
+			ConsoleX.WriteWarning("TODO Read the rest of the file");
+			
+		}
+		
+		private void Step3_ApplicationKind()
+		{
+			var newApplicationInput = this.CurrentReader.GetCheckBoxValue("Check Box1");
+			var updateApplicationInput = this.CurrentReader.GetCheckBoxValue("Check Box2");
+			
+			bool isUpdate = false;
+			
+			if(!newApplicationInput && !updateApplicationInput)
+			{
+				if(this.CurrentVolunteer.ID != 0)
+					isUpdate = true;
+			}
+			else if(updateApplicationInput)
+			{
+				isUpdate = true;
+			}
+			
+			if(isUpdate)
+				this.CurrentVolunteer.ApplicationKind = ApplicationKind.UpdateOfPersonalData;
+			else
+				this.CurrentVolunteer.ApplicationKind = ApplicationKind.NewApplication;
+			
+		}
+		
+		private void Step3_FormsOfService()
+		{
+			var constructionInput = this.CurrentReader.GetCheckBoxValue("Check Box3");
+			var disasterInput = this.CurrentReader.GetCheckBoxValue("Check Box4");
+			
+			if(constructionInput)
+				this.CurrentVolunteer.FormsOfService |= FormOfServiceKinds.HallConstruction;
+			
+			if(disasterInput)
+				this.CurrentVolunteer.FormsOfService |= FormOfServiceKinds.DisasterRelief;
+		}
+		
+		private void Step3_Dates()
+		{
+			var birthDate = this.CurrentReader.GetDateTimeValue("Text3");
+			var baptismDate = this.CurrentReader.GetDateTimeValue("Text4");
+			
+			if(birthDate == DateTime.MinValue)
+			{
+				this.INeedYourHelp("Date of Birth");
+				
+				birthDate = ConsoleX.WriteDateTimeQuery("Please can you tell me their Date of Birth?");
+			}
+			
+			if(baptismDate == DateTime.MinValue)
+			{
+				this.INeedYourHelp("Date of Baptism");
+				
+				baptismDate = ConsoleX.WriteDateTimeQuery("Please can you tell me their Date of Baptism?");
+			}
+			
+			this.CurrentVolunteer.DateOfBirth = birthDate;
+			this.CurrentVolunteer.DateOfBaptism = baptismDate;
+		}
+		
+		private void Step3_TelephoneNumbers()
+		{
+			var home = this.CurrentReader["Text7"];
+			var work = this.CurrentReader["Text8"];
+			var mobile = this.CurrentReader["Text9"];
+			
+			// TODO Better telephone validation
+			
+			this.CurrentVolunteer.PhoneNumberHome = home;
+			this.CurrentVolunteer.PhoneNumberWork = work;
+			this.CurrentVolunteer.PhoneNumberMobile = mobile;
+		}
+		
+		private void Step3_Privileges()
+		{
+			
+			var elder = this.CurrentReader.GetCheckBoxValue("Check Box7.0");
+			var servant = this.CurrentReader.GetCheckBoxValue("Check Box7.1");
+			var pioneer = this.CurrentReader.GetCheckBoxValue("Check Box7.2");
+			
+			if(elder)
+				this.CurrentVolunteer.CongregationPrivileges |= CongregationPrivilegeKinds.Elder;
+			else if(servant)
+				this.CurrentVolunteer.CongregationPrivileges |= CongregationPrivilegeKinds.MinisterialServant;
+			
+			if(pioneer)
+				this.CurrentVolunteer.RegularPioneer = true;
+			
+		}
+		
+		private void Step3_WorkBackground()
+		{
+			this.CurrentVolunteer.WorkBackgroundList = new List<WorkBackground>();
+			
+			Action<int, string, string, string> createBackground = delegate(int row, string field1, string field2, string field3)
+			{
+				var bg = new WorkBackground();
+				this.CurrentVolunteer.WorkBackgroundList.Add(bg);
+				
+				bg.TradeOrProfession = this.CurrentReader[field1];
+				bg.TypeOfExprience = this.CurrentReader[field2];
+				
+				string yearsStr = this.CurrentReader[field3];
+				if(!string.IsNullOrEmpty(yearsStr))
+				{
+					int years;
+					if(int.TryParse(yearsStr, out years))
+					{
+						bg.Years = years;
+					}
+					else
+					{
+						this.INeedYourHelp(string.Format("Work Background {0} - Years", row));
+						
+						ConsoleX.WriteLine(string.Format("The years experience fields says '{0}', but I don't understand this.", yearsStr));
+						
+						bg.Years = ConsoleX.WriteIntegerQuery("Please can you tell me the number of years experience?");
+					}
+				}
+			};
+			
+			createBackground(1, "Text11.0.0", "Text11.0.1", "Text12.0.0");
+			createBackground(2, "Text11.1.0", "Text11.1.1", "Text12.0.1");
+			createBackground(3, "Text11.2.0", "Text11.2.1", "Text12.0.2");
+			createBackground(4, "Text11.3.0", "Text11.3.1", "Text12.0.3");
+		}
+		
+		private void Step4_DisplayDetails()
+		{
+			ConsoleX.WriteLine("The following details were collected:", ConsoleColor.Green);
+			
+			// Application Kind
+			ConsoleX.WriteLine(string.Format("Application Kind = {0}", this.CurrentVolunteer.ApplicationKind.GetName()));
+			
+			// Forms of service
+			var message = "Forms of service: ";
+			
+			if(this.CurrentVolunteer.FormsOfService.HasFlag(FormOfServiceKinds.HallConstruction))
+				message += " * Hall Construction ";
+			
+			if(this.CurrentVolunteer.FormsOfService.HasFlag(FormOfServiceKinds.DisasterRelief))
+				message += " * Disaster Relief ";
+			
+			if(this.CurrentVolunteer.FormsOfService == FormOfServiceKinds.NoneSpecified)
+				message += " None Specified ";
+			
+			ConsoleX.WriteLine(message);
+			
+			// Names and Gender
+			
+			ConsoleX.WriteLine("First name: " + this.CurrentVolunteer.FirstName);
+			ConsoleX.WriteLine("Middle name(s): " + this.CurrentVolunteer.MiddleNames);
+			ConsoleX.WriteLine("Last name: " + this.CurrentVolunteer.LastName);
+			ConsoleX.WriteLine("Gender: " + this.CurrentVolunteer.Gender.ToString());
+			
+			// Dates
+			ConsoleX.WriteLine("Date of birth: " + this.CurrentVolunteer.DateOfBirth.ToLongDateString());
+			ConsoleX.WriteLine("Date of baptism: " + this.CurrentVolunteer.DateOfBaptism.ToLongDateString());
+			
+			// Postal Address
+			ConsoleX.WriteLine("Postal Address: " + this.CurrentVolunteer.Address);
+			
+			// Email Address
+			ConsoleX.WriteLine("Email Address: " + this.CurrentVolunteer.EmailAddress);
+			
+			// Phone numbers
+			ConsoleX.WriteLine("Home Phone: " + this.CurrentVolunteer.PhoneNumberHome);
+			ConsoleX.WriteLine("Work Phone: " + this.CurrentVolunteer.PhoneNumberWork);
+			ConsoleX.WriteLine("Mobile Phone: " + this.CurrentVolunteer.PhoneNumberMobile);
+			
+			// Current privileges
+			message = "Current Privileges: ";
+			
+			if(this.CurrentVolunteer.CongregationPrivileges.HasFlag(CongregationPrivilegeKinds.Elder))
+			{
+				message += " * Elder ";
+			}
+			else if(this.CurrentVolunteer.CongregationPrivileges.HasFlag(CongregationPrivilegeKinds.MinisterialServant))
+			{
+				message += " * Ministerial Servant ";
+			}
+			
+			if(this.CurrentVolunteer.RegularPioneer)
+			{
+				message += " * Regular Pioneer ";
+			}
+			
+			if(!this.CurrentVolunteer.RegularPioneer && this.CurrentVolunteer.CongregationPrivileges == CongregationPrivilegeKinds.NoneSpecified)
+				message += " None Specified ";
+			
+			ConsoleX.WriteLine(message);
+			
+			// Name of Mate
+			ConsoleX.WriteLine("Name of mate: " + this.CurrentVolunteer.NameOfMate);
+			
+			// Work background
+			ConsoleX.WriteLine("Work background:");
+			DataTable table = new DataTable();
+			table.Columns.Add("Trade or profession");
+			table.Columns.Add("Type of experience");
+			table.Columns.Add("Years");
+			
+			Action<int> displayBackground = delegate(int index)
+			{
+				var row = table.NewRow();
+				var bg = this.CurrentVolunteer.WorkBackgroundList[index];
+				row[0] = bg.TradeOrProfession;
+				row[1] = bg.TypeOfExprience;
+				row[2] = bg.Years;
+				table.Rows.Add(row);
+			};
+			
+			displayBackground(0);
+			displayBackground(1);
+			displayBackground(2);
+			displayBackground(3);
+			
+			ConsoleX.WriteDataTable(table);
+			
+			
+		}
+		
+		#endregion
+		
+		#region Reusable Methods
+		
+		public static string[] GetFiles(IConsoleX consoleX)
+		{
+			consoleX.WriteLine("Press any key to select the S82 PDF files...");
+			Console.ReadKey();
+			
+			string[] files = null;
+			OpenFileDialog dlg = new OpenFileDialog();
+			dlg.Multiselect = true;
+			dlg.Title = "Choose S82 PDF files";
+			dlg.Filter = "PDF Files|*.pdf";
+			if (dlg.ShowDialog() == DialogResult.OK)
+			{
+				files = dlg.FileNames;
+			}
+			return files;
+		}
+		
+		public void INeedYourHelp(string fieldName)
+		{
+			ConsoleX.WriteWarning(string.Format("I'm having trouble with the field: '{0}'. I need your help. ", fieldName));
+		}
+		
+		public void OpenFileInNewProcess()
+		{
+			if(this.OpenFileProcess == null)
+			{
+				this.OpenFileProcess = Process.Start(this.CurrentReader.FilePath);
+			}
+		}
+		
+		public void CloseFileIfProcessOpen()
+		{
+			if(this.OpenFileProcess != null)
+			{
+				var process = this.OpenFileProcess;
+				this.OpenFileProcess = null;
 				try
 				{
 					process.Kill();
 				}
-				catch (Exception){}
+				catch (Exception) {}
 			}
-			
-			volunteer.LastName = lastName;
-			volunteer.MiddleNames = middleNames;
-			volunteer.FirstName = firstName;
-			
-			return volunteer;
 		}
 		
-		public void ShowFields(S82Reader reader)
-		{
-			ConsoleX.WriteLine("Reading fields from " + reader.FilePath);
-			foreach(var key in reader.Keys)
-			{
-				// Get the value for the key, and tidy it up a little.
-				var val = reader[key];
-				ConsoleX.WriteLine("Field= \"" + key + "\", Value = " + val);
-			}
-		}
+		#endregion
 		
 	}
 }

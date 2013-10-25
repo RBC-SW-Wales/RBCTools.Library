@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Data;
+using System.Globalization;
 using System.Linq;
 using RbcVolunteerApplications.Library;
 
@@ -18,18 +19,16 @@ namespace RbcVolunteerApplications.Importer
 			if(blankAfter) Console.WriteLine(" ");
 		}
 		
-		public void WriteWarning(string text)
-		{
-			Console.ForegroundColor = ConsoleColor.Yellow;
-			this.WriteLine(text);
-			Console.ResetColor();
-		}
-		
 		public void WriteLine(string text, ConsoleColor color)
 		{
 			Console.ForegroundColor = color;
 			this.WriteLine(text);
 			Console.ResetColor();
+		}
+		
+		public void WriteWarning(string text)
+		{
+			this.WriteLine(text, ConsoleColor.Yellow);
 		}
 		
 		public string ReadPromt(List<string> tabPossibilities = null)
@@ -102,6 +101,67 @@ namespace RbcVolunteerApplications.Importer
 			return input;
 		}
 		
+		public bool WriteBooleanQuery(string text)
+		{
+			this.WriteLine(text, false);
+			
+			bool? boolean = null;
+			
+			do
+			{
+				this.WriteLine("Please reply \"yes\" or \"no\".", ConsoleColor.DarkGray);
+				var input = this.ReadPromt();
+				if(input == "yes")
+					boolean = true;
+				else if(input == "no")
+					boolean = false;
+			}
+			while(!boolean.HasValue);
+			
+			return boolean.Value;
+		}
+		
+		public DateTime WriteDateTimeQuery(string text)
+		{
+			this.WriteLine(text, false);
+			DateTime returnDate = DateTime.MinValue;
+			
+			do
+			{
+				this.WriteLine("Please enter date (DD MM YYYY):", ConsoleColor.DarkGray);
+				var input = this.ReadPromt();
+				
+				DateTime parsedDate;
+				if(DateTime.TryParseExact(input, "dd MM yyyy", CultureInfo.CurrentCulture, DateTimeStyles.None, out parsedDate))
+					returnDate = parsedDate;
+				
+			}
+			while(returnDate == DateTime.MinValue);
+			
+			return returnDate;
+		}
+		
+		public int WriteIntegerQuery(string text)
+		{
+			this.WriteLine(text, false);
+			
+			int number;
+			bool parsed = false;
+			
+			do
+			{
+				this.WriteLine("Please enter a number:", ConsoleColor.DarkGray);
+				var input = this.ReadPromt();
+				if(int.TryParse(input, out number))
+				{
+					parsed = true;
+				}
+			}
+			while(!parsed);
+			
+			return number;
+		}
+		
 		public void WriteHorizontalRule()
 		{
 			Console.Write(" "); // space
@@ -146,8 +206,6 @@ namespace RbcVolunteerApplications.Importer
 				var tableWidth = (table.Columns.Count * (columnWidth + 3)) + 1;
 				var cellFormat = "| {0,-" + columnWidth + "} ";
 				
-				this.WriteLine(string.Format("Record count: {0}", table.Rows.Count), blankAfter: false);
-				
 				this.WriteLine(new string('-', tableWidth), blankAfter:false);
 				
 				string line = "";
@@ -172,7 +230,10 @@ namespace RbcVolunteerApplications.Importer
 					this.WriteLine(line, blankAfter:false);
 				}
 				
-				this.WriteLine(new string('-', tableWidth));
+				this.WriteLine(new string('-', tableWidth), blankAfter: false);
+				
+				this.WriteLine(string.Format("Record count: {0}", table.Rows.Count));
+				
 			}
 		}
 	}

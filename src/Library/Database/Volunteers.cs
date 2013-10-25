@@ -40,9 +40,9 @@ namespace RbcVolunteerApplications.Library.Database
 			return table;
 		}
 		
-		public static VolunteerApplication GetByID(int volunteerId)
+		public static Volunteer GetByID(int volunteerId)
 		{
-			VolunteerApplication volunteer = null;
+			Volunteer volunteer = null;
 			
 			var connector = new Connector(BasicQuery +
 			                              " WHERE Volunteers.ID = @VolunteerID " +
@@ -61,9 +61,9 @@ namespace RbcVolunteerApplications.Library.Database
 			return volunteer;
 		}
 		
-		private static VolunteerApplication BuildFromDataRow(DataRow row)
+		private static Volunteer BuildFromDataRow(DataRow row)
 		{
-			var volunteer = new VolunteerApplication();
+			var volunteer = new Volunteer();
 			volunteer.ID = (int)row["ID"];
 			volunteer.FirstName = row["FirstName"] as string;
 			volunteer.MiddleNames = row["MiddleName"] as string;
@@ -76,9 +76,16 @@ namespace RbcVolunteerApplications.Library.Database
 			get
 			{
 				return "" +
-					" SELECT Volunteers.ID, Volunteers.FirstName, Volunteers.MiddleName, Volunteers.Surname, Congregation.CongregationName " +
+					" SELECT " +
+					" Volunteers.ID, " +
+					" Volunteers.FirstName, " +
+					" Volunteers.MiddleName, " +
+					" Volunteers.Surname, " +
+					" Congregation.CongregationName, " +
+					" Volunteers.TypeOfApplication, " +
+					" Volunteers.Gender " +
 					" FROM Volunteers " +
-					" INNER JOIN Congregation ON (Congregation.ID = Volunteers.CongregationName) ";
+					" LEFT JOIN Congregation ON (Congregation.ID = Volunteers.CongregationName) ";
 			}
 		}
 		
