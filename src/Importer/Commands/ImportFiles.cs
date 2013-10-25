@@ -16,10 +16,14 @@ namespace RbcVolunteerApplications.Importer.Commands
 			base.Description = "Import S82 files (PDF) into the RBC SharePoint database";
 		}
 		
+		#region Fields
+		
 		private Volunteer CurrentVolunteer;
 		private S82Reader CurrentReader;
-		
 		private Process OpenFileProcess;
+		private bool SkipFile = false;
+		
+		#endregion
 		
 		public override void Run()
 		{
@@ -33,112 +37,112 @@ namespace RbcVolunteerApplications.Importer.Commands
 		public void RunImportFiles()
 		{
 			var fileNames = ImportFiles.GetFiles(base.ConsoleX);
-			if (fileNames != null)
+			
+			if(fileNames != null)
 			{
 				foreach (string fileName in fileNames)
 				{
-					
-					ConsoleX.WriteLine(string.Format("Reading '{0}' file...", fileName), ConsoleColor.Green);
-					
-					this.CurrentReader = new S82Reader(fileName);
-					this.CurrentVolunteer = new Volunteer();
-					
-					ConsoleX.WriteLine("I'll open the file for you to check the data as we go.");
-					
-					this.OpenFileForHelp();
-					
-					bool skipProcessing = false;
-					
-					#region Step #1 Get name and gender
-					
-					ConsoleX.WriteLine("Step #1 Get name and gender", ConsoleColor.Green);
-					
-					this.Step1_NameAndGender();
-					
-					#endregion
-					
-					#region Step #2 Search for existing records (use existing or create new)
-					
-					ConsoleX.WriteLine("Step #2 Search for existing records", ConsoleColor.Green);
-					
-					this.Step2_SelectRecord(ref skipProcessing);
-					
-					#endregion
-					
-					if(!skipProcessing)
-					{
-						
-						#region Step #3 Read the rest of the form
-						
-						if(!skipProcessing)
-						{
-							ConsoleX.WriteLine("Step #3 Read the rest of the file", ConsoleColor.Green);
-							
-							this.Step3_ApplicationKind();
-							this.Step3_FormsOfService();
-							this.Step3_Dates();
-							
-							// Postal Address
-							this.CurrentVolunteer.Address = this.CurrentReader["Text5"];
-							
-							// Email Address
-							this.CurrentVolunteer.EmailAddress = this.CurrentReader["Text6"];
-							
-							this.Step3_TelephoneNumbers();
-							
-							this.Step3_Privileges();
-							
-							// Name Of Mate
-							this.CurrentVolunteer.NameOfMate = this.CurrentReader["Text10"];
-							
-							this.Step3_WorkBackground();
-							
-							// TODO Read the rest of the file
-							ConsoleX.WriteWarning("TODO Read the rest of the file");
-						}
-						
-						#endregion
-						
-						#region Step #4 Display details and confirm
-						
-						ConsoleX.WriteLine("Step #4 Display collected details and confirm save", ConsoleColor.Green);
-						
-						this.Step4_DisplayDetails();
-						
-						if(ConsoleX.WriteBooleanQuery("Shall I save to the database?"))
-						{
-							this.CurrentVolunteer.SaveToDatabase();
-							
-							if(this.CurrentVolunteer.ID == 0)
-								ConsoleX.WriteLine("DONE: Inserted a new record to the database!", ConsoleColor.Magenta);
-							else
-								ConsoleX.WriteLine("DONE: Updated the record in the database!", ConsoleColor.Magenta);
-						}
-						else
-						{
-							ConsoleX.WriteLine("UNSAVED: This record was not saved.", ConsoleColor.Magenta);
-						}
-						
-						#endregion
-						
-						ConsoleX.WriteLine(string.Format("Finished '{0}'", fileName), ConsoleColor.Green);
-						
-					}
-					else // Skipped file
-					{
-						ConsoleX.WriteLine(string.Format("Skipping '{0}'", fileName), ConsoleColor.Red);
-					}
-					
-					ConsoleX.WriteHorizontalRule();
-					
-					this.CurrentReader = null;
-					this.CurrentVolunteer = null;
-					this.CloseFileIfOpen();
-					
+					this.OpenS82Reader(fileName);
 				}
+				ConsoleX.WriteLine("All files completed!");
+			}
+			else
+				ConsoleX.WriteWarning("No files selected!");
+		}
+		
+		private void OpenS82Reader(string fileName)
+		{
+			ConsoleX.WriteLine(string.Format("Reading '{0}' file...", fileName), ConsoleColor.Green);
+			
+			this.SkipFile = false;
+			
+			this.CurrentReader = new S82Reader(fileName);
+			
+			if(this.CurrentReader.IsReadable)
+			{
+				this.ProcessVolunteer();
+			}
+			else
+			{
+				ConsoleX.WriteWarning("File is not readable. Perhaps it is not in the correct format.");
+				ConsoleX.WriteLine("Press any key to continue.");
+				Console.ReadKey();
+				this.SkipFile = true;
 			}
 			
-			ConsoleX.WriteLine("All files completed!");
+			this.CurrentReader = null;
+			
+			if(this.SkipFile)
+				ConsoleX.WriteLine(string.Format("Skipping '{0}'", fileName), ConsoleColor.Red);
+			else
+				ConsoleX.WriteLine(string.Format("Finished '{0}'", fileName), ConsoleColor.Green);
+			
+			ConsoleX.WriteHorizontalRule();
+			
+		}
+		
+		private void ProcessVolunteer()
+		{
+			this.CurrentVolunteer = new Volunteer();
+			
+			ConsoleX.WriteLine("I'll open the file for you to check the data as we go.");
+			
+			this.OpenFileInNewProcess();
+			
+			#region Step #1 Get name and gender
+			
+			ConsoleX.WriteLine("Step #1 Get name and gender", ConsoleColor.Green);
+			
+			this.Step1_NameAndGender();
+			
+			#endregion
+			
+			#region Step #2 Search for existing records (use existing or create new)
+			
+			ConsoleX.WriteLine("Step #2 Search for existing records", ConsoleColor.Green);
+			
+			this.Step2_SelectRecord();
+			
+			#endregion
+			
+			if(!this.SkipFile)
+			{
+				
+				#region Step #3 Read the rest of the form
+				
+				ConsoleX.WriteLine("Step #3 Read the rest of the file", ConsoleColor.Green);
+				
+				this.Step3_ReadFileData();
+				
+				#endregion
+				
+				#region Step #4 Display details and confirm
+				
+				ConsoleX.WriteLine("Step #4 Display collected details and confirm save", ConsoleColor.Green);
+				
+				this.Step4_DisplayDetails();
+				
+				if(ConsoleX.WriteBooleanQuery("Shall I save to the database?"))
+				{
+					this.CurrentVolunteer.SaveToDatabase();
+					
+					if(this.CurrentVolunteer.ID == 0)
+						ConsoleX.WriteLine("DONE: Inserted a new record to the database!", ConsoleColor.Magenta);
+					else
+						ConsoleX.WriteLine("DONE: Updated the record in the database!", ConsoleColor.Magenta);
+				}
+				else
+				{
+					ConsoleX.WriteLine("UNSAVED: This record was not saved.", ConsoleColor.Magenta);
+				}
+				
+				#endregion
+				
+			}
+			
+			this.CloseFileIfProcessOpen();
+			
+			this.CurrentVolunteer = null;
 		}
 		
 		#region Step Methods
@@ -211,7 +215,7 @@ namespace RbcVolunteerApplications.Importer.Commands
 			
 		}
 		
-		private void Step2_SelectRecord(ref bool skipProcessing)
+		private void Step2_SelectRecord()
 		{
 			
 			ConsoleX.WriteLine(string.Format("Looking up '{0} {1}'...", this.CurrentVolunteer.FirstName, this.CurrentVolunteer.LastName));
@@ -263,8 +267,35 @@ namespace RbcVolunteerApplications.Importer.Commands
 				ConsoleX.WriteLine("Continuing will create a NEW record.");
 				var confirm = ConsoleX.WriteQuery("Is this correct? Enter 'yes' to confirm, or anything else to skip this file.").ToLower();
 				if(confirm != "yes")
-					skipProcessing = true;
+					this.SkipFile = true;
 			}
+		}
+		
+		private void Step3_ReadFileData()
+		{
+			
+			this.Step3_ApplicationKind();
+			this.Step3_FormsOfService();
+			this.Step3_Dates();
+			
+			// Postal Address
+			this.CurrentVolunteer.Address = this.CurrentReader["Text5"];
+			
+			// Email Address
+			this.CurrentVolunteer.EmailAddress = this.CurrentReader["Text6"];
+			
+			this.Step3_TelephoneNumbers();
+			
+			this.Step3_Privileges();
+			
+			// Name Of Mate
+			this.CurrentVolunteer.NameOfMate = this.CurrentReader["Text10"];
+			
+			this.Step3_WorkBackground();
+			
+			// TODO Read the rest of the file
+			ConsoleX.WriteWarning("TODO Read the rest of the file");
+			
 		}
 		
 		private void Step3_ApplicationKind()
@@ -416,9 +447,9 @@ namespace RbcVolunteerApplications.Importer.Commands
 			
 			// Names and Gender
 			
-			ConsoleX.WriteLine("First name:" + this.CurrentVolunteer.FirstName);
-			ConsoleX.WriteLine("Middle name(s):" + this.CurrentVolunteer.MiddleNames);
-			ConsoleX.WriteLine("Last name:" + this.CurrentVolunteer.LastName);
+			ConsoleX.WriteLine("First name: " + this.CurrentVolunteer.FirstName);
+			ConsoleX.WriteLine("Middle name(s): " + this.CurrentVolunteer.MiddleNames);
+			ConsoleX.WriteLine("Last name: " + this.CurrentVolunteer.LastName);
 			ConsoleX.WriteLine("Gender: " + this.CurrentVolunteer.Gender.ToString());
 			
 			// Dates
@@ -514,7 +545,7 @@ namespace RbcVolunteerApplications.Importer.Commands
 			ConsoleX.WriteWarning(string.Format("I'm having trouble with the field: '{0}'. I need your help. ", fieldName));
 		}
 		
-		public void OpenFileForHelp()
+		public void OpenFileInNewProcess()
 		{
 			if(this.OpenFileProcess == null)
 			{
@@ -522,7 +553,7 @@ namespace RbcVolunteerApplications.Importer.Commands
 			}
 		}
 		
-		public void CloseFileIfOpen()
+		public void CloseFileIfProcessOpen()
 		{
 			if(this.OpenFileProcess != null)
 			{
