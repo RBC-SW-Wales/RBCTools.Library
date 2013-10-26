@@ -21,15 +21,43 @@ namespace RbcTools.Library.Database
 		
 		#region Fields
 		
-		private string ConnectionString = @"Provider=Microsoft.ACE.OLEDB.12.0; Data Source=C:\Users\Phil\Dropbox\Theocratic\RBC\Database\RBCWalesVolsDatabase.accdb";
+		private string _FilePath = null;
+		private string _ConnectionString = null;
+		private string _Query;
 		private OleDbConnection Connection;
 		private OleDbCommand Command;
-		
-		private string _Query;
 		
 		#endregion
 		
 		#region Properties
+		
+		private string AccessFilePath
+		{
+			get
+			{
+				if(_FilePath == null)
+				{
+					var exeDirectory = System.IO.Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location);
+					_FilePath = exeDirectory + @"\RBCWalesVolsDatabase.accdb";
+				}
+				return _FilePath;
+			}
+		}
+		
+		private string ConnectionString
+		{
+			get
+			{
+				if(_ConnectionString == null)
+				{
+					if(this.AccessFileExists)
+						_ConnectionString = string.Format(@"Provider=Microsoft.ACE.OLEDB.12.0; Data Source={0}", this.AccessFilePath);
+					else
+						throw new AccessFileMissingException("The required Access database file was missing: " + this.AccessFilePath);
+				}
+				return _ConnectionString;
+			}
+		}
 		
 		public string Query
 		{
@@ -41,6 +69,14 @@ namespace RbcTools.Library.Database
 					this.Command.CommandText = value;
 					_Query = value;
 				}
+			}
+		}
+		
+		public bool AccessFileExists
+		{
+			get
+			{
+				return File.Exists(this.AccessFilePath);
 			}
 		}
 		
