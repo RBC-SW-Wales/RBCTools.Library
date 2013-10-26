@@ -12,18 +12,13 @@ namespace RbcConsole.Commands
 		{
 			base.Slug = "query-departments";
 			base.Description = "Query the Departments in the database";
+			base.IsDatabaseCommand = true;
 		}
 		
 		public override void Run()
 		{
-			AccessFileHelper.CheckForAccessFile(base.ConsoleX);
-			
-			ConsoleX.WriteIntro(base.Description);
-			
 			var table = Departments.GetDepartmentsTable();
 			ConsoleX.WriteDataTable(table, 30);
-			
-			ConsoleX.WriteHorizontalRule();
 		}
 	}
 }

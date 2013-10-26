@@ -15,6 +15,7 @@ namespace RbcConsole.Commands
 		{
 			base.Slug = "import-files";
 			base.Description = "Import S82 files (PDF) into the RBC SharePoint database";
+			base.IsDatabaseCommand = true;
 		}
 		
 		#region Fields
@@ -28,13 +29,7 @@ namespace RbcConsole.Commands
 		
 		public override void Run()
 		{
-			AccessFileHelper.CheckForAccessFile(base.ConsoleX);
-			
-			ConsoleX.WriteIntro(base.Description);
-			
 			this.RunImportFiles();
-			
-			ConsoleX.WriteHorizontalRule();
 		}
 		
 		public void RunImportFiles()

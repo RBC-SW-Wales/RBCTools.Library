@@ -13,11 +13,7 @@ namespace RbcConsole.Commands
 		
 		public override void Run()
 		{
-			ConsoleX.WriteIntro(base.Description);
-			
 			this.ShowFields();
-			
-			ConsoleX.WriteHorizontalRule();
 		}
 		
 		public void ShowFields()

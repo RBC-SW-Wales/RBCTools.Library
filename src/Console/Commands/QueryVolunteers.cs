@@ -14,18 +14,13 @@ namespace RbcConsole.Commands
 		{
 			base.Slug = "query-volunteers";
 			base.Description = "Query the Volunteers in the database";
+			base.IsDatabaseCommand = true;
 		}
 		
 		public override void Run()
 		{
-			AccessFileHelper.CheckForAccessFile(base.ConsoleX);
-			
-			ConsoleX.WriteIntro(base.Description);
-			
 			var table = Volunteers.GetAllVolunteers();
 			ConsoleX.WriteDataTable(table);
-			
-			ConsoleX.WriteHorizontalRule();
 		}
 	}
 }

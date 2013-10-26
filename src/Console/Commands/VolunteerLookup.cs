@@ -11,20 +11,15 @@ namespace RbcConsole.Commands
 		{
 			base.Slug = "volunteer-lookup";
 			base.Description = "Lookup a Volunteer based on First and Last Name";
+			base.IsDatabaseCommand = true;
 		}
 		
 		public override void Run()
 		{
-			AccessFileHelper.CheckForAccessFile(base.ConsoleX);
-			
-			ConsoleX.WriteIntro(base.Description);
-			
 			var firstName = ConsoleX.WriteQuery("Please enter First Name:");
 			var lastName = ConsoleX.WriteQuery("Please enter Last Name:");
 			
 			TrySearchForNames(firstName, lastName, ConsoleX);
-			
-			ConsoleX.WriteHorizontalRule();
 		}
 		
 		public static bool TrySearchForNames(string firstName, string lastName, ConsoleX consoleX)

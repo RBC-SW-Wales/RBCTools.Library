@@ -10,13 +10,11 @@ namespace RbcConsole.Commands
 		{
 			base.Slug = "cong-lookup";
 			base.Description = "Lookup Congregation Details by ID";
+			base.IsDatabaseCommand = true;
 		}
 		
 		public override void Run()
 		{
-			AccessFileHelper.CheckForAccessFile(base.ConsoleX);
-			
-			ConsoleX.WriteIntro(base.Description);
 			
 			ConsoleX.WriteLine("Enter Congregation ID, or 'exit'");
 			
@@ -37,7 +35,6 @@ namespace RbcConsole.Commands
 			}
 			
 			ConsoleX.WriteLine("Congregation lookup finished");
-			ConsoleX.WriteHorizontalRule();
 		}
 	}
 }

@@ -1,5 +1,6 @@
 ﻿
 using System;
+using RbcConsole.Helpers;
 
 namespace RbcConsole.Commands
 {
@@ -13,6 +14,24 @@ namespace RbcConsole.Commands
 		
 		public string Description { get; set; }
 		
-	 	public abstract void Run();
+		public bool IsDatabaseCommand { get; set; }
+		
+		public bool SkipIntroAndRule { get; set; }
+		
+		public void Execute()
+		{
+			if(this.IsDatabaseCommand)
+				AccessFileHelper.CheckForAccessFile(this.ConsoleX);
+			
+			if(!this.SkipIntroAndRule)
+				ConsoleX.WriteIntro(this.Description);
+			
+			this.Run();
+			
+			if(!this.SkipIntroAndRule)
+				ConsoleX.WriteHorizontalRule();
+		}
+		
+		public abstract void Run();
 	}
 }

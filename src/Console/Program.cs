@@ -59,7 +59,7 @@ namespace RbcConsole
 								if(command.Slug == input)
 								{
 									commandFound = true;
-									command.Run();
+									command.Execute();
 								}
 							}
 							if(!commandFound)
