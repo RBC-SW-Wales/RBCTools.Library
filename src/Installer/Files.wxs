@@ -3,10 +3,40 @@
 	<Fragment>
 		<DirectoryRef Id="TARGETDIR">
 			<Directory Id="ProgramFilesFolder" Name="PFiles">
-				<Directory Id="INSTALLDIR" Name="RBCVolunteerImporter">
-					<Component Id="MyComponent" Guid="412031F2-B887-4081-BE1F-CBE932CCF5DE" DiskId="1">
-						<File Id="LicenseFile" Name="license.rtf" Source="license.rtf"/>
+				<Directory Id="INSTALLDIR" Name="RbcTools">
+					
+					<Directory Id="RbcConsole" Name="RbcConsole">
+						<Directory Id="bin" Name="bin">
+							<Component Id="RbcConsoleExe" Guid="EC9011DE-0808-4C46-B309-CA2847E8ECAC" DiskId="1">
+								<File Id="RbcConsole.exe" Name="RbcConsole.exe" Source="..\Console\bin\Debug\RbcConsole.exe" KeyPath="yes" />
+							</Component>
+							<Component Id="RbcConsoleConfig" Guid="D77FE06F-9D96-4BC8-BF4C-3FA0C5A48A30" DiskId="1">
+								<File Id="RbcConsole.exe.config" Name="RbcConsole.exe.config" Source="..\Console\bin\Debug\RbcConsole.exe.config" KeyPath="yes" />
+							</Component>
+							<Component Id="RbcConsoleDebug" Guid="27EF7825-C530-4437-A959-159448FF1A38" DiskId="1">
+								<File Id="RbcConsole.pdb" Name="RbcConsole.pdb" Source="..\Console\bin\Debug\RbcConsole.pdb" KeyPath="yes" />
+							</Component>
+							<Component Id="ITextSharp" Guid="34A79DA4-A47F-44AD-95BA-D2C8942FC6CE" DiskId="1">
+								<File Id="itextsharp.dll" Name="itextsharp.dll" Source="..\Console\bin\Debug\itextsharp.dll" KeyPath="yes" />
+							</Component>
+							<Component Id="RbcToolLibrary" Guid="FCC314BD-9DC1-45D2-8DB3-8605A20D5BD9" DiskId="1">
+								<File Id="RbcTools.Library.dll" Name="RbcTools.Library.dll" Source="..\Console\bin\Debug\RbcTools.Library.dll" KeyPath="yes" />
+							</Component>
+							<Component Id="RbcToolLibraryDebug" Guid="039E551A-77BD-4FDF-BA02-E2A258BE7401" DiskId="1">
+								<File Id="RbcTools.Library.pdb" Name="RbcTools.Library.pdb" Source="..\Console\bin\Debug\RbcTools.Library.pdb" KeyPath="yes" />
+							</Component>
+						</Directory>
+					</Directory>
+					
+					<Component Id="AddToPath" Guid="BE774AEC-6959-47C9-89C3-A3D539DAB18D">
+						<CreateFolder />
+						<Environment Id="PATH" Name="PATH" Value="[bin]" Permanent="no" Part="last" Action="set" System="yes" />
 					</Component>
+					
+					<!--<Component Id="MyComponent" Guid="412031F2-B887-4081-BE1F-CBE932CCF5DE" DiskId="1">
+						<File Id="LicenseFile" Name="license.rtf" Source="license.rtf"/>
+					</Component>-->
+				
 				</Directory>
 			</Directory>
 		</DirectoryRef>

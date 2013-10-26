@@ -1,15 +1,15 @@
 ﻿<?xml version="1.0"?>
 <Wix xmlns="http://schemas.microsoft.com/wix/2006/wi">
 	<Product Id="*"
-		Name="RBC Console"
-		Language="1033"
-		Version="0.1.0"
-		UpgradeCode="75B576DB-23FB-4D73-96E8-DE43A1FAE3B5"
-		Manufacturer="rbcwales.org">
+	         Name="RBC Console"
+	         Language="1033"
+	         Version="0.1.0"
+	         UpgradeCode="75B576DB-23FB-4D73-96E8-DE43A1FAE3B5"
+	         Manufacturer="rbcwales.org">
 		<Package Description="Install the RBC Console application (rbcwales.org)"
-			Comments="Comments"
-			InstallerVersion="200"
-			Compressed="yes"/>
+		         Comments="Comments"
+		         InstallerVersion="200"
+		         Compressed="yes"/>
 		<!--
 			Source media for the installation. 
  			Specifies a single cab file to be embedded in the installer's .msi. 
@@ -20,7 +20,17 @@
 		<Directory Id="TARGETDIR" Name="SourceDir"/>
 		
 		<Feature Id="Complete" Title="RBC Console" Description="RBC Console application for interfacing with RBC database" Level="1">
-		         <ComponentRef Id="MyComponent"/>
+			
+			<ComponentRef Id="RbcConsoleExe" />
+			<ComponentRef Id="RbcConsoleConfig" />
+			<ComponentRef Id="RbcConsoleDebug" />
+			<ComponentRef Id="ITextSharp" />
+			<ComponentRef Id="RbcToolLibrary" />
+			<ComponentRef Id="RbcToolLibraryDebug" />
+			
+			<ComponentRef Id="AddToPath" />
+			
+			<!--<ComponentRef Id="MyComponent"/>-->
 		</Feature>
 		
 		<!--
