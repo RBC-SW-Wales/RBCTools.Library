@@ -10,7 +10,7 @@ namespace RbcConsole.Helpers
 	public static class AccessFileHelper
 	{
 		
-		private static string CorrectHash = "c9a126102854b4569762a3b742a53696ce379dd5fe44a74e1b42bdc310849b37";
+		private static string CorrectHash = "76dfc75952b6fb67da4dde043056a61190d8001a4a149816b64c17f0b244552e";
 		
 		public static void CheckForAccessFile(IConsoleX consoleX)
 		{
@@ -26,6 +26,8 @@ namespace RbcConsole.Helpers
 				{
 					url = consoleX.WriteQuery("What is the CORRECT URL for the Access database file?");
 					hash = GetUrlHash(url);
+					
+//					consoleX.WriteLine(hash);
 					
 					if(hash != CorrectHash)
 						consoleX.WriteLine("Sorry, incorrect URL. Please try again.");
