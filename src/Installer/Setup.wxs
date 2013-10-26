@@ -30,6 +30,8 @@
 			
 			<ComponentRef Id="AddToPath" />
 			
+			<ComponentRef Id="ApplicationShortcut" />
+			
 			<!--<ComponentRef Id="MyComponent"/>-->
 		</Feature>
 		
