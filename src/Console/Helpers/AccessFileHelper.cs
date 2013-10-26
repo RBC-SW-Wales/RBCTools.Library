@@ -37,7 +37,7 @@ namespace RbcConsole.Helpers
 				}
 				while(hash != CorrectHash);
 				
-				consoleX.WriteLine("Thank! Downloading file now. Please wait...");
+				consoleX.WriteLine("Thanks! Downloading file now. Please wait...");
 				
 				using(var client = new WebClient())
 				{
