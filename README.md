@@ -1,12 +1,19 @@
-RBC Volunteer Application Importer
-==================================
+RBC Tools
+=========
+
+Tools for use by the RBC South and West Wales.
 
 A work in progress...
 
-A simple command line tool used to import RBC Volunteer Application PDF files into the RBC Database.
+RBC Console
+===========
+
+A simple command line tool used to interface with the RBCwales.org database
 
 Requirements
 ------------
 
-* Install the '[Microsoft Access Database Engine 2010 Redistributable](http://www.microsoft.com/en-us/download/details.aspx?id=13255)' package.
-* Get a local syncronised version of the RBCWalesVolsDatabase.
+* Install: [.NET Framework 4.5](http://www.microsoft.com/en-gb/download/details.aspx?id=30653).
+* Install: [Microsoft Access Database Engine 2010 Redistributable](http://www.microsoft.com/en-us/download/details.aspx?id=13255).
+* Download a version of RBCWalesVolsDatabase.accdb (ask for link)
+
