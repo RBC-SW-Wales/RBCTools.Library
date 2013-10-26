@@ -122,7 +122,8 @@ namespace RbcConsole.Commands
 				
 				if(ConsoleX.WriteBooleanQuery("Shall I save to the database?"))
 				{
-					this.CurrentVolunteer.SaveToDatabase();
+					// this.CurrentVolunteer.SaveToDatabase();
+					ConsoleX.WriteWarning("DISABLED: Please note that the saving functionality is currently disabled in this test");
 					
 					if(this.CurrentVolunteer.ID == 0)
 						ConsoleX.WriteLine("DONE: Inserted a new record to the database!", ConsoleColor.Magenta);
@@ -131,7 +132,7 @@ namespace RbcConsole.Commands
 				}
 				else
 				{
-					ConsoleX.WriteLine("UNSAVED: This record was not saved.", ConsoleColor.Magenta);
+					ConsoleX.WriteWarning("UNSAVED: This record was not saved.");
 				}
 				
 				#endregion
