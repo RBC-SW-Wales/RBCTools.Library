@@ -2,7 +2,7 @@
 Microsoft Visual Studio Solution File, Format Version 11.00
 # Visual Studio 2010
 # SharpDevelop 4.3
-Project("{CFEE4113-1246-4D54-95CB-156813CB8593}") = "RbcConsole.Installer", "RbcConsole.Installer.wixproj", "{5522E67F-50D9-4EA2-AC34-02298518D3C0}"
+Project("{CFEE4113-1246-4D54-95CB-156813CB8593}") = "RbcConsole.Installer", "Installer\RbcConsole.Installer.wixproj", "{5522E67F-50D9-4EA2-AC34-02298518D3C0}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
