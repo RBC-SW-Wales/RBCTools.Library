@@ -15,5 +15,5 @@ Requirements
 
 * Install: [.NET Framework 4.5](http://www.microsoft.com/en-gb/download/details.aspx?id=30653).
 * Install: [Microsoft Access Database Engine 2010 Redistributable](http://www.microsoft.com/en-us/download/details.aspx?id=13255).
-* Download a version of RBCWalesVolsDatabase.accdb (ask for link)
+* You need to know the private URL to the Access database file (application will ask for the URL).
 
