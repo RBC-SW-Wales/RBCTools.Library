@@ -21,8 +21,8 @@ namespace RbcConsole
 		{
 			var list = new List<CommandBase>();
 			list.Add(new ImportFiles());
-			list.Add(new ShowFileFields());
-//			list.Add(new CongregationLookup());
+//			list.Add(new ShowFileFields());
+			list.Add(new CongregationLookup());
 			list.Add(new VolunteerLookup());
 			list.Add(new QueryVolunteers());
 //			list.Add(new QueryDepartments());
