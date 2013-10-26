@@ -37,8 +37,12 @@ namespace RbcTools.Library.Database
 			{
 				if(_AccessFilePath == null)
 				{
-					var exeDirectory = System.IO.Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location);
-					_AccessFilePath = exeDirectory + @"\RBCWalesVolsDatabase.accdb";
+					var directory = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + @"\RBCTool";
+					
+					if(!Directory.Exists(directory))
+						Directory.CreateDirectory(directory);
+					
+					_AccessFilePath = directory + @"\RBCWalesVolsDatabase.accdb";
 				}
 				return _AccessFilePath;
 			}

@@ -16,28 +16,36 @@ namespace RbcConsole.Helpers
 		{
 			if(!Connector.AccessFileExists)
 			{
+				
+				consoleX.WriteIntro("Database requirements");
+				
 				string url = "";
 				string hash = "";
 				
-				consoleX.WriteWarning("Looks like you don't have the correct Access database file in place.");
-				consoleX.WriteLine("Don't worry though, I can download it for you and put it into the correct place.");
+				consoleX.WriteWarning("It looks like you don't have the Access database file yet.");
+				consoleX.WriteLine("Don't worry, I can download it for you and save it to the correct place.");
 				
 				do
 				{
 					url = consoleX.WriteQuery("What is the CORRECT URL for the Access database file?");
 					hash = GetUrlHash(url);
 					
-//					consoleX.WriteLine(hash);
+					// consoleX.WriteLine(hash);
 					
 					if(hash != CorrectHash)
 						consoleX.WriteLine("Sorry, incorrect URL. Please try again.");
 				}
 				while(hash != CorrectHash);
 				
-				consoleX.WriteLine("Downloading file...");
-				var client = new WebClient();
-				client.DownloadFile(url, Connector.AccessFilePath);
-				consoleX.WriteLine("Done.");
+				consoleX.WriteLine("Thank! Downloading file now. Please wait...");
+				
+				using(var client = new WebClient())
+				{
+					client.DownloadFile(url, Connector.AccessFilePath);
+				}
+				
+				consoleX.WriteLine("OK, Done. You can now continue with your previous task.");
+				consoleX.WriteHorizontalRule();
 			}
 		}
 		
