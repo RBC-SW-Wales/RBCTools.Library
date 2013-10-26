@@ -1,12 +1,12 @@
 ﻿<?xml version="1.0"?>
 <Wix xmlns="http://schemas.microsoft.com/wix/2006/wi">
 	<Product Id="*"
-		Name="RBC Volunteer Importer"
+		Name="RBC Console"
 		Language="1033"
 		Version="0.1.0"
 		UpgradeCode="75B576DB-23FB-4D73-96E8-DE43A1FAE3B5"
 		Manufacturer="rbcwales.org">
-		<Package Description="Install the RBC Volunteer Importer (rbcwales.org)"
+		<Package Description="Install the RBC Console application (rbcwales.org)"
 			Comments="Comments"
 			InstallerVersion="200"
 			Compressed="yes"/>
@@ -19,7 +19,7 @@
 		<!-- Installation directory and files are defined in Files.wxs -->
 		<Directory Id="TARGETDIR" Name="SourceDir"/>
 		
-		<Feature Id="Complete" Title="RBC Volunteer Importer" Description="Import RBC S-82 forms into the rbcwales.org database" Level="1">
+		<Feature Id="Complete" Title="RBC Console" Description="RBC Console application for interfacing with RBC database" Level="1">
 		         <ComponentRef Id="MyComponent"/>
 		</Feature>
 		
