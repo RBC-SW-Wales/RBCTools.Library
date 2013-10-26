@@ -4,7 +4,7 @@ using System.Linq;
 
 using iTextSharp.text.pdf;
 
-namespace RbcVolunteerApplications.Library
+namespace RbcTools.Library
 {
 	public class S82Reader
 	{

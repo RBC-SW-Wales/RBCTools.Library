@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace RbcVolunteerApplications.Library
+namespace RbcTools.Library
 {
 	public class WorkBackground
 	{

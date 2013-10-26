@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace RbcVolunteerApplications.Importer.Commands
+namespace RbcConsole.Commands
 {
 	public class HelpCommand : CommandBase
 	{

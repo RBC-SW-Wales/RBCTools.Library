@@ -1,9 +1,9 @@
 ﻿
 using System;
 using System.Collections.Generic;
-using RbcVolunteerApplications.Library.Database;
+using RbcTools.Library.Database;
 
-namespace RbcVolunteerApplications.Library
+namespace RbcTools.Library
 {
 	/// <summary>
 	///  A representation of the RBC Volunteer Application form.

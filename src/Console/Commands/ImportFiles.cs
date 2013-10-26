@@ -3,10 +3,10 @@ using System.Collections.Generic;
 using System.Data;
 using System.Diagnostics;
 using System.Windows.Forms;
-using RbcVolunteerApplications.Library;
-using RbcVolunteerApplications.Library.Database;
+using RbcTools.Library;
+using RbcTools.Library.Database;
 
-namespace RbcVolunteerApplications.Importer.Commands
+namespace RbcConsole.Commands
 {
 	public class ImportFiles : CommandBase
 	{

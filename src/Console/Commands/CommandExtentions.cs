@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 
-namespace RbcVolunteerApplications.Importer.Commands
+namespace RbcConsole.Commands
 {
 	public static class CommandExtentions
 	{

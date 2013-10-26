@@ -1,7 +1,7 @@
 ﻿using System;
-using RbcVolunteerApplications.Library.Database;
+using RbcTools.Library.Database;
 
-namespace RbcVolunteerApplications.Importer.Commands
+namespace RbcConsole.Commands
 {
 	public class CongregationLookup : CommandBase
 	{

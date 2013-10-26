@@ -1,7 +1,7 @@
 ﻿
 using System;
 
-namespace RbcVolunteerApplications.Importer.Commands
+namespace RbcConsole.Commands
 {
 	public abstract class CommandBase
 	{

@@ -1,7 +1,7 @@
 ﻿
 using System;
 
-namespace RbcVolunteerApplications.Library
+namespace RbcTools.Library
 {
 	/// <summary>
 	/// Extension methods for string

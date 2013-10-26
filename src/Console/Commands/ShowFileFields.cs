@@ -1,7 +1,7 @@
 ﻿using System;
-using RbcVolunteerApplications.Library;
+using RbcTools.Library;
 
-namespace RbcVolunteerApplications.Importer.Commands
+namespace RbcConsole.Commands
 {
 	public class ShowFileFields : CommandBase
 	{

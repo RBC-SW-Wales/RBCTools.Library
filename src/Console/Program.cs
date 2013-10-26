@@ -5,11 +5,11 @@ using System.IO;
 using System.Threading;
 using System.Windows.Forms;
 using System.Collections.Generic;
-using RbcVolunteerApplications.Importer.Commands;
-using RbcVolunteerApplications.Library;
-using RbcVolunteerApplications.Library.Database;
+using RbcConsole.Commands;
+using RbcTools.Library;
+using RbcTools.Library.Database;
 
-namespace RbcVolunteerApplications.Importer
+namespace RbcConsole
 {
 	class Program
 	{

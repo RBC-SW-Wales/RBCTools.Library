@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Data;
-using RbcVolunteerApplications.Library;
-using RbcVolunteerApplications.Library.Database;
+using RbcTools.Library;
+using RbcTools.Library.Database;
 
-namespace RbcVolunteerApplications.Importer.Commands
+namespace RbcConsole.Commands
 {
 	public class QueryDepartments : CommandBase
 	{

@@ -3,9 +3,9 @@ using System.Collections.Generic;
 using System.Data;
 using System.Globalization;
 using System.Linq;
-using RbcVolunteerApplications.Library;
+using RbcTools.Library;
 
-namespace RbcVolunteerApplications.Importer
+namespace RbcConsole
 {
 	public class ConsoleX : IConsoleX
 	{

@@ -2,9 +2,9 @@
 Microsoft Visual Studio Solution File, Format Version 11.00
 # Visual Studio 2010
 # SharpDevelop 4.3
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RbcVolunteerApplications.Importer", "Console\RbcVolunteerApplications.Importer.csproj", "{EAE86486-EA18-4DDB-8A2A-DB682D5DE91F}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RbcConsole", "Console\RbcConsole.csproj", "{EAE86486-EA18-4DDB-8A2A-DB682D5DE91F}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RbcVolunteerApplications.Library", "Library\RbcVolunteerApplications.Library.csproj", "{B756777A-A247-47B2-B2ED-8A9121EC787D}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RbcTools.Library", "Library\RbcTools.Library.csproj", "{B756777A-A247-47B2-B2ED-8A9121EC787D}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

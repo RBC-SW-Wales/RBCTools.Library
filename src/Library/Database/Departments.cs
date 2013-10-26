@@ -2,7 +2,7 @@
 using System;
 using System.Data;
 
-namespace RbcVolunteerApplications.Library.Database
+namespace RbcTools.Library.Database
 {
 	public static class Departments
 	{
