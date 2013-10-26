@@ -3,7 +3,7 @@
 	<Product Id="*"
 		Name="RBC Volunteer Importer"
 		Language="1033"
-		Version="0.1.0.0"
+		Version="0.1.0"
 		UpgradeCode="75B576DB-23FB-4D73-96E8-DE43A1FAE3B5"
 		Manufacturer="rbcwales.org">
 		<Package Description="Install the RBC Volunteer Importer (rbcwales.org)"
