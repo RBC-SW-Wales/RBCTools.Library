@@ -1,5 +1,6 @@
 ﻿
 using System;
+using RbcConsole.Helpers;
 using RbcTools.Library.Database;
 
 namespace RbcConsole.Commands
@@ -17,7 +18,9 @@ namespace RbcConsole.Commands
 		
 		public override void Run()
 		{
-			ConsoleX.WriteIntro("Query Volunteers");
+			AccessFileHelper.CheckForAccessFile(base.ConsoleX);
+			
+			ConsoleX.WriteIntro(base.Description);
 			
 			var table = Volunteers.GetAllVolunteers();
 			ConsoleX.WriteDataTable(table);

@@ -13,7 +13,7 @@ namespace RbcTools.Library.Database
 		public Connector(string query)
 		{
 			this._Query = query;
-			this.Connection = new OleDbConnection(this.ConnectionString);
+			this.Connection = new OleDbConnection(Connector.ConnectionString);
 			this.Command = new OleDbCommand(query, this.Connection);
 		}
 		
@@ -21,8 +21,8 @@ namespace RbcTools.Library.Database
 		
 		#region Fields
 		
-		private string _FilePath = null;
-		private string _ConnectionString = null;
+		private static string _AccessFilePath = null;
+		private static string _ConnectionString = null;
 		private string _Query;
 		private OleDbConnection Connection;
 		private OleDbCommand Command;
@@ -31,29 +31,29 @@ namespace RbcTools.Library.Database
 		
 		#region Properties
 		
-		private string AccessFilePath
+		public static string AccessFilePath
 		{
 			get
 			{
-				if(_FilePath == null)
+				if(_AccessFilePath == null)
 				{
 					var exeDirectory = System.IO.Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location);
-					_FilePath = exeDirectory + @"\RBCWalesVolsDatabase.accdb";
+					_AccessFilePath = exeDirectory + @"\RBCWalesVolsDatabase.accdb";
 				}
-				return _FilePath;
+				return _AccessFilePath;
 			}
 		}
 		
-		private string ConnectionString
+		private static string ConnectionString
 		{
 			get
 			{
 				if(_ConnectionString == null)
 				{
-					if(this.AccessFileExists)
-						_ConnectionString = string.Format(@"Provider=Microsoft.ACE.OLEDB.12.0; Data Source={0}", this.AccessFilePath);
+					if(Connector.AccessFileExists)
+						_ConnectionString = string.Format(@"Provider=Microsoft.ACE.OLEDB.12.0; Data Source={0}", Connector.AccessFilePath);
 					else
-						throw new AccessFileMissingException("The required Access database file was missing: " + this.AccessFilePath);
+						throw new AccessFileMissingException("The required Access database file was missing: " + Connector.AccessFilePath);
 				}
 				return _ConnectionString;
 			}
@@ -72,11 +72,11 @@ namespace RbcTools.Library.Database
 			}
 		}
 		
-		public bool AccessFileExists
+		public static bool AccessFileExists
 		{
 			get
 			{
-				return File.Exists(this.AccessFilePath);
+				return File.Exists(Connector.AccessFilePath);
 			}
 		}
 		

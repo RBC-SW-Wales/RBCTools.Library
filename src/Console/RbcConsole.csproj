@@ -69,6 +69,7 @@
     <Compile Include="Commands\ShowFileFields.cs" />
     <Compile Include="Commands\VolunteerLookup.cs" />
     <Compile Include="ConsoleX.cs" />
+    <Compile Include="Helpers\AccessFileHelper.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
@@ -83,6 +84,7 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Commands" />
+    <Folder Include="Helpers" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

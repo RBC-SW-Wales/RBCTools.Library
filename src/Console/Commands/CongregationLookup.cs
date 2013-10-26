@@ -1,4 +1,5 @@
 ﻿using System;
+using RbcConsole.Helpers;
 using RbcTools.Library.Database;
 
 namespace RbcConsole.Commands
@@ -13,7 +14,10 @@ namespace RbcConsole.Commands
 		
 		public override void Run()
 		{
-			ConsoleX.WriteIntro("Congregation Look-up");
+			AccessFileHelper.CheckForAccessFile(base.ConsoleX);
+			
+			ConsoleX.WriteIntro(base.Description);
+			
 			ConsoleX.WriteLine("Enter Congregation ID, or 'exit'");
 			
 			var input = "";

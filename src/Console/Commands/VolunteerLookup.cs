@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Data;
 using RbcTools.Library.Database;
+using RbcConsole.Helpers;
 
 namespace RbcConsole.Commands
 {
@@ -14,6 +15,10 @@ namespace RbcConsole.Commands
 		
 		public override void Run()
 		{
+			AccessFileHelper.CheckForAccessFile(base.ConsoleX);
+			
+			ConsoleX.WriteIntro(base.Description);
+			
 			var firstName = ConsoleX.WriteQuery("Please enter First Name:");
 			var lastName = ConsoleX.WriteQuery("Please enter Last Name:");
 			

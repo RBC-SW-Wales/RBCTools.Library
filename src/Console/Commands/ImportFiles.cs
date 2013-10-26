@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Data;
 using System.Diagnostics;
 using System.Windows.Forms;
+using RbcConsole.Helpers;
 using RbcTools.Library;
 using RbcTools.Library.Database;
 
@@ -27,6 +28,8 @@ namespace RbcConsole.Commands
 		
 		public override void Run()
 		{
+			AccessFileHelper.CheckForAccessFile(base.ConsoleX);
+			
 			ConsoleX.WriteIntro(base.Description);
 			
 			this.RunImportFiles();
