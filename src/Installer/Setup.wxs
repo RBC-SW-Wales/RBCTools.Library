@@ -19,7 +19,7 @@
 		<!-- Installation directory and files are defined in Files.wxs -->
 		<Directory Id="TARGETDIR" Name="SourceDir"/>
 		
-		<Feature Id="Complete" Title="RBC Console" Description="RBC Console application for interfacing with RBC database" Level="1">
+		<Feature Id="Complete" Title="RBC Console v0.2.0" Description="RBC Console application for interfacing with RBC database" Level="1">
 			
 			<ComponentRef Id="RbcConsoleExe" />
 			<ComponentRef Id="RbcConsoleConfig" />
