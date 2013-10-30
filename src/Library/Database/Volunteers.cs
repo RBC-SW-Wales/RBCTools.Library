@@ -81,9 +81,8 @@ namespace RbcTools.Library.Database
 					" Volunteers.FirstName, " +
 					" Volunteers.MiddleName, " +
 					" Volunteers.Surname, " +
-					" Congregation.CongregationName, " +
-					" Volunteers.TypeOfApplication, " +
-					" Volunteers.Gender " +
+					" Volunteers.Gender, " +
+					" Congregation.CongregationName " +
 					" FROM Volunteers " +
 					" LEFT JOIN Congregation ON (Congregation.ID = Volunteers.CongregationName) ";
 			}

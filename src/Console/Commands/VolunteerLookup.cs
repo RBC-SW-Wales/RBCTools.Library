@@ -40,7 +40,7 @@ namespace RbcConsole.Commands
 			if(table.Rows.Count > 0)
 			{
 				consoleX.WriteLine(table.Rows.Count > 1 ? "The following matches where found:" : "The following match was found");
-				consoleX.WriteDataTable(table);
+				consoleX.WriteDataTable(table, 15);
 			}
 			else
 			{
