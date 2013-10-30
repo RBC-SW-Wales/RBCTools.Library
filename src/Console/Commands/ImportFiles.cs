@@ -292,6 +292,8 @@ namespace RbcConsole.Commands
 			
 			this.Step3_WorkBackground();
 			
+			this.Step3_EmergencyContactDetails();
+			
 			// TODO Read the rest of the file
 			ConsoleX.WriteWarning("TODO Read the rest of the file");
 			
@@ -421,6 +423,41 @@ namespace RbcConsole.Commands
 			createBackground(2, "Text11.1.0", "Text11.1.1", "Text12.0.1");
 			createBackground(3, "Text11.2.0", "Text11.2.1", "Text12.0.2");
 			createBackground(4, "Text11.3.0", "Text11.3.1", "Text12.0.3");
+		}
+		
+		private void Step3_EmergencyContactDetails()
+		{
+			var name = "";
+			var relationship = "";
+			
+			// Take a guess (assume last work is relationship);
+			var text13 = this.CurrentReader["Text13"];
+			var parts = text13.Split(' ');
+			
+			if(parts.Length > 0)
+				relationship = parts[parts.Length-1];
+			
+			name = text13.Replace(relationship, "");
+			
+			// Ask if correct, and if not get help until it is correct.
+			while (!Step3_EmergencyContactDetails_Check(name, relationship))
+			{
+				name = ConsoleX.WriteClipboardQuery("Emergency Contact Name");
+				relationship = text13.Replace(name, "");
+			}
+			
+			this.CurrentVolunteer.EmergencyContactName = name;
+			this.CurrentVolunteer.EmergencyContactRelationship = relationship;
+		}
+		
+		private bool Step3_EmergencyContactDetails_Check(string name, string relationship)
+		{
+			ConsoleX.WriteLine("Please check this below:", ConsoleColor.Green);
+			
+			ConsoleX.WriteLine("Emergency Contact Name: " + name);
+			ConsoleX.WriteLine("Emergency Contact Relationship: " + relationship);
+			
+			return ConsoleX.WriteBooleanQuery("Is this correct?");
 		}
 		
 		private void Step4_DisplayDetails()
