@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Data;
 using System.Globalization;
 using System.Linq;
+using System.Windows.Forms;
 using RbcTools.Library;
 
 namespace RbcConsole
@@ -160,6 +161,25 @@ namespace RbcConsole
 			while(!parsed);
 			
 			return number;
+		}
+		
+		public string WriteClipboardQuery(string fieldName)
+		{
+			this.WriteLine(string.Format("Please HIGHLIGHT and COPY the '{0}' in the open PDF, then return here and press any key.", fieldName));
+			
+			string input;
+			
+			do
+			{
+				Console.ReadKey();
+				input = Clipboard.GetText();
+			
+				if(string.IsNullOrEmpty(input))
+					this.WriteWarning("Sorry, nothing found in the clipboard. Please try again.");
+			}
+			while(string.IsNullOrEmpty(input));
+			
+			return input;
 		}
 		
 		public void WriteHorizontalRule()
