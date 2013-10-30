@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Data;
 using System.Diagnostics;
+using System.Text.RegularExpressions;
 using System.Windows.Forms;
 using RbcConsole.Helpers;
 using RbcTools.Library;
@@ -120,20 +121,7 @@ namespace RbcConsole.Commands
 				
 				this.Step4_DisplayDetails();
 				
-				if(ConsoleX.WriteBooleanQuery("Shall I save to the database?"))
-				{
-					// this.CurrentVolunteer.SaveToDatabase();
-					ConsoleX.WriteWarning("DISABLED: Please note that the saving functionality is currently disabled in this test");
-					
-					if(this.CurrentVolunteer.ID == 0)
-						ConsoleX.WriteLine("DONE: Inserted a new record to the database!", ConsoleColor.Magenta);
-					else
-						ConsoleX.WriteLine("DONE: Updated the record in the database!", ConsoleColor.Magenta);
-				}
-				else
-				{
-					ConsoleX.WriteWarning("UNSAVED: This record was not saved.");
-				}
+				this.Step4_Save();
 				
 				#endregion
 				
@@ -276,24 +264,25 @@ namespace RbcConsole.Commands
 			this.Step3_ApplicationKind();
 			this.Step3_FormsOfService();
 			this.Step3_Dates();
-			
+
 			// Postal Address
 			this.CurrentVolunteer.Address = this.CurrentReader["Text5"];
-			
+
 			// Email Address
 			this.CurrentVolunteer.EmailAddress = this.CurrentReader["Text6"];
-			
+
 			this.Step3_TelephoneNumbers();
-			
+
 			this.Step3_Privileges();
-			
+
 			// Name Of Mate
 			this.CurrentVolunteer.NameOfMate = this.CurrentReader["Text10"];
-			
+
 			this.Step3_WorkBackground();
 			
-			// TODO Read the rest of the file
-			ConsoleX.WriteWarning("TODO Read the rest of the file");
+			this.Step3_EmergencyContactNameAndRelationship();
+			
+			this.Step3_EmergencyContactTelAndAddress();
 			
 		}
 		
@@ -423,6 +412,82 @@ namespace RbcConsole.Commands
 			createBackground(4, "Text11.3.0", "Text11.3.1", "Text12.0.3");
 		}
 		
+		private void Step3_EmergencyContactNameAndRelationship()
+		{
+			var text13 = this.CurrentReader["Text13"];
+			if(!string.IsNullOrEmpty(text13))
+			{
+				var name = "";
+				var relationship = "";
+				
+				// Take a guess (assume last word is relationship);
+				var parts = text13.Split(' ');
+				if(parts.Length == 0)
+				{
+					// only one word found - assume name
+					name = text13;
+				}
+				else
+				{
+					relationship = parts[parts.Length-1];
+					name = text13.Replace(relationship, "").Trim();
+				}
+				
+				// Ask if correct, and if not get help until it is correct.
+				while(!Step3_EmergencyContactNameAndRelationship_Check(name, relationship))
+				{
+					name = ConsoleX.WriteClipboardQuery("Emergency Contact Name");
+					relationship = text13.Replace(name, "").Trim();
+				}
+				
+				this.CurrentVolunteer.EmergencyContactName = name;
+				this.CurrentVolunteer.EmergencyContactRelationship = relationship;
+			}
+		}
+		
+		private bool Step3_EmergencyContactNameAndRelationship_Check(string name, string relationship)
+		{
+			return ConsoleX.WriteFieldCheck("Emergency Contact Name", name, "Emergency Contact Relationship", relationship);
+		}
+		
+		private void Step3_EmergencyContactTelAndAddress()
+		{
+			string text14 = this.CurrentReader["Text14"];
+			if(!string.IsNullOrEmpty(text14))
+			{
+				string phone = "";
+				string address = "";
+				
+				// Try to find telephone number(s)
+				string lastMatch = "";
+				foreach(Match match in Regex.Matches(text14, @"\(?0( *\d\)?){9,10}"))
+				{
+					if(!string.IsNullOrEmpty(phone)) phone += " or ";
+					phone += match.Value;
+					lastMatch = match.Value;
+				}
+				
+				// Find address by using everything after last found telephone number
+				var startIndex = text14.LastIndexOf(lastMatch) + lastMatch.Length;
+				address = text14.Substring(startIndex).Trim();
+				
+				// Ask if correct, and if not get help until it is correct.
+				while(!Step3_EmergencyContactTelAndAddress_Check(phone, address))
+				{
+					address = ConsoleX.WriteClipboardQuery("Emergency Contact Address");
+					phone = text14.Replace(address, "").Trim();
+				}
+				
+				this.CurrentVolunteer.EmergencyContactPhoneNumber = phone;
+				this.CurrentVolunteer.EmergencyContactAddress = address;
+			}
+		}
+		
+		private bool Step3_EmergencyContactTelAndAddress_Check(string phone, string address)
+		{
+			return ConsoleX.WriteFieldCheck("Emergency Contact Phone Number(s)", phone, "Emergency Contact Address", address);
+		}
+		
 		private void Step4_DisplayDetails()
 		{
 			ConsoleX.WriteLine("The following details were collected:", ConsoleColor.Green);
@@ -498,6 +563,12 @@ namespace RbcConsole.Commands
 			table.Columns.Add("Type of experience");
 			table.Columns.Add("Years");
 			
+			// Emergency Contact Details
+			ConsoleX.WriteLine("Emergency Contact Name: " + this.CurrentVolunteer.EmergencyContactName);
+			ConsoleX.WriteLine("Emergency Contact Relationship: " + this.CurrentVolunteer.EmergencyContactRelationship);
+			ConsoleX.WriteLine("Emergency Contact Phone Number(s): " + this.CurrentVolunteer.EmergencyContactPhoneNumber);
+			ConsoleX.WriteLine("Emergency Contact Address: " + this.CurrentVolunteer.EmergencyContactAddress);
+			
 			Action<int> displayBackground = delegate(int index)
 			{
 				var row = table.NewRow();
@@ -514,8 +585,24 @@ namespace RbcConsole.Commands
 			displayBackground(3);
 			
 			ConsoleX.WriteDataTable(table);
-			
-			
+		}
+		
+		private void Step4_Save()
+		{
+			if(ConsoleX.WriteBooleanQuery("Shall I save to the database?"))
+			{
+//				this.CurrentVolunteer.SaveToDatabase();
+				ConsoleX.WriteWarning("DISABLED: Please note that the saving functionality is currently disabled in this test");
+				
+				if(this.CurrentVolunteer.ID == 0)
+					ConsoleX.WriteLine("DONE: Inserted a new record to the database!", ConsoleColor.Magenta);
+				else
+					ConsoleX.WriteLine("DONE: Updated the record in the database!", ConsoleColor.Magenta);
+			}
+			else
+			{
+				ConsoleX.WriteWarning("UNSAVED: This record was not saved.");
+			}
 		}
 		
 		#endregion

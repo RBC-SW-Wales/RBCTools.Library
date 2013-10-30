@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Data;
 using System.Globalization;
 using System.Linq;
+using System.Windows.Forms;
 using RbcTools.Library;
 
 namespace RbcConsole
@@ -109,16 +110,25 @@ namespace RbcConsole
 			
 			do
 			{
-				this.WriteLine("Please reply \"yes\" or \"no\".", ConsoleColor.DarkGray);
+				this.WriteLine("Please reply \"y\" for yes or \"n\" for no.", ConsoleColor.DarkGray);
 				var input = this.ReadPromt();
-				if(input == "yes")
+				if(input == "y")
 					boolean = true;
-				else if(input == "no")
+				else if(input == "n")
 					boolean = false;
 			}
 			while(!boolean.HasValue);
 			
 			return boolean.Value;
+		}
+		
+		public bool WriteFieldCheck(string fieldName, string fieldValue, string fieldName2 = null, string fieldValue2 = null, string fieldName3 = null, string fieldValue3 = null)
+		{
+			this.WriteLine("Please check this below:");
+			this.WriteLine(fieldName + ": " + fieldValue);
+			if(fieldName2 != null) this.WriteLine(fieldName2 + ": " + fieldValue2);
+			if(fieldName3 != null) this.WriteLine(fieldName3 + ": " + fieldValue3);
+			return this.WriteBooleanQuery("Is this correct?");
 		}
 		
 		public DateTime WriteDateTimeQuery(string text)
@@ -160,6 +170,25 @@ namespace RbcConsole
 			while(!parsed);
 			
 			return number;
+		}
+		
+		public string WriteClipboardQuery(string fieldName)
+		{
+			this.WriteLine(string.Format("Please HIGHLIGHT and COPY the '{0}' in the open PDF, then return here and press any key.", fieldName));
+			
+			string input;
+			
+			do
+			{
+				Console.ReadKey();
+				input = Clipboard.GetText();
+			
+				if(string.IsNullOrEmpty(input))
+					this.WriteWarning("Sorry, nothing found in the clipboard. Please try again.");
+			}
+			while(string.IsNullOrEmpty(input));
+			
+			return input;
 		}
 		
 		public void WriteHorizontalRule()

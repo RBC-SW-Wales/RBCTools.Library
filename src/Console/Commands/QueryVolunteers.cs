@@ -20,7 +20,7 @@ namespace RbcConsole.Commands
 		public override void Run()
 		{
 			var table = Volunteers.GetAllVolunteers();
-			ConsoleX.WriteDataTable(table);
+			ConsoleX.WriteDataTable(table, 15);
 		}
 	}
 }

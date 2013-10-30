@@ -24,7 +24,7 @@
 			</Directory>
 			
 			<Directory Id="ProgramMenuFolder">
-				<Directory Id="MENUDIR" Name="RBC Console" />
+				<Directory Id="MENUDIR" Name="RBC Tools" />
 			</Directory>
 		
 		</DirectoryRef>
@@ -55,7 +55,7 @@
 		<DirectoryRef Id="MENUDIR">
 			<Component Id="ApplicationShortcut" Guid="D02F8404-3A45-4EA2-A4E3-D200642D823C">
 				<Shortcut Id="ApplicationStartMenuShortcut"
-				          Name="RBC Console"
+				          Name="RBC Console v0.2.0"
 				          Description="RBC Console application for interfacing with RBC database"
 				          Target="[#RbcConsole.exe]"
 				          WorkingDirectory="CONSOLEDIR"/>
