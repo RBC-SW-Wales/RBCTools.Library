@@ -81,7 +81,8 @@ namespace RbcTools.Library
 				         " Trade2, Experience2, Years2, " +
 				         " Trade3, Experience3, Years3, " +
 				         " Trade4, Experience4, Years4," +
-				         " EmergencyContactName, EmergencyContactRelationship) " +
+				         " EmergencyContactName, EmergencyContactRelationship," +
+				         " EmergencyContactPhoneNo, EmergencyContactAddress) " +
 				         "VALUES (@ApplicationKind, @HallConstruction, @DisasterRelief, " +
 				         " @Surname, @FirstName, @MiddleName, @Gender, @DateOfBirth, @DateOfBaptism, " +
 				         " @Address, @EmailAddress, @PhoneNumberHome, @PhoneNumberWork, @PhoneNumberMobile, " +
@@ -90,7 +91,8 @@ namespace RbcTools.Library
 				         " @Trade2, @Experience2, @Years2, " +
 				         " @Trade3, @Experience3, @Years3, " +
 				         " @Trade4, @Experience4, @Years4," +
-				         " @EmergencyContactName, @EmergencyContactRelationship) ");
+				         " @EmergencyContactName, @EmergencyContactRelationship, " +
+				         " @EmergencyContactPhoneNumber, @EmergencyContactAddress) ");
 			}
 			else
 			{
@@ -124,7 +126,9 @@ namespace RbcTools.Library
 				         " Experience4 = @Experience4, " +
 				         " Years4 = @Years4, " +
 				         " EmergencyContactName = @EmergencyContactName, " +
-				         " EmergencyContactRelationship = @EmergencyContactRelationship" +
+				         " EmergencyContactRelationship = @EmergencyContactRelationship, " +
+				         " EmergencyContactPhoneNo = @EmergencyContactPhoneNumber, " +
+				         " EmergencyContactAddress = @EmergencyContactAddress " +
 				         " WHERE ID = @ID");
 			}
 			
@@ -165,6 +169,8 @@ namespace RbcTools.Library
 			
 			connector.AddParameter("@EmergencyContactName", this.EmergencyContactName);
 			connector.AddParameter("@EmergencyContactRelationship", this.EmergencyContactRelationship);
+			connector.AddParameter("@EmergencyContactPhoneNumber", this.EmergencyContactPhoneNumber);
+			connector.AddParameter("@EmergencyContactAddress", this.EmergencyContactAddress);
 			
 			connector.AddParameter("@ID", this.ID);
 			connector.ExecuteNonQuery();

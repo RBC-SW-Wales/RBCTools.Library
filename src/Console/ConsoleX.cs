@@ -122,6 +122,15 @@ namespace RbcConsole
 			return boolean.Value;
 		}
 		
+		public bool WriteFieldCheck(string fieldName, string fieldValue, string fieldName2 = null, string fieldValue2 = null, string fieldName3 = null, string fieldValue3 = null)
+		{
+			this.WriteLine("Please check this below:");
+			this.WriteLine(fieldName + ": " + fieldValue);
+			if(fieldName2 != null) this.WriteLine(fieldName2 + ": " + fieldValue2);
+			if(fieldName3 != null) this.WriteLine(fieldName3 + ": " + fieldValue3);
+			return this.WriteBooleanQuery("Is this correct?");
+		}
+		
 		public DateTime WriteDateTimeQuery(string text)
 		{
 			this.WriteLine(text, false);
