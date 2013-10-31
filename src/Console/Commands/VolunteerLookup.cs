@@ -1,7 +1,8 @@
 ﻿using System;
 using System.Data;
-using RbcTools.Library.Database;
 using RbcConsole.Helpers;
+using RbcTools.Library;
+using RbcTools.Library.Database;
 
 namespace RbcConsole.Commands
 {
@@ -18,23 +19,38 @@ namespace RbcConsole.Commands
 		{
 			var firstName = ConsoleX.WriteQuery("Please enter First Name:");
 			var lastName = ConsoleX.WriteQuery("Please enter Last Name:");
+			var isMale = ConsoleX.WriteBooleanQuery("Gender: Are they male?");
 			
-			TrySearchForNames(firstName, lastName, ConsoleX);
+			var vol = new Volunteer();
+			vol.FirstName = firstName;
+			vol.LastName = lastName;
+			vol.Gender = isMale ? GenderKind.Male : GenderKind.Female;
+			
+			TrySearchForNames(vol, ConsoleX);
 		}
 		
-		public static bool TrySearchForNames(string firstName, string lastName, ConsoleX consoleX)
+		public static bool TrySearchForNames(Volunteer volunteer, ConsoleX consoleX)
 		{
 			// TODO Use Gender also to help with match.
 			bool matchesFound = true;
 			
 			consoleX.WriteLine("Searching for matches on both First and Last name...");
 			
-			var table = Volunteers.GetByNames(firstName, lastName);
+			var table = Volunteers.GetByBothNames(volunteer.FirstName, volunteer.LastName, volunteer.Gender);
 			
 			if(table.Rows.Count == 0)
 			{
-				consoleX.WriteLine("No matched found on both First and Last name! Trying just Last name...");
-				table = Volunteers.GetByLastName(lastName);
+				consoleX.WriteLine("No matched found on both First and Last name! Trying a wider search:");
+				if(volunteer.Gender == GenderKind.Male)
+				{
+					consoleX.WriteLine("Searching for other brothers with same Last name...");
+					table = Volunteers.GetByLastName(volunteer.LastName, volunteer.Gender);
+				}
+				else
+				{
+					consoleX.WriteLine("Searching for other sisters with same First OR Last name...");
+					table = Volunteers.GetByEitherName(volunteer.FirstName, volunteer.LastName, volunteer.Gender);
+				}
 			}
 			
 			if(table.Rows.Count > 0)

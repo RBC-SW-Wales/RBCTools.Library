@@ -253,7 +253,7 @@ namespace RbcConsole.Commands
 			
 			ConsoleX.WriteLine(string.Format("Looking up '{0} {1}'...", this.CurrentVolunteer.FirstName, this.CurrentVolunteer.LastName));
 			
-			bool matchesFound = VolunteerLookup.TrySearchForNames(this.CurrentVolunteer.FirstName, this.CurrentVolunteer.LastName, ConsoleX);
+			bool matchesFound = VolunteerLookup.TrySearchForNames(this.CurrentVolunteer, ConsoleX);
 			
 			if(matchesFound)
 			{
