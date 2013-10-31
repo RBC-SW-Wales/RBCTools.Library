@@ -64,6 +64,7 @@
     <Compile Include="Commands\HelpCommand.cs" />
     <Compile Include="Commands\ImportFiles.cs" />
     <Compile Include="Commands\CommandBase.cs" />
+    <Compile Include="Commands\ListCongregations.cs" />
     <Compile Include="Commands\QueryDepartments.cs" />
     <Compile Include="Commands\QueryVolunteers.cs" />
     <Compile Include="Commands\ShowFileFields.cs" />
