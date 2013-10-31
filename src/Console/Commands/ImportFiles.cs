@@ -144,9 +144,14 @@ namespace RbcConsole.Commands
 			
 			#region Step #2 Search for existing records (use existing or create new)
 			
-			ConsoleX.WriteLine("Step #2 Search for existing records", ConsoleColor.Green);
-			
-			this.Step2_SelectRecord();
+			if(!this.skipFile)
+			{
+				
+				ConsoleX.WriteLine("Step #2 Search for existing records", ConsoleColor.Green);
+				
+				this.Step2_SelectRecord();
+				
+			}
 			
 			#endregion
 			
@@ -210,42 +215,63 @@ namespace RbcConsole.Commands
 			
 			// Get Surname, FirstName and MiddleName
 			
-			string pdfValue = this.CurrentReader["Text2"];
+			string text2 = this.CurrentReader["Text2"];
 			
-			// Remove any periods or commas (.,)
-			pdfValue = pdfValue.Replace(".", "").Replace(",", "");
-			
-			string lastName, firstName, middleNames = "";
-			
-			var names = pdfValue.Split(' ');
-			if(names.Length == 3)
+			if(string.IsNullOrEmpty(text2))
 			{
-				lastName = names[0];
-				firstName = names[1];
-				middleNames = names[2];
-			}
-			else if(names.Length == 2)
-			{
-				lastName = names[0];
-				firstName = names[1];
+				skipFile = true;
+				ConsoleX.WriteWarning("No Names could be found in file. Please complete this file and try again.");
 			}
 			else
 			{
-				this.INeedYourHelp("Name");
 				
-				lastName = ConsoleX.WriteQuery("Please can you tell me their 'Last Name'?");
-				middleNames = ConsoleX.WriteQuery("Please can you tell me their 'Middles Names'? (Leave blank if they don't have any)");
-				firstName = ConsoleX.WriteQuery("Please can you tell me their 'First Name'?");
+				// Remove any periods or commas (.,)
+				text2 = text2.Replace(".", "").Replace(",", "");
+				
+				// Init variables for use
+				string lastName = "", firstName = "", middleNames = "";
+				
+				Action getClipboardInput = delegate()
+				{
+					lastName = ConsoleX.WriteClipboardQuery("Last Name");
+					firstName = ConsoleX.WriteClipboardQuery("First Name");
+					middleNames = text2.Replace(lastName, "").Replace(firstName, "").Trim();
+				};
+				
+				// Split string into individial words
+				var names = text2.Split(' ');
+				
+				if(names.Length >= 2)
+				{
+					// If there are 2 or more words, should be...
+					// 1) last name
+					lastName = names[0];
+					// 2) first name
+					firstName = names[1];
+					// 3) all other words should be middle names
+					for (int i = 2; i < names.Length; i++)
+						middleNames += names[i] + " ";
+					// Remove trailing white space.
+					middleNames = middleNames.Trim();
+				}
+				else
+				{
+					// Not what expected, ask for help.
+					this.INeedYourHelp("Name");
+					getClipboardInput();
+				}
+				
+				while(!ConsoleX.WriteFieldCheck("Last Name", lastName, "First Name", firstName, "Middle name(s)", middleNames))
+				{
+					getClipboardInput();
+				}
+				
+				this.CurrentVolunteer.LastName = lastName;
+				this.CurrentVolunteer.MiddleNames = middleNames;
+				this.CurrentVolunteer.FirstName = firstName;
 			}
 			
-			this.CurrentVolunteer.LastName = lastName;
-			this.CurrentVolunteer.MiddleNames = middleNames;
-			this.CurrentVolunteer.FirstName = firstName;
-			
-			ConsoleX.WriteLine(string.Format("Volunteer's Name: {0} {1}", this.CurrentVolunteer.FirstName, this.CurrentVolunteer.LastName));
-			
 			#endregion
-			
 		}
 		
 		private void Step2_SelectRecord()
