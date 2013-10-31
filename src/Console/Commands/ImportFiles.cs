@@ -303,9 +303,7 @@ namespace RbcConsole.Commands
 							                                 existingVolunteer.FirstName,
 							                                 existingVolunteer.LastName));
 							
-							var confirm = ConsoleX.WriteQuery("Is this correct? Enter 'yes' to confirm, ENTER to try again.").ToLower();
-							
-							if(confirm == "yes")
+							if(ConsoleX.WriteBooleanQuery("Is this correct? (Say no to try again)"))
 							{
 								input = string.Empty; // So that we can leave loop.
 								this.CurrentVolunteer.ID = existingVolunteer.ID;
@@ -324,8 +322,8 @@ namespace RbcConsole.Commands
 			{
 				ConsoleX.WriteLine("Step #2.2 Confirm this is a new record", ConsoleColor.Green);
 				ConsoleX.WriteLine("Continuing will create a NEW record.");
-				var confirm = ConsoleX.WriteQuery("Is this correct? Enter 'yes' to confirm, or anything else to skip this file.").ToLower();
-				if(confirm != "yes")
+				
+				if(!ConsoleX.WriteBooleanQuery("Is this correct? (Say no to skip this file)"))
 					this.skipFile = true;
 			}
 		}

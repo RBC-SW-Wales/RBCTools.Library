@@ -110,11 +110,11 @@ namespace RbcConsole
 			
 			do
 			{
-				this.WriteLine("Please reply \"y\" for yes or \"n\" for no.", ConsoleColor.DarkGray);
-				var input = this.ReadPromt();
-				if(input == "y")
+				this.WriteLine("Please reply \"yes\" or \"no\" (\"y\" or \"n\")", ConsoleColor.DarkGray);
+				var input = this.ReadPromt().ToLower();
+				if(input == "y" || input == "yes")
 					boolean = true;
-				else if(input == "n")
+				else if(input == "n" || input == "no")
 					boolean = false;
 			}
 			while(!boolean.HasValue);
