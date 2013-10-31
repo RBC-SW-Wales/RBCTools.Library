@@ -563,12 +563,6 @@ namespace RbcConsole.Commands
 			table.Columns.Add("Type of experience");
 			table.Columns.Add("Years");
 			
-			// Emergency Contact Details
-			ConsoleX.WriteLine("Emergency Contact Name: " + this.CurrentVolunteer.EmergencyContactName);
-			ConsoleX.WriteLine("Emergency Contact Relationship: " + this.CurrentVolunteer.EmergencyContactRelationship);
-			ConsoleX.WriteLine("Emergency Contact Phone Number(s): " + this.CurrentVolunteer.EmergencyContactPhoneNumber);
-			ConsoleX.WriteLine("Emergency Contact Address: " + this.CurrentVolunteer.EmergencyContactAddress);
-			
 			Action<int> displayBackground = delegate(int index)
 			{
 				var row = table.NewRow();
@@ -585,6 +579,12 @@ namespace RbcConsole.Commands
 			displayBackground(3);
 			
 			ConsoleX.WriteDataTable(table);
+			
+			// Emergency Contact Details
+			ConsoleX.WriteLine("Emergency Contact Name: " + this.CurrentVolunteer.EmergencyContactName);
+			ConsoleX.WriteLine("Emergency Contact Relationship: " + this.CurrentVolunteer.EmergencyContactRelationship);
+			ConsoleX.WriteLine("Emergency Contact Phone Number(s): " + this.CurrentVolunteer.EmergencyContactPhoneNumber);
+			ConsoleX.WriteLine("Emergency Contact Address: " + this.CurrentVolunteer.EmergencyContactAddress);
 		}
 		
 		private void Step4_Save()
