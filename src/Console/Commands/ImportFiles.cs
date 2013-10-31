@@ -24,16 +24,61 @@ namespace RbcConsole.Commands
 		private Volunteer CurrentVolunteer;
 		private S82Reader CurrentReader;
 		private Process OpenFileProcess;
-		private bool SkipFile = false;
+		private bool skipFile = false;
+		private bool skipCommand = false;
+		private int currentCongregationID = 0;
 		
 		#endregion
 		
 		public override void Run()
 		{
-			this.RunImportFiles();
+			this.SelectCongregation();
+			
+			if(this.skipCommand == false)
+			{
+				this.RunImportFiles();
+			}
+			else
+				ConsoleX.WriteLine("Import Files Skipped", ConsoleColor.Red);
+			
+			// Reset for next Run()
+			this.skipCommand = false;
+			this.currentCongregationID = 0;
+		}
+
+		private void SelectCongregation()
+		{
+			ConsoleX.WriteLine("First, please enter the ID of the Congregation you are about to import.");
+			do
+			{
+				var id = ConsoleX.WriteIntegerQuery("Enter Congregation ID:", allowSkip: true);
+				if(id == int.MinValue)
+				{
+					this.skipCommand = true;
+					this.currentCongregationID = id;
+				}
+				else
+				{
+					var table = Congregations.GetById(id);
+					if(table.Rows.Count == 1)
+					{
+						ConsoleX.WriteLine("Selected congregation:", false);
+						ConsoleX.WriteDataTable(table);
+						if (ConsoleX.WriteBooleanQuery("Is this correct?"))
+							this.currentCongregationID = id;
+						else
+							ConsoleX.WriteLine("No, okay. Please try again.");
+					}
+					else
+					{
+						ConsoleX.WriteLine("No Congregation Found. Please try again.", ConsoleColor.Red);
+					}
+				}
+			}
+			while(this.currentCongregationID == 0);
 		}
 		
-		public void RunImportFiles()
+		private void RunImportFiles()
 		{
 			var fileNames = ImportFiles.GetFiles(base.ConsoleX);
 			
@@ -53,7 +98,7 @@ namespace RbcConsole.Commands
 		{
 			ConsoleX.WriteLine(string.Format("Reading '{0}' file...", fileName), ConsoleColor.Green);
 			
-			this.SkipFile = false;
+			this.skipFile = false;
 			
 			this.CurrentReader = new S82Reader(fileName);
 			
@@ -66,12 +111,12 @@ namespace RbcConsole.Commands
 				ConsoleX.WriteWarning("File is not readable. Perhaps it is not in the correct format.");
 				ConsoleX.WriteLine("Press any key to continue.");
 				Console.ReadKey();
-				this.SkipFile = true;
+				this.skipFile = true;
 			}
 			
 			this.CurrentReader = null;
 			
-			if(this.SkipFile)
+			if(this.skipFile)
 				ConsoleX.WriteLine(string.Format("Skipping '{0}'", fileName), ConsoleColor.Red);
 			else
 				ConsoleX.WriteLine(string.Format("Finished '{0}'", fileName), ConsoleColor.Green);
@@ -83,6 +128,7 @@ namespace RbcConsole.Commands
 		private void ProcessVolunteer()
 		{
 			this.CurrentVolunteer = new Volunteer();
+			this.CurrentVolunteer.CongregationID = this.currentCongregationID;
 			
 			ConsoleX.WriteLine("I'll open the file for you to check the data as we go.");
 			
@@ -104,7 +150,7 @@ namespace RbcConsole.Commands
 			
 			#endregion
 			
-			if(!this.SkipFile)
+			if(!this.skipFile)
 			{
 				
 				#region Step #3 Read the rest of the form
@@ -254,7 +300,7 @@ namespace RbcConsole.Commands
 				ConsoleX.WriteLine("Continuing will create a NEW record.");
 				var confirm = ConsoleX.WriteQuery("Is this correct? Enter 'yes' to confirm, or anything else to skip this file.").ToLower();
 				if(confirm != "yes")
-					this.SkipFile = true;
+					this.skipFile = true;
 			}
 		}
 		

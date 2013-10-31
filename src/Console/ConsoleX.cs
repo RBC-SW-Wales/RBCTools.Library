@@ -151,7 +151,7 @@ namespace RbcConsole
 			return returnDate;
 		}
 		
-		public int WriteIntegerQuery(string text)
+		public int WriteIntegerQuery(string text, bool allowSkip = false)
 		{
 			this.WriteLine(text, false);
 			
@@ -160,9 +160,19 @@ namespace RbcConsole
 			
 			do
 			{
-				this.WriteLine("Please enter a number:", ConsoleColor.DarkGray);
+				if(allowSkip)
+					this.WriteLine("Please enter a number (leave blank to skip):", ConsoleColor.DarkGray);
+				else
+					this.WriteLine("Please enter a number:", ConsoleColor.DarkGray);
+				
 				var input = this.ReadPromt();
-				if(int.TryParse(input, out number))
+				
+				if(allowSkip && input == "")
+				{
+					number = int.MinValue;
+					parsed = true;
+				}
+				else if(int.TryParse(input, out number))
 				{
 					parsed = true;
 				}
@@ -182,7 +192,7 @@ namespace RbcConsole
 			{
 				Console.ReadKey();
 				input = Clipboard.GetText();
-			
+				
 				if(string.IsNullOrEmpty(input))
 					this.WriteWarning("Sorry, nothing found in the clipboard. Please try again.");
 			}

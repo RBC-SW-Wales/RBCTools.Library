@@ -62,6 +62,8 @@ namespace RbcTools.Library
 		
 		public string EmergencyContactAddress { get; set; }
 		
+		public int CongregationID { get; set; }
+		
 		#endregion
 		
 		#region Methods
@@ -82,7 +84,8 @@ namespace RbcTools.Library
 				         " Trade3, Experience3, Years3, " +
 				         " Trade4, Experience4, Years4," +
 				         " EmergencyContactName, EmergencyContactRelationship," +
-				         " EmergencyContactPhoneNo, EmergencyContactAddress) " +
+				         " EmergencyContactPhoneNo, EmergencyContactAddress, " +
+				         " CongregationName) " +
 				         "VALUES (@ApplicationKind, @HallConstruction, @DisasterRelief, " +
 				         " @Surname, @FirstName, @MiddleName, @Gender, @DateOfBirth, @DateOfBaptism, " +
 				         " @Address, @EmailAddress, @PhoneNumberHome, @PhoneNumberWork, @PhoneNumberMobile, " +
@@ -92,7 +95,8 @@ namespace RbcTools.Library
 				         " @Trade3, @Experience3, @Years3, " +
 				         " @Trade4, @Experience4, @Years4," +
 				         " @EmergencyContactName, @EmergencyContactRelationship, " +
-				         " @EmergencyContactPhoneNumber, @EmergencyContactAddress) ");
+				         " @EmergencyContactPhoneNumber, @EmergencyContactAddress, " +
+				         " @CongregationID) ");
 			}
 			else
 			{
@@ -128,7 +132,8 @@ namespace RbcTools.Library
 				         " EmergencyContactName = @EmergencyContactName, " +
 				         " EmergencyContactRelationship = @EmergencyContactRelationship, " +
 				         " EmergencyContactPhoneNo = @EmergencyContactPhoneNumber, " +
-				         " EmergencyContactAddress = @EmergencyContactAddress " +
+				         " EmergencyContactAddress = @EmergencyContactAddress, " +
+				         " CongregationName = @CongregationID " +
 				         " WHERE ID = @ID");
 			}
 			
@@ -136,7 +141,7 @@ namespace RbcTools.Library
 			connector.AddParameter("@ApplicationKind", this.ApplicationKind.GetName());
 			connector.AddParameter("@HallConstruction", this.FormsOfService.HasFlag(FormOfServiceKinds.HallConstruction));
 			connector.AddParameter("@DisasterRelief", this.FormsOfService.HasFlag(FormOfServiceKinds.DisasterRelief));
-			connector.AddParameter("@Surname", "AAA DONT DELETE " + this.LastName);
+			connector.AddParameter("@Surname", this.LastName);
 			connector.AddParameter("@FirstName", this.FirstName);
 			connector.AddParameter("@MiddleName", this.MiddleNames);
 			connector.AddParameter("@Gender", this.Gender.ToString());
@@ -171,6 +176,8 @@ namespace RbcTools.Library
 			connector.AddParameter("@EmergencyContactRelationship", this.EmergencyContactRelationship);
 			connector.AddParameter("@EmergencyContactPhoneNumber", this.EmergencyContactPhoneNumber);
 			connector.AddParameter("@EmergencyContactAddress", this.EmergencyContactAddress);
+			
+			connector.AddParameter("@CongregationID", this.CongregationID);
 			
 			connector.AddParameter("@ID", this.ID);
 			connector.ExecuteNonQuery();
