@@ -507,6 +507,8 @@ namespace RbcConsole.Commands
 				var name = "";
 				var relationship = "";
 				
+				var trimChars = new char[] { ',', '.' }; // Trim any periods/commas in certain places.
+				
 				// Take a guess (assume last word is relationship);
 				var parts = text13.Split(' ');
 				if(parts.Length == 0)
@@ -517,14 +519,16 @@ namespace RbcConsole.Commands
 				else
 				{
 					relationship = parts[parts.Length-1];
-					name = text13.Replace(relationship, "").Trim();
+					name = text13.Replace(relationship, "");
+					name = name.Trim().TrimEnd(trimChars).Trim();
 				}
 				
 				// Ask if correct, and if not get help until it is correct.
 				while(!Step3_EmergencyContactNameAndRelationship_Check(name, relationship))
 				{
 					name = ConsoleX.WriteClipboardQuery("Emergency Contact Name");
-					relationship = text13.Replace(name, "").Trim();
+					relationship = text13.Replace(name, "");
+					relationship = relationship.Trim().TrimStart(trimChars).Trim();
 				}
 				
 				this.CurrentVolunteer.EmergencyContactName = name;
@@ -554,15 +558,19 @@ namespace RbcConsole.Commands
 					lastMatch = match.Value;
 				}
 				
+				var trimChars = new char[] { ',', '.' }; // Trim any periods/commas in certain places.
+				
 				// Find address by using everything after last found telephone number
 				var startIndex = text14.LastIndexOf(lastMatch) + lastMatch.Length;
-				address = text14.Substring(startIndex).Trim();
+				address = text14.Substring(startIndex);
+				address = address.Trim().TrimStart(trimChars).Trim();
 				
 				// Ask if correct, and if not get help until it is correct.
 				while(!Step3_EmergencyContactTelAndAddress_Check(phone, address))
 				{
 					address = ConsoleX.WriteClipboardQuery("Emergency Contact Address");
-					phone = text14.Replace(address, "").Trim();
+					phone = text14.Replace(address, "");
+					phone = phone.Trim().TrimEnd(trimChars).Trim();
 				}
 				
 				this.CurrentVolunteer.EmergencyContactPhoneNumber = phone;
