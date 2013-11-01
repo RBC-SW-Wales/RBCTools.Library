@@ -7,7 +7,7 @@ namespace RbcTools.Library.Database
 	{
 		public static DataTable GetById(int congregationId)
 		{
-			var connector = new Connector("SELECT ID, CongregationNo, CongregationName FROM Congregation WHERE ID = @CongregationId");
+			var connector = new Connector("SELECT ID, CongregationName FROM Congregation WHERE ID = @CongregationId");
 			connector.AddParameter("@CongregationId", congregationId);
 			var table = connector.ExecuteDataTable();
 			connector = null;
@@ -16,7 +16,7 @@ namespace RbcTools.Library.Database
 		
 		public static DataTable GetAll()
 		{
-			var connector = new Connector("SELECT ID, CongregationNo, CongregationName FROM Congregation ORDER BY CongregationName");
+			var connector = new Connector("SELECT ID, CongregationName FROM Congregation ORDER BY CongregationName");
 			var table = connector.ExecuteDataTable();
 			connector = null;
 			return table;

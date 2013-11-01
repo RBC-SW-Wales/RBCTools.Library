@@ -8,7 +8,7 @@ namespace RbcConsole.Commands
 		public ListCongregations()
 		{
 			base.Slug = "list-congregations";
-			base.Description = "Show all a table of all Congregations (ID, Number and Name)";
+			base.Description = "Show all a table of all Congregations (ID and Name)";
 			base.IsDatabaseCommand = true;
 		}
 		
