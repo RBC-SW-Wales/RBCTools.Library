@@ -1,4 +1,5 @@
 ﻿using System;
+using RbcConsole.Helpers;
 
 namespace RbcConsole.Commands
 {
@@ -14,9 +15,7 @@ namespace RbcConsole.Commands
 		public override void Run()
 		{
 			Console.Clear();
-			// Display application title
-			ConsoleX.WriteTitle("RBC Application Form (S82) Importer");
-			ConsoleX.WriteLine("Enter a command to start (e.g. 'help')");
+			StartUpHelper.ShowStartUpMessage(ConsoleX);
 		}
 	}
 }

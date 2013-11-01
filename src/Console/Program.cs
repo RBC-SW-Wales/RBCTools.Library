@@ -6,6 +6,7 @@ using System.Threading;
 using System.Windows.Forms;
 using System.Collections.Generic;
 using RbcConsole.Commands;
+using RbcConsole.Helpers;
 using RbcTools.Library;
 using RbcTools.Library.Database;
 
@@ -39,9 +40,8 @@ namespace RbcConsole
 			Console.SetWindowSize(Console.LargestWindowWidth - 2, Console.LargestWindowHeight);
 			Console.BufferWidth = Console.WindowWidth;
 			
-			// Display application title
-			ConsoleX.WriteTitle("RBC Application Form (S82) Importer");
-			ConsoleX.WriteLine("Enter a command to start (e.g. 'help')");
+			// Display start message
+			StartUpHelper.ShowStartUpMessage(ConsoleX);
 			
 			// Enter into loop that takes commands.
 			var input = "";

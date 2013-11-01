@@ -71,6 +71,7 @@
     <Compile Include="Commands\VolunteerLookup.cs" />
     <Compile Include="ConsoleX.cs" />
     <Compile Include="Helpers\AccessFileHelper.cs" />
+    <Compile Include="Helpers\StartUpHelper.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
