@@ -62,6 +62,8 @@ namespace RbcTools.Library
 		
 		public string EmergencyContactAddress { get; set; }
 		
+		public DateTime ApplicationDate { get; set; }
+		
 		public int CongregationID { get; set; }
 		
 		#endregion
@@ -85,6 +87,7 @@ namespace RbcTools.Library
 				         " Trade4, Experience4, Years4," +
 				         " EmergencyContactName, EmergencyContactRelationship," +
 				         " EmergencyContactPhoneNo, EmergencyContactAddress, " +
+				         " ApplicationDate, ProcessedDate, " +
 				         " CongregationName, " +
 				         " Authenticated, " +
 				         " Trade) " +
@@ -98,6 +101,7 @@ namespace RbcTools.Library
 				         " @Trade4, @Experience4, @Years4," +
 				         " @EmergencyContactName, @EmergencyContactRelationship, " +
 				         " @EmergencyContactPhoneNumber, @EmergencyContactAddress, " +
+				         " @ApplicationDate, @ProcessedDate, " +
 				         " @CongregationID, " +
 				         " True, " +
 				         " 34) "); // USE 34 for Trade ID (Not Assigned) - INSERT ONLY
@@ -137,6 +141,8 @@ namespace RbcTools.Library
 				         " EmergencyContactRelationship = @EmergencyContactRelationship, " +
 				         " EmergencyContactPhoneNo = @EmergencyContactPhoneNumber, " +
 				         " EmergencyContactAddress = @EmergencyContactAddress, " +
+				         " ApplicationDate = @ApplicationDate, " +
+				         " ProcessedDate = @ProcessedDate, " +
 				         " CongregationName = @CongregationID, " +
 				         " Authenticated = True " +
 				         " WHERE ID = @ID");
@@ -181,6 +187,9 @@ namespace RbcTools.Library
 			connector.AddParameter("@EmergencyContactRelationship", this.EmergencyContactRelationship);
 			connector.AddParameter("@EmergencyContactPhoneNumber", this.EmergencyContactPhoneNumber);
 			connector.AddParameter("@EmergencyContactAddress", this.EmergencyContactAddress);
+			
+			connector.AddParameter("@ApplicationDate", this.ApplicationDate);
+			connector.AddParameter("@ProcessedDate", DateTime.Now.Date);
 			
 			connector.AddParameter("@CongregationID", this.CongregationID);
 			

@@ -28,6 +28,7 @@ namespace RbcConsole.Commands
 		private bool skipCommand = false;
 		private int currentCongregationID = 0;
 		private List<string> skippedFilesList;
+		private List<string> erroredFilesList;
 		
 		#endregion
 		
@@ -86,18 +87,42 @@ namespace RbcConsole.Commands
 			if(fileNames != null)
 			{
 				this.skippedFilesList = new List<string>();
+				this.erroredFilesList = new List<string>();
 				
 				foreach (string fileName in fileNames)
 				{
-					this.OpenS82Reader(fileName);
+					try
+					{
+						this.OpenS82Reader(fileName);
+					}
+					catch (Exception ex)
+					{
+						// There was a problem, handle it by
+						// 1) add it to a list - to be displayed at the end
+						this.erroredFilesList.Add(fileName);
+						// 2) Clean up any mess it may have left
+						this.CloseFileIfProcessOpen(); // Close file that errored
+						// 3) Display the error and offer to report it.
+						ExceptionHelper.HandleException(ex, base.ConsoleX);
+					}
 				}
 				
-				if(skippedFilesList.Count > 0)
+				if(this.skippedFilesList.Count > 0)
 				{
 					ConsoleX.WriteWarning("The following files where skipped:");
-					foreach(var filePath in skippedFilesList)
+					foreach(var filePath in this.skippedFilesList)
 					{
 						ConsoleX.WriteWarning(filePath, false);
+					}
+					ConsoleX.WriteLine("", false);
+				}
+				
+				if(this.erroredFilesList.Count > 0)
+				{
+					ConsoleX.WriteLine("The following files where missed because of errors:", ConsoleColor.Red);
+					foreach(var filePath in this.erroredFilesList)
+					{
+						ConsoleX.WriteLine(filePath, ConsoleColor.Red, false);
 					}
 					ConsoleX.WriteLine("", false);
 				}
@@ -113,7 +138,6 @@ namespace RbcConsole.Commands
 			ConsoleX.WriteLine(string.Format("Reading '{0}' file...", fileName), ConsoleColor.Green);
 			
 			this.skipFile = false;
-			
 			this.CurrentReader = new S82Reader(fileName);
 			
 			if(this.CurrentReader.IsReadable)
@@ -350,7 +374,7 @@ namespace RbcConsole.Commands
 			
 			this.Step3_ApplicationKind();
 			this.Step3_FormsOfService();
-			this.Step3_Dates();
+			this.Step3_BirthAndBaptismDates();
 
 			// Postal Address
 			this.CurrentVolunteer.Address = this.CurrentReader["Text5"];
@@ -370,6 +394,8 @@ namespace RbcConsole.Commands
 			this.Step3_EmergencyContactNameAndRelationship();
 			
 			this.Step3_EmergencyContactTelAndAddress();
+			
+			this.Step3_ApplicationDate();
 			
 		}
 		
@@ -409,7 +435,7 @@ namespace RbcConsole.Commands
 				this.CurrentVolunteer.FormsOfService |= FormOfServiceKinds.DisasterRelief;
 		}
 		
-		private void Step3_Dates()
+		private void Step3_BirthAndBaptismDates()
 		{
 			var birthDate = this.CurrentReader.GetDateTimeValue("Text3");
 			var baptismDate = this.CurrentReader.GetDateTimeValue("Text4");
@@ -583,6 +609,19 @@ namespace RbcConsole.Commands
 			return ConsoleX.WriteFieldCheck("Emergency Contact Phone Number(s)", phone, "Emergency Contact Address", address);
 		}
 		
+		private void Step3_ApplicationDate()
+		{
+			var applicationDate = this.CurrentReader.GetDateTimeValue("Text15");
+			
+			if(applicationDate == DateTime.MinValue)
+			{
+				this.INeedYourHelp("Application Date (after Signature)");
+				applicationDate = ConsoleX.WriteDateTimeQuery("Please can you tell me the Application Date?");
+			}
+			
+			this.CurrentVolunteer.ApplicationDate = applicationDate;
+		}
+		
 		private void Step4_DisplayDetails()
 		{
 			ConsoleX.WriteLine("The following details were collected:", ConsoleColor.Green);
@@ -730,14 +769,19 @@ namespace RbcConsole.Commands
 			addDetailsRow("Address: ", this.CurrentVolunteer.EmergencyContactAddress);
 			
 			ConsoleX.WriteDataTable(detailsTable, 32, includeHeader:false, includeCount:false);
+			
+			detailsTable = newDetailsTable();
+			addDetailsRow("Application Date: ", this.CurrentVolunteer.ApplicationDate.ToLongDateString());
+			
+			ConsoleX.WriteDataTable(detailsTable, 32, includeHeader:false, includeCount:false);
 		}
 		
 		private void Step4_Save()
 		{
 			if(ConsoleX.WriteBooleanQuery("Shall I save to the database? (Say no to skip this file)"))
 			{
-//				this.CurrentVolunteer.SaveToDatabase();
-				ConsoleX.WriteWarning("DISABLED: Please note that the saving functionality is currently disabled in this test");
+				this.CurrentVolunteer.SaveToDatabase();
+//				ConsoleX.WriteWarning("DISABLED: Please note that the saving functionality is currently disabled in this test");
 				
 				if(this.CurrentVolunteer.ID == 0)
 					ConsoleX.WriteLine("DONE: Inserted a new record to the database!", ConsoleColor.Magenta);
