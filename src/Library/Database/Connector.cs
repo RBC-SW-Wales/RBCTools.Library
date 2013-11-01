@@ -42,7 +42,7 @@ namespace RbcTools.Library.Database
 					if(!Directory.Exists(directory))
 						Directory.CreateDirectory(directory);
 					
-					_AccessFilePath = directory + @"\RBCWalesVolsDatabase.accdb";
+					_AccessFilePath = directory + @"\Console_0001_RBCWalesVolsDatabase.accdb";
 				}
 				return _AccessFilePath;
 			}
@@ -88,9 +88,19 @@ namespace RbcTools.Library.Database
 		
 		public void ExecuteNonQuery()
 		{
-			this.OpenConnection();
-			this.Command.ExecuteNonQuery();
-			this.CloseConnection();
+			try
+			{
+				this.OpenConnection();
+				this.Command.ExecuteNonQuery();
+			}
+			catch (Exception)
+			{
+				throw;
+			}
+			finally
+			{
+				this.CloseConnection();
+			}
 		}
 		
 		public DataTable ExecuteDataTable()

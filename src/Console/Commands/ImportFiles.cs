@@ -374,7 +374,7 @@ namespace RbcConsole.Commands
 			
 			this.Step3_ApplicationKind();
 			this.Step3_FormsOfService();
-			this.Step3_Dates();
+			this.Step3_BirthAndBaptismDates();
 
 			// Postal Address
 			this.CurrentVolunteer.Address = this.CurrentReader["Text5"];
@@ -394,6 +394,8 @@ namespace RbcConsole.Commands
 			this.Step3_EmergencyContactNameAndRelationship();
 			
 			this.Step3_EmergencyContactTelAndAddress();
+			
+			this.Step3_ApplicationDate();
 			
 		}
 		
@@ -433,7 +435,7 @@ namespace RbcConsole.Commands
 				this.CurrentVolunteer.FormsOfService |= FormOfServiceKinds.DisasterRelief;
 		}
 		
-		private void Step3_Dates()
+		private void Step3_BirthAndBaptismDates()
 		{
 			var birthDate = this.CurrentReader.GetDateTimeValue("Text3");
 			var baptismDate = this.CurrentReader.GetDateTimeValue("Text4");
@@ -607,6 +609,19 @@ namespace RbcConsole.Commands
 			return ConsoleX.WriteFieldCheck("Emergency Contact Phone Number(s)", phone, "Emergency Contact Address", address);
 		}
 		
+		private void Step3_ApplicationDate()
+		{
+			var applicationDate = this.CurrentReader.GetDateTimeValue("Text15");
+			
+			if(applicationDate == DateTime.MinValue)
+			{
+				this.INeedYourHelp("Application Date (after Signature)");
+				applicationDate = ConsoleX.WriteDateTimeQuery("Please can you tell me the Application Date?");
+			}
+			
+			this.CurrentVolunteer.ApplicationDate = applicationDate;
+		}
+		
 		private void Step4_DisplayDetails()
 		{
 			ConsoleX.WriteLine("The following details were collected:", ConsoleColor.Green);
@@ -752,6 +767,11 @@ namespace RbcConsole.Commands
 			addDetailsRow("Relationship: ", this.CurrentVolunteer.EmergencyContactRelationship);
 			addDetailsRow("Phone Number(s): ", this.CurrentVolunteer.EmergencyContactPhoneNumber);
 			addDetailsRow("Address: ", this.CurrentVolunteer.EmergencyContactAddress);
+			
+			ConsoleX.WriteDataTable(detailsTable, 32, includeHeader:false, includeCount:false);
+			
+			detailsTable = newDetailsTable();
+			addDetailsRow("Application Date: ", this.CurrentVolunteer.ApplicationDate.ToLongDateString());
 			
 			ConsoleX.WriteDataTable(detailsTable, 32, includeHeader:false, includeCount:false);
 		}
