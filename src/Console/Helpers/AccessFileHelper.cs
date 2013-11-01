@@ -28,6 +28,7 @@ namespace RbcConsole.Helpers
 				do
 				{
 					url = consoleX.WriteClipboardQuery("CORRECT URL");
+					url = url.Trim(); // Remove any whitespace that may have been copied by mistake.
 					hash = GetUrlHash(url);
 					
 					// consoleX.WriteLine(hash);
