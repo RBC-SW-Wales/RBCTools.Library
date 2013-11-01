@@ -563,7 +563,14 @@ namespace RbcConsole.Commands
 			ConsoleX.WriteLine("The following details were collected:", ConsoleColor.Green);
 			
 			// Application Kind
-			ConsoleX.WriteLine(string.Format("Application Kind = {0}", this.CurrentVolunteer.ApplicationKind.GetName()));
+			ConsoleX.WriteLine(string.Format("Application Kind: {0}", this.CurrentVolunteer.ApplicationKind.GetName()));
+			
+			// Update or Insert database record
+			string insertOrUpdate = "NEW RECORD";
+			if(this.CurrentVolunteer.ID != 0)
+				insertOrUpdate = string.Format("UPDATE RECORD ({0})", this.CurrentVolunteer.ID);
+			
+			ConsoleX.WriteLine(string.Format("Datebase record: {0}", insertOrUpdate));
 			
 			// Forms of service
 			var message = "Forms of service: ";
