@@ -20,16 +20,16 @@ namespace RbcConsole
 			if(blankAfter) Console.WriteLine(" ");
 		}
 		
-		public void WriteLine(string text, ConsoleColor color)
+		public void WriteLine(string text, ConsoleColor color, bool blankAfter = true)
 		{
 			Console.ForegroundColor = color;
-			this.WriteLine(text);
+			this.WriteLine(text, blankAfter);
 			Console.ResetColor();
 		}
 		
-		public void WriteWarning(string text)
+		public void WriteWarning(string text, bool blankAfter = true)
 		{
-			this.WriteLine(text, ConsoleColor.Yellow);
+			this.WriteLine(text, ConsoleColor.Yellow, blankAfter);
 		}
 		
 		public string ReadPromt(List<string> tabPossibilities = null)

@@ -27,6 +27,7 @@ namespace RbcConsole.Commands
 		private bool skipFile = false;
 		private bool skipCommand = false;
 		private int currentCongregationID = 0;
+		private List<string> skippedFilesList;
 		
 		#endregion
 		
@@ -84,10 +85,23 @@ namespace RbcConsole.Commands
 			
 			if(fileNames != null)
 			{
+				this.skippedFilesList = new List<string>();
+				
 				foreach (string fileName in fileNames)
 				{
 					this.OpenS82Reader(fileName);
 				}
+				
+				if(skippedFilesList.Count > 0)
+				{
+					ConsoleX.WriteWarning("The following files where skipped:");
+					foreach(var filePath in skippedFilesList)
+					{
+						ConsoleX.WriteWarning(filePath, false);
+					}
+					ConsoleX.WriteLine("", false);
+				}
+				
 				ConsoleX.WriteLine("All files completed!");
 			}
 			else
@@ -117,7 +131,10 @@ namespace RbcConsole.Commands
 			this.CurrentReader = null;
 			
 			if(this.skipFile)
+			{
 				ConsoleX.WriteLine(string.Format("Skipping '{0}'", fileName), ConsoleColor.Red);
+				this.skippedFilesList.Add(fileName);
+			}
 			else
 				ConsoleX.WriteLine(string.Format("Finished '{0}'", fileName), ConsoleColor.Green);
 			
@@ -709,7 +726,7 @@ namespace RbcConsole.Commands
 		
 		private void Step4_Save()
 		{
-			if(ConsoleX.WriteBooleanQuery("Shall I save to the database?"))
+			if(ConsoleX.WriteBooleanQuery("Shall I save to the database? (Say no to skip this file)"))
 			{
 //				this.CurrentVolunteer.SaveToDatabase();
 				ConsoleX.WriteWarning("DISABLED: Please note that the saving functionality is currently disabled in this test");
@@ -721,7 +738,7 @@ namespace RbcConsole.Commands
 			}
 			else
 			{
-				ConsoleX.WriteWarning("UNSAVED: This record was not saved.");
+				this.skipFile = true;
 			}
 		}
 		
