@@ -28,6 +28,7 @@ namespace RbcConsole.Commands
 		private bool skipCommand = false;
 		private int currentCongregationID = 0;
 		private List<string> skippedFilesList;
+		private List<string> erroredFilesList;
 		
 		#endregion
 		
@@ -86,18 +87,42 @@ namespace RbcConsole.Commands
 			if(fileNames != null)
 			{
 				this.skippedFilesList = new List<string>();
+				this.erroredFilesList = new List<string>();
 				
 				foreach (string fileName in fileNames)
 				{
-					this.OpenS82Reader(fileName);
+					try
+					{
+						this.OpenS82Reader(fileName);
+					}
+					catch (Exception ex)
+					{
+						// There was a problem, handle it by
+						// 1) add it to a list - to be displayed at the end
+						this.erroredFilesList.Add(fileName);
+						// 2) Clean up any mess it may have left
+						this.CloseFileIfProcessOpen(); // Close file that errored
+						// 3) Display the error and offer to report it.
+						ExceptionHelper.HandleException(ex, base.ConsoleX);
+					}
 				}
 				
-				if(skippedFilesList.Count > 0)
+				if(this.skippedFilesList.Count > 0)
 				{
 					ConsoleX.WriteWarning("The following files where skipped:");
-					foreach(var filePath in skippedFilesList)
+					foreach(var filePath in this.skippedFilesList)
 					{
 						ConsoleX.WriteWarning(filePath, false);
+					}
+					ConsoleX.WriteLine("", false);
+				}
+				
+				if(this.erroredFilesList.Count > 0)
+				{
+					ConsoleX.WriteLine("The following files where missed because of errors:", ConsoleColor.Red);
+					foreach(var filePath in this.erroredFilesList)
+					{
+						ConsoleX.WriteLine(filePath, ConsoleColor.Red, false);
 					}
 					ConsoleX.WriteLine("", false);
 				}
@@ -113,7 +138,6 @@ namespace RbcConsole.Commands
 			ConsoleX.WriteLine(string.Format("Reading '{0}' file...", fileName), ConsoleColor.Green);
 			
 			this.skipFile = false;
-			
 			this.CurrentReader = new S82Reader(fileName);
 			
 			if(this.CurrentReader.IsReadable)
