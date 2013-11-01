@@ -86,6 +86,7 @@ namespace RbcTools.Library
 				         " EmergencyContactName, EmergencyContactRelationship," +
 				         " EmergencyContactPhoneNo, EmergencyContactAddress, " +
 				         " CongregationName, " +
+				         " Authenticated, " +
 				         " Trade) " +
 				         "VALUES (@ApplicationKind, @HallConstruction, @DisasterRelief, " +
 				         " @Surname, @FirstName, @MiddleName, @Gender, @DateOfBirth, @DateOfBaptism, " +
@@ -98,6 +99,7 @@ namespace RbcTools.Library
 				         " @EmergencyContactName, @EmergencyContactRelationship, " +
 				         " @EmergencyContactPhoneNumber, @EmergencyContactAddress, " +
 				         " @CongregationID, " +
+				         " True, " +
 				         " 34) "); // USE 34 for Trade ID (Not Assigned) - INSERT ONLY
 			}
 			else
@@ -135,7 +137,8 @@ namespace RbcTools.Library
 				         " EmergencyContactRelationship = @EmergencyContactRelationship, " +
 				         " EmergencyContactPhoneNo = @EmergencyContactPhoneNumber, " +
 				         " EmergencyContactAddress = @EmergencyContactAddress, " +
-				         " CongregationName = @CongregationID " +
+				         " CongregationName = @CongregationID, " +
+				         " Authenticated = True " +
 				         " WHERE ID = @ID");
 			}
 			
