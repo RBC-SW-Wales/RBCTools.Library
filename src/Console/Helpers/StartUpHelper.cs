@@ -5,7 +5,7 @@ namespace RbcConsole.Helpers
 {
 	public static class StartUpHelper
 	{
-		public static void ShowStartUpMessage(IConsoleX consoleX)
+		public static void ShowStartUpMessage(ConsoleX consoleX)
 		{
 			// Display application title
 			consoleX.WriteTitle("RBC Console, application for interfacing with RBC South and West Wales database");

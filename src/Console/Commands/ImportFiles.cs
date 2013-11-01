@@ -729,7 +729,7 @@ namespace RbcConsole.Commands
 		
 		#region Reusable Methods
 		
-		public static string[] GetFiles(IConsoleX consoleX)
+		public static string[] GetFiles(ConsoleX consoleX)
 		{
 			consoleX.WriteLine("Press any key to select the S82 PDF files...");
 			Console.ReadKey();

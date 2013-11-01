@@ -8,7 +8,7 @@ using RbcTools.Library;
 
 namespace RbcConsole
 {
-	public class ConsoleX : IConsoleX
+	public class ConsoleX
 	{
 		public ConsoleX(){}
 		
