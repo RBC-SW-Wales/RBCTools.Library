@@ -562,92 +562,131 @@ namespace RbcConsole.Commands
 		{
 			ConsoleX.WriteLine("The following details were collected:", ConsoleColor.Green);
 			
-			// Application Kind
-			ConsoleX.WriteLine(string.Format("Application Kind: {0}", this.CurrentVolunteer.ApplicationKind.GetName()));
+			Func<DataTable> newDetailsTable = delegate()
+			{
+				var table = new DataTable();
+				table.Columns.Add("Field Name");
+				table.Columns.Add("Field Value");
+				return table;
+			};
+			
+			var detailsTable = newDetailsTable();
+			
+			Action<string, string> addDetailsRow = delegate(string fieldName, string fieldValue)
+			{
+				var newRow = detailsTable.NewRow();
+				newRow[0] = fieldName;
+				newRow[1] = fieldValue;
+				detailsTable.Rows.Add(newRow);
+			};
+			
+			Action<string, List<string>> addDetailsList = delegate(string fieldName, List<string> fieldValues)
+			{
+				foreach(var fieldValue in fieldValues)
+				{
+					if(fieldValues.IndexOf(fieldValue) == 0)
+						addDetailsRow(fieldName, fieldValue);
+					else
+						addDetailsRow("", fieldValue);
+				}
+			};
 			
 			// Update or Insert database record
 			string insertOrUpdate = "NEW RECORD";
 			if(this.CurrentVolunteer.ID != 0)
 				insertOrUpdate = string.Format("UPDATE RECORD ({0})", this.CurrentVolunteer.ID);
 			
-			ConsoleX.WriteLine(string.Format("Datebase record: {0}", insertOrUpdate));
+			addDetailsRow("Datebase record: ", insertOrUpdate);
+			
+			// Application Kind
+			addDetailsRow("Application Kind: ", this.CurrentVolunteer.ApplicationKind.GetName());
 			
 			// Forms of service
-			var message = "Forms of service: ";
+			var formsOfService = new List<string>();
 			
 			if(this.CurrentVolunteer.FormsOfService.HasFlag(FormOfServiceKinds.HallConstruction))
-				message += " * Hall Construction ";
+				formsOfService.Add("* Hall Construction");
 			
 			if(this.CurrentVolunteer.FormsOfService.HasFlag(FormOfServiceKinds.DisasterRelief))
-				message += " * Disaster Relief ";
+				formsOfService.Add("* Disaster Relief");
 			
 			if(this.CurrentVolunteer.FormsOfService == FormOfServiceKinds.NoneSpecified)
-				message += " None Specified ";
+				formsOfService.Add("None Specified");
 			
-			ConsoleX.WriteLine(message);
+			addDetailsList("Forms of service: ", formsOfService);
+			
+			ConsoleX.WriteDataTable(detailsTable, 32, includeHeader:false, includeCount:false);
+			detailsTable = newDetailsTable();
+			
+			ConsoleX.WriteLine("Legal name, gender and dates:", false);
 			
 			// Names and Gender
-			
-			ConsoleX.WriteLine("First name: " + this.CurrentVolunteer.FirstName);
-			ConsoleX.WriteLine("Middle name(s): " + this.CurrentVolunteer.MiddleNames);
-			ConsoleX.WriteLine("Last name: " + this.CurrentVolunteer.LastName);
-			ConsoleX.WriteLine("Gender: " + this.CurrentVolunteer.Gender.ToString());
+			addDetailsRow("First name: ", this.CurrentVolunteer.FirstName);
+			addDetailsRow("Middle name(s): ", this.CurrentVolunteer.MiddleNames);
+			addDetailsRow("Last name: ", this.CurrentVolunteer.LastName);
+			addDetailsRow("Gender: ", this.CurrentVolunteer.Gender.ToString());
 			
 			// Dates
-			ConsoleX.WriteLine("Date of birth: " + this.CurrentVolunteer.DateOfBirth.ToLongDateString());
-			ConsoleX.WriteLine("Date of baptism: " + this.CurrentVolunteer.DateOfBaptism.ToLongDateString());
+			addDetailsRow("Date of birth: ", this.CurrentVolunteer.DateOfBirth.ToLongDateString());
+			addDetailsRow("Date of baptism: ", this.CurrentVolunteer.DateOfBaptism.ToLongDateString());
+			
+			ConsoleX.WriteDataTable(detailsTable, 32, includeHeader:false, includeCount:false);
+			detailsTable = newDetailsTable();
+			
+			ConsoleX.WriteLine("Contact details:", false);
 			
 			// Postal Address
-			ConsoleX.WriteLine("Postal Address: " + this.CurrentVolunteer.Address);
+			addDetailsRow("Postal Address: ", this.CurrentVolunteer.Address);
 			
 			// Email Address
-			ConsoleX.WriteLine("Email Address: " + this.CurrentVolunteer.EmailAddress);
+			addDetailsRow("Email Address: ", this.CurrentVolunteer.EmailAddress);
 			
 			// Phone numbers
-			ConsoleX.WriteLine("Home Phone: " + this.CurrentVolunteer.PhoneNumberHome);
-			ConsoleX.WriteLine("Work Phone: " + this.CurrentVolunteer.PhoneNumberWork);
-			ConsoleX.WriteLine("Mobile Phone: " + this.CurrentVolunteer.PhoneNumberMobile);
+			addDetailsRow("Home Phone: ", this.CurrentVolunteer.PhoneNumberHome);
+			addDetailsRow("Work Phone: ", this.CurrentVolunteer.PhoneNumberWork);
+			addDetailsRow("Mobile Phone: ", this.CurrentVolunteer.PhoneNumberMobile);
+			
+			ConsoleX.WriteDataTable(detailsTable, 32, includeHeader:false, includeCount:false);
+			detailsTable = newDetailsTable();
+			
+			ConsoleX.WriteLine("Current privileges, and name of mate:", false);
 			
 			// Current privileges
-			message = "Current Privileges: ";
+			var privileges = new List<string>();
 			
 			if(this.CurrentVolunteer.CongregationPrivileges.HasFlag(CongregationPrivilegeKinds.Elder))
-			{
-				message += " * Elder ";
-			}
+				privileges.Add("* Elder");
 			else if(this.CurrentVolunteer.CongregationPrivileges.HasFlag(CongregationPrivilegeKinds.MinisterialServant))
-			{
-				message += " * Ministerial Servant ";
-			}
+				privileges.Add("* Ministerial Servant");
 			
 			if(this.CurrentVolunteer.RegularPioneer)
-			{
-				message += " * Regular Pioneer ";
-			}
+				privileges.Add("* Regular Pioneer");
 			
 			if(!this.CurrentVolunteer.RegularPioneer && this.CurrentVolunteer.CongregationPrivileges == CongregationPrivilegeKinds.NoneSpecified)
-				message += " None Specified ";
+				privileges.Add("None Specified");
 			
-			ConsoleX.WriteLine(message);
+			addDetailsList("Current Privileges: ", privileges);
 			
 			// Name of Mate
-			ConsoleX.WriteLine("Name of mate: " + this.CurrentVolunteer.NameOfMate);
+			addDetailsRow("Name of mate: ", this.CurrentVolunteer.NameOfMate);
+			
+			ConsoleX.WriteDataTable(detailsTable, 32, includeHeader:false, includeCount:false);
 			
 			// Work background
-			ConsoleX.WriteLine("Work background:");
-			DataTable table = new DataTable();
-			table.Columns.Add("Trade or profession");
-			table.Columns.Add("Type of experience");
-			table.Columns.Add("Years");
+			ConsoleX.WriteLine("Work background:", false);
+			detailsTable = new DataTable();
+			detailsTable.Columns.Add("Trade or profession");
+			detailsTable.Columns.Add("Type of experience");
+			detailsTable.Columns.Add("Years");
 			
 			Action<int> displayBackground = delegate(int index)
 			{
-				var row = table.NewRow();
+				var row = detailsTable.NewRow();
 				var bg = this.CurrentVolunteer.WorkBackgroundList[index];
 				row[0] = bg.TradeOrProfession;
 				row[1] = bg.TypeOfExprience;
 				row[2] = bg.Years;
-				table.Rows.Add(row);
+				detailsTable.Rows.Add(row);
 			};
 			
 			displayBackground(0);
@@ -655,13 +694,17 @@ namespace RbcConsole.Commands
 			displayBackground(2);
 			displayBackground(3);
 			
-			ConsoleX.WriteDataTable(table);
+			ConsoleX.WriteDataTable(detailsTable, includeCount:false);
+			detailsTable = newDetailsTable();
 			
 			// Emergency Contact Details
-			ConsoleX.WriteLine("Emergency Contact Name: " + this.CurrentVolunteer.EmergencyContactName);
-			ConsoleX.WriteLine("Emergency Contact Relationship: " + this.CurrentVolunteer.EmergencyContactRelationship);
-			ConsoleX.WriteLine("Emergency Contact Phone Number(s): " + this.CurrentVolunteer.EmergencyContactPhoneNumber);
-			ConsoleX.WriteLine("Emergency Contact Address: " + this.CurrentVolunteer.EmergencyContactAddress);
+			ConsoleX.WriteLine("Emeregency Contact Details:", false);
+			addDetailsRow("Name: ", this.CurrentVolunteer.EmergencyContactName);
+			addDetailsRow("Relationship: ", this.CurrentVolunteer.EmergencyContactRelationship);
+			addDetailsRow("Phone Number(s): ", this.CurrentVolunteer.EmergencyContactPhoneNumber);
+			addDetailsRow("Address: ", this.CurrentVolunteer.EmergencyContactAddress);
+			
+			ConsoleX.WriteDataTable(detailsTable, 32, includeHeader:false, includeCount:false);
 		}
 		
 		private void Step4_Save()

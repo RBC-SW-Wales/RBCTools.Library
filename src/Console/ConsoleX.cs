@@ -238,29 +238,30 @@ namespace RbcConsole
 			Console.ResetColor();
 		}
 		
-		public void WriteDataTable(DataTable table, int columnWidth = 20)
+		public void WriteDataTable(DataTable table, int columnWidth = 20, bool includeHeader = true, bool includeCount = true)
 		{
 			if(table != null)
 			{
 				var tableWidth = (table.Columns.Count * (columnWidth + 3)) + 1;
 				var cellFormat = "| {0,-" + columnWidth + "} ";
 				
-				this.WriteLine(new string('-', tableWidth), blankAfter:false);
-				
-				string line = "";
-				foreach(DataColumn column in table.Columns)
+				if(includeHeader)
 				{
-					line += string.Format(cellFormat, column.ColumnName.TruncateIfTooLong(columnWidth, "..."));
+					this.WriteLine(new string('-', tableWidth), blankAfter:false);
+					string line = "";
+					foreach(DataColumn column in table.Columns)
+					{
+						line += string.Format(cellFormat, column.ColumnName.TruncateIfTooLong(columnWidth, "..."));
+					}
+					line += "|";
+					this.WriteLine(line, blankAfter:false);
 				}
-				line += "|";
-				
-				this.WriteLine(line, blankAfter:false);
 				
 				this.WriteLine(new string('-', tableWidth), blankAfter:false);
 				
 				foreach(DataRow row in table.Rows)
 				{
-					line = "";
+					string line = "";
 					foreach(DataColumn col in table.Columns)
 					{
 						line += string.Format(cellFormat, row[col.ColumnName].ToString().TruncateIfTooLong(columnWidth, "..."));
@@ -269,9 +270,10 @@ namespace RbcConsole
 					this.WriteLine(line, blankAfter:false);
 				}
 				
-				this.WriteLine(new string('-', tableWidth), blankAfter: false);
+				this.WriteLine(new string('-', tableWidth), blankAfter:!includeCount); // Only insert blank if not displaying record count.
 				
-				this.WriteLine(string.Format("Record count: {0}", table.Rows.Count));
+				if(includeCount)
+					this.WriteLine(string.Format("Record count: {0}", table.Rows.Count));
 				
 			}
 		}

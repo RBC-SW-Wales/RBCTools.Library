@@ -18,6 +18,6 @@ namespace RbcTools.Library
 		void WriteTitle(string text);
 		void WriteIntro(string text);
 		void WriteException(Exception ex);
-		void WriteDataTable(DataTable table, int columnWidth = 20);
+		void WriteDataTable(DataTable table, int columnWidth = 20, bool includeHeader = false, bool includeCount = false);
 	}
 }
