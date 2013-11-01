@@ -184,7 +184,7 @@ namespace RbcConsole
 		
 		public string WriteClipboardQuery(string fieldName)
 		{
-			this.WriteLine(string.Format("Please HIGHLIGHT and COPY the '{0}' in the open PDF, then return here and press any key.", fieldName));
+			this.WriteLine(string.Format("Please HIGHLIGHT & COPY the '{0}'. Then return here and press any key to PASTE.", fieldName));
 			
 			string input;
 			
