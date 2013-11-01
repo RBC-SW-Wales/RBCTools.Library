@@ -8,7 +8,7 @@ using RbcTools.Library;
 
 namespace RbcConsole
 {
-	public class ConsoleX : IConsoleX
+	public class ConsoleX
 	{
 		public ConsoleX(){}
 		
@@ -20,16 +20,16 @@ namespace RbcConsole
 			if(blankAfter) Console.WriteLine(" ");
 		}
 		
-		public void WriteLine(string text, ConsoleColor color)
+		public void WriteLine(string text, ConsoleColor color, bool blankAfter = true)
 		{
 			Console.ForegroundColor = color;
-			this.WriteLine(text);
+			this.WriteLine(text, blankAfter);
 			Console.ResetColor();
 		}
 		
-		public void WriteWarning(string text)
+		public void WriteWarning(string text, bool blankAfter = true)
 		{
-			this.WriteLine(text, ConsoleColor.Yellow);
+			this.WriteLine(text, ConsoleColor.Yellow, blankAfter);
 		}
 		
 		public string ReadPromt(List<string> tabPossibilities = null)
@@ -110,11 +110,11 @@ namespace RbcConsole
 			
 			do
 			{
-				this.WriteLine("Please reply \"y\" for yes or \"n\" for no.", ConsoleColor.DarkGray);
-				var input = this.ReadPromt();
-				if(input == "y")
+				this.WriteLine("Please reply \"yes\" or \"no\" (\"y\" or \"n\")", ConsoleColor.DarkGray);
+				var input = this.ReadPromt().ToLower();
+				if(input == "y" || input == "yes")
 					boolean = true;
-				else if(input == "n")
+				else if(input == "n" || input == "no")
 					boolean = false;
 			}
 			while(!boolean.HasValue);
@@ -151,7 +151,7 @@ namespace RbcConsole
 			return returnDate;
 		}
 		
-		public int WriteIntegerQuery(string text)
+		public int WriteIntegerQuery(string text, bool allowSkip = false)
 		{
 			this.WriteLine(text, false);
 			
@@ -160,9 +160,19 @@ namespace RbcConsole
 			
 			do
 			{
-				this.WriteLine("Please enter a number:", ConsoleColor.DarkGray);
+				if(allowSkip)
+					this.WriteLine("Please enter a number (leave blank to skip):", ConsoleColor.DarkGray);
+				else
+					this.WriteLine("Please enter a number:", ConsoleColor.DarkGray);
+				
 				var input = this.ReadPromt();
-				if(int.TryParse(input, out number))
+				
+				if(allowSkip && input == "")
+				{
+					number = int.MinValue;
+					parsed = true;
+				}
+				else if(int.TryParse(input, out number))
 				{
 					parsed = true;
 				}
@@ -174,7 +184,7 @@ namespace RbcConsole
 		
 		public string WriteClipboardQuery(string fieldName)
 		{
-			this.WriteLine(string.Format("Please HIGHLIGHT and COPY the '{0}' in the open PDF, then return here and press any key.", fieldName));
+			this.WriteLine(string.Format("Please HIGHLIGHT & COPY the '{0}'. Then return here and press any key to PASTE.", fieldName));
 			
 			string input;
 			
@@ -182,7 +192,7 @@ namespace RbcConsole
 			{
 				Console.ReadKey();
 				input = Clipboard.GetText();
-			
+				
 				if(string.IsNullOrEmpty(input))
 					this.WriteWarning("Sorry, nothing found in the clipboard. Please try again.");
 			}
@@ -228,29 +238,30 @@ namespace RbcConsole
 			Console.ResetColor();
 		}
 		
-		public void WriteDataTable(DataTable table, int columnWidth = 20)
+		public void WriteDataTable(DataTable table, int columnWidth = 20, bool includeHeader = true, bool includeCount = true)
 		{
 			if(table != null)
 			{
 				var tableWidth = (table.Columns.Count * (columnWidth + 3)) + 1;
 				var cellFormat = "| {0,-" + columnWidth + "} ";
 				
-				this.WriteLine(new string('-', tableWidth), blankAfter:false);
-				
-				string line = "";
-				foreach(DataColumn column in table.Columns)
+				if(includeHeader)
 				{
-					line += string.Format(cellFormat, column.ColumnName.TruncateIfTooLong(columnWidth, "..."));
+					this.WriteLine(new string('-', tableWidth), blankAfter:false);
+					string line = "";
+					foreach(DataColumn column in table.Columns)
+					{
+						line += string.Format(cellFormat, column.ColumnName.TruncateIfTooLong(columnWidth, "..."));
+					}
+					line += "|";
+					this.WriteLine(line, blankAfter:false);
 				}
-				line += "|";
-				
-				this.WriteLine(line, blankAfter:false);
 				
 				this.WriteLine(new string('-', tableWidth), blankAfter:false);
 				
 				foreach(DataRow row in table.Rows)
 				{
-					line = "";
+					string line = "";
 					foreach(DataColumn col in table.Columns)
 					{
 						line += string.Format(cellFormat, row[col.ColumnName].ToString().TruncateIfTooLong(columnWidth, "..."));
@@ -259,9 +270,10 @@ namespace RbcConsole
 					this.WriteLine(line, blankAfter:false);
 				}
 				
-				this.WriteLine(new string('-', tableWidth), blankAfter: false);
+				this.WriteLine(new string('-', tableWidth), blankAfter:!includeCount); // Only insert blank if not displaying record count.
 				
-				this.WriteLine(string.Format("Record count: {0}", table.Rows.Count));
+				if(includeCount)
+					this.WriteLine(string.Format("Record count: {0}", table.Rows.Count));
 				
 			}
 		}

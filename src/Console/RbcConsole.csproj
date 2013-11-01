@@ -63,12 +63,14 @@
     <Compile Include="Commands\HelpCommand.cs" />
     <Compile Include="Commands\ImportFiles.cs" />
     <Compile Include="Commands\CommandBase.cs" />
+    <Compile Include="Commands\ListCongregations.cs" />
     <Compile Include="Commands\QueryDepartments.cs" />
     <Compile Include="Commands\QueryVolunteers.cs" />
     <Compile Include="Commands\ShowFileFields.cs" />
     <Compile Include="Commands\VolunteerLookup.cs" />
     <Compile Include="ConsoleX.cs" />
     <Compile Include="Helpers\AccessFileHelper.cs" />
+    <Compile Include="Helpers\StartUpHelper.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

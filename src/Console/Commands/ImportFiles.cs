@@ -24,25 +24,84 @@ namespace RbcConsole.Commands
 		private Volunteer CurrentVolunteer;
 		private S82Reader CurrentReader;
 		private Process OpenFileProcess;
-		private bool SkipFile = false;
+		private bool skipFile = false;
+		private bool skipCommand = false;
+		private int currentCongregationID = 0;
+		private List<string> skippedFilesList;
 		
 		#endregion
 		
 		public override void Run()
 		{
-			this.RunImportFiles();
+			this.SelectCongregation();
+			
+			if(this.skipCommand == false)
+			{
+				this.RunImportFiles();
+			}
+			else
+				ConsoleX.WriteLine("Import Files Skipped", ConsoleColor.Red);
+			
+			// Reset for next Run()
+			this.skipCommand = false;
+			this.currentCongregationID = 0;
+		}
+
+		private void SelectCongregation()
+		{
+			ConsoleX.WriteLine("First, please enter the ID of the Congregation you are about to import.");
+			do
+			{
+				var id = ConsoleX.WriteIntegerQuery("Enter Congregation ID:", allowSkip: true);
+				if(id == int.MinValue)
+				{
+					this.skipCommand = true;
+					this.currentCongregationID = id;
+				}
+				else
+				{
+					var table = Congregations.GetById(id);
+					if(table.Rows.Count == 1)
+					{
+						ConsoleX.WriteLine("Selected congregation:", false);
+						ConsoleX.WriteDataTable(table);
+						if (ConsoleX.WriteBooleanQuery("Is this correct?"))
+							this.currentCongregationID = id;
+						else
+							ConsoleX.WriteLine("No, okay. Please try again.");
+					}
+					else
+					{
+						ConsoleX.WriteLine("No Congregation Found. Please try again.", ConsoleColor.Red);
+					}
+				}
+			}
+			while(this.currentCongregationID == 0);
 		}
 		
-		public void RunImportFiles()
+		private void RunImportFiles()
 		{
 			var fileNames = ImportFiles.GetFiles(base.ConsoleX);
 			
 			if(fileNames != null)
 			{
+				this.skippedFilesList = new List<string>();
+				
 				foreach (string fileName in fileNames)
 				{
 					this.OpenS82Reader(fileName);
 				}
+				
+				if(skippedFilesList.Count > 0)
+				{
+					ConsoleX.WriteWarning("The following files where skipped:");
+					foreach(var filePath in skippedFilesList)
+					{
+						ConsoleX.WriteWarning(filePath, false);
+					}
+					ConsoleX.WriteLine("", false);
+				}
+				
 				ConsoleX.WriteLine("All files completed!");
 			}
 			else
@@ -53,7 +112,7 @@ namespace RbcConsole.Commands
 		{
 			ConsoleX.WriteLine(string.Format("Reading '{0}' file...", fileName), ConsoleColor.Green);
 			
-			this.SkipFile = false;
+			this.skipFile = false;
 			
 			this.CurrentReader = new S82Reader(fileName);
 			
@@ -66,13 +125,16 @@ namespace RbcConsole.Commands
 				ConsoleX.WriteWarning("File is not readable. Perhaps it is not in the correct format.");
 				ConsoleX.WriteLine("Press any key to continue.");
 				Console.ReadKey();
-				this.SkipFile = true;
+				this.skipFile = true;
 			}
 			
 			this.CurrentReader = null;
 			
-			if(this.SkipFile)
+			if(this.skipFile)
+			{
 				ConsoleX.WriteLine(string.Format("Skipping '{0}'", fileName), ConsoleColor.Red);
+				this.skippedFilesList.Add(fileName);
+			}
 			else
 				ConsoleX.WriteLine(string.Format("Finished '{0}'", fileName), ConsoleColor.Green);
 			
@@ -83,6 +145,7 @@ namespace RbcConsole.Commands
 		private void ProcessVolunteer()
 		{
 			this.CurrentVolunteer = new Volunteer();
+			this.CurrentVolunteer.CongregationID = this.currentCongregationID;
 			
 			ConsoleX.WriteLine("I'll open the file for you to check the data as we go.");
 			
@@ -98,13 +161,18 @@ namespace RbcConsole.Commands
 			
 			#region Step #2 Search for existing records (use existing or create new)
 			
-			ConsoleX.WriteLine("Step #2 Search for existing records", ConsoleColor.Green);
-			
-			this.Step2_SelectRecord();
+			if(!this.skipFile)
+			{
+				
+				ConsoleX.WriteLine("Step #2 Search for existing records", ConsoleColor.Green);
+				
+				this.Step2_SelectRecord();
+				
+			}
 			
 			#endregion
 			
-			if(!this.SkipFile)
+			if(!this.skipFile)
 			{
 				
 				#region Step #3 Read the rest of the form
@@ -164,42 +232,63 @@ namespace RbcConsole.Commands
 			
 			// Get Surname, FirstName and MiddleName
 			
-			string pdfValue = this.CurrentReader["Text2"];
+			string text2 = this.CurrentReader["Text2"];
 			
-			// Remove any periods or commas (.,)
-			pdfValue = pdfValue.Replace(".", "").Replace(",", "");
-			
-			string lastName, firstName, middleNames = "";
-			
-			var names = pdfValue.Split(' ');
-			if(names.Length == 3)
+			if(string.IsNullOrEmpty(text2))
 			{
-				lastName = names[0];
-				firstName = names[1];
-				middleNames = names[2];
-			}
-			else if(names.Length == 2)
-			{
-				lastName = names[0];
-				firstName = names[1];
+				skipFile = true;
+				ConsoleX.WriteWarning("No Names could be found in file. Please complete this file and try again.");
 			}
 			else
 			{
-				this.INeedYourHelp("Name");
 				
-				lastName = ConsoleX.WriteQuery("Please can you tell me their 'Last Name'?");
-				middleNames = ConsoleX.WriteQuery("Please can you tell me their 'Middles Names'? (Leave blank if they don't have any)");
-				firstName = ConsoleX.WriteQuery("Please can you tell me their 'First Name'?");
+				// Remove any periods or commas (.,)
+				text2 = text2.Replace(".", "").Replace(",", "");
+				
+				// Init variables for use
+				string lastName = "", firstName = "", middleNames = "";
+				
+				Action getClipboardInput = delegate()
+				{
+					lastName = ConsoleX.WriteClipboardQuery("Last Name");
+					firstName = ConsoleX.WriteClipboardQuery("First Name");
+					middleNames = text2.Replace(lastName, "").Replace(firstName, "").Trim();
+				};
+				
+				// Split string into individial words
+				var names = text2.Split(' ');
+				
+				if(names.Length >= 2)
+				{
+					// If there are 2 or more words, should be...
+					// 1) last name
+					lastName = names[0];
+					// 2) first name
+					firstName = names[1];
+					// 3) all other words should be middle names
+					for (int i = 2; i < names.Length; i++)
+						middleNames += names[i] + " ";
+					// Remove trailing white space.
+					middleNames = middleNames.Trim();
+				}
+				else
+				{
+					// Not what expected, ask for help.
+					this.INeedYourHelp("Name");
+					getClipboardInput();
+				}
+				
+				while(!ConsoleX.WriteFieldCheck("Last Name", lastName, "First Name", firstName, "Middle name(s)", middleNames))
+				{
+					getClipboardInput();
+				}
+				
+				this.CurrentVolunteer.LastName = lastName;
+				this.CurrentVolunteer.MiddleNames = middleNames;
+				this.CurrentVolunteer.FirstName = firstName;
 			}
 			
-			this.CurrentVolunteer.LastName = lastName;
-			this.CurrentVolunteer.MiddleNames = middleNames;
-			this.CurrentVolunteer.FirstName = firstName;
-			
-			ConsoleX.WriteLine(string.Format("Volunteer's Name: {0} {1}", this.CurrentVolunteer.FirstName, this.CurrentVolunteer.LastName));
-			
 			#endregion
-			
 		}
 		
 		private void Step2_SelectRecord()
@@ -207,7 +296,7 @@ namespace RbcConsole.Commands
 			
 			ConsoleX.WriteLine(string.Format("Looking up '{0} {1}'...", this.CurrentVolunteer.FirstName, this.CurrentVolunteer.LastName));
 			
-			bool matchesFound = VolunteerLookup.TrySearchForNames(this.CurrentVolunteer.FirstName, this.CurrentVolunteer.LastName, ConsoleX);
+			bool matchesFound = VolunteerLookup.TrySearchForNames(this.CurrentVolunteer, ConsoleX);
 			
 			if(matchesFound)
 			{
@@ -231,9 +320,7 @@ namespace RbcConsole.Commands
 							                                 existingVolunteer.FirstName,
 							                                 existingVolunteer.LastName));
 							
-							var confirm = ConsoleX.WriteQuery("Is this correct? Enter 'yes' to confirm, ENTER to try again.").ToLower();
-							
-							if(confirm == "yes")
+							if(ConsoleX.WriteBooleanQuery("Is this correct? (Say no to try again)"))
 							{
 								input = string.Empty; // So that we can leave loop.
 								this.CurrentVolunteer.ID = existingVolunteer.ID;
@@ -252,9 +339,9 @@ namespace RbcConsole.Commands
 			{
 				ConsoleX.WriteLine("Step #2.2 Confirm this is a new record", ConsoleColor.Green);
 				ConsoleX.WriteLine("Continuing will create a NEW record.");
-				var confirm = ConsoleX.WriteQuery("Is this correct? Enter 'yes' to confirm, or anything else to skip this file.").ToLower();
-				if(confirm != "yes")
-					this.SkipFile = true;
+				
+				if(!ConsoleX.WriteBooleanQuery("Is this correct? (Say no to skip this file)"))
+					this.skipFile = true;
 			}
 		}
 		
@@ -420,6 +507,8 @@ namespace RbcConsole.Commands
 				var name = "";
 				var relationship = "";
 				
+				var trimChars = new char[] { ',', '.' }; // Trim any periods/commas in certain places.
+				
 				// Take a guess (assume last word is relationship);
 				var parts = text13.Split(' ');
 				if(parts.Length == 0)
@@ -430,14 +519,16 @@ namespace RbcConsole.Commands
 				else
 				{
 					relationship = parts[parts.Length-1];
-					name = text13.Replace(relationship, "").Trim();
+					name = text13.Replace(relationship, "");
+					name = name.Trim().TrimEnd(trimChars).Trim();
 				}
 				
 				// Ask if correct, and if not get help until it is correct.
 				while(!Step3_EmergencyContactNameAndRelationship_Check(name, relationship))
 				{
 					name = ConsoleX.WriteClipboardQuery("Emergency Contact Name");
-					relationship = text13.Replace(name, "").Trim();
+					relationship = text13.Replace(name, "");
+					relationship = relationship.Trim().TrimStart(trimChars).Trim();
 				}
 				
 				this.CurrentVolunteer.EmergencyContactName = name;
@@ -467,15 +558,19 @@ namespace RbcConsole.Commands
 					lastMatch = match.Value;
 				}
 				
+				var trimChars = new char[] { ',', '.' }; // Trim any periods/commas in certain places.
+				
 				// Find address by using everything after last found telephone number
 				var startIndex = text14.LastIndexOf(lastMatch) + lastMatch.Length;
-				address = text14.Substring(startIndex).Trim();
+				address = text14.Substring(startIndex);
+				address = address.Trim().TrimStart(trimChars).Trim();
 				
 				// Ask if correct, and if not get help until it is correct.
 				while(!Step3_EmergencyContactTelAndAddress_Check(phone, address))
 				{
 					address = ConsoleX.WriteClipboardQuery("Emergency Contact Address");
-					phone = text14.Replace(address, "").Trim();
+					phone = text14.Replace(address, "");
+					phone = phone.Trim().TrimEnd(trimChars).Trim();
 				}
 				
 				this.CurrentVolunteer.EmergencyContactPhoneNumber = phone;
@@ -492,91 +587,131 @@ namespace RbcConsole.Commands
 		{
 			ConsoleX.WriteLine("The following details were collected:", ConsoleColor.Green);
 			
+			Func<DataTable> newDetailsTable = delegate()
+			{
+				var table = new DataTable();
+				table.Columns.Add("Field Name");
+				table.Columns.Add("Field Value");
+				return table;
+			};
+			
+			var detailsTable = newDetailsTable();
+			
+			Action<string, string> addDetailsRow = delegate(string fieldName, string fieldValue)
+			{
+				var newRow = detailsTable.NewRow();
+				newRow[0] = fieldName;
+				newRow[1] = fieldValue;
+				detailsTable.Rows.Add(newRow);
+			};
+			
+			Action<string, List<string>> addDetailsList = delegate(string fieldName, List<string> fieldValues)
+			{
+				foreach(var fieldValue in fieldValues)
+				{
+					if(fieldValues.IndexOf(fieldValue) == 0)
+						addDetailsRow(fieldName, fieldValue);
+					else
+						addDetailsRow("", fieldValue);
+				}
+			};
+			
+			// Update or Insert database record
+			string insertOrUpdate = "NEW RECORD";
+			if(this.CurrentVolunteer.ID != 0)
+				insertOrUpdate = string.Format("UPDATE RECORD ({0})", this.CurrentVolunteer.ID);
+			
+			addDetailsRow("Datebase record: ", insertOrUpdate);
+			
 			// Application Kind
-			ConsoleX.WriteLine(string.Format("Application Kind = {0}", this.CurrentVolunteer.ApplicationKind.GetName()));
+			addDetailsRow("Application Kind: ", this.CurrentVolunteer.ApplicationKind.GetName());
 			
 			// Forms of service
-			var message = "Forms of service: ";
+			var formsOfService = new List<string>();
 			
 			if(this.CurrentVolunteer.FormsOfService.HasFlag(FormOfServiceKinds.HallConstruction))
-				message += " * Hall Construction ";
+				formsOfService.Add("* Hall Construction");
 			
 			if(this.CurrentVolunteer.FormsOfService.HasFlag(FormOfServiceKinds.DisasterRelief))
-				message += " * Disaster Relief ";
+				formsOfService.Add("* Disaster Relief");
 			
 			if(this.CurrentVolunteer.FormsOfService == FormOfServiceKinds.NoneSpecified)
-				message += " None Specified ";
+				formsOfService.Add("None Specified");
 			
-			ConsoleX.WriteLine(message);
+			addDetailsList("Forms of service: ", formsOfService);
+			
+			ConsoleX.WriteDataTable(detailsTable, 32, includeHeader:false, includeCount:false);
+			detailsTable = newDetailsTable();
+			
+			ConsoleX.WriteLine("Legal name, gender and dates:", false);
 			
 			// Names and Gender
-			
-			ConsoleX.WriteLine("First name: " + this.CurrentVolunteer.FirstName);
-			ConsoleX.WriteLine("Middle name(s): " + this.CurrentVolunteer.MiddleNames);
-			ConsoleX.WriteLine("Last name: " + this.CurrentVolunteer.LastName);
-			ConsoleX.WriteLine("Gender: " + this.CurrentVolunteer.Gender.ToString());
+			addDetailsRow("First name: ", this.CurrentVolunteer.FirstName);
+			addDetailsRow("Middle name(s): ", this.CurrentVolunteer.MiddleNames);
+			addDetailsRow("Last name: ", this.CurrentVolunteer.LastName);
+			addDetailsRow("Gender: ", this.CurrentVolunteer.Gender.ToString());
 			
 			// Dates
-			ConsoleX.WriteLine("Date of birth: " + this.CurrentVolunteer.DateOfBirth.ToLongDateString());
-			ConsoleX.WriteLine("Date of baptism: " + this.CurrentVolunteer.DateOfBaptism.ToLongDateString());
+			addDetailsRow("Date of birth: ", this.CurrentVolunteer.DateOfBirth.ToLongDateString());
+			addDetailsRow("Date of baptism: ", this.CurrentVolunteer.DateOfBaptism.ToLongDateString());
+			
+			ConsoleX.WriteDataTable(detailsTable, 32, includeHeader:false, includeCount:false);
+			detailsTable = newDetailsTable();
+			
+			ConsoleX.WriteLine("Contact details:", false);
 			
 			// Postal Address
-			ConsoleX.WriteLine("Postal Address: " + this.CurrentVolunteer.Address);
+			addDetailsRow("Postal Address: ", this.CurrentVolunteer.Address);
 			
 			// Email Address
-			ConsoleX.WriteLine("Email Address: " + this.CurrentVolunteer.EmailAddress);
+			addDetailsRow("Email Address: ", this.CurrentVolunteer.EmailAddress);
 			
 			// Phone numbers
-			ConsoleX.WriteLine("Home Phone: " + this.CurrentVolunteer.PhoneNumberHome);
-			ConsoleX.WriteLine("Work Phone: " + this.CurrentVolunteer.PhoneNumberWork);
-			ConsoleX.WriteLine("Mobile Phone: " + this.CurrentVolunteer.PhoneNumberMobile);
+			addDetailsRow("Home Phone: ", this.CurrentVolunteer.PhoneNumberHome);
+			addDetailsRow("Work Phone: ", this.CurrentVolunteer.PhoneNumberWork);
+			addDetailsRow("Mobile Phone: ", this.CurrentVolunteer.PhoneNumberMobile);
+			
+			ConsoleX.WriteDataTable(detailsTable, 32, includeHeader:false, includeCount:false);
+			detailsTable = newDetailsTable();
+			
+			ConsoleX.WriteLine("Current privileges, and name of mate:", false);
 			
 			// Current privileges
-			message = "Current Privileges: ";
+			var privileges = new List<string>();
 			
 			if(this.CurrentVolunteer.CongregationPrivileges.HasFlag(CongregationPrivilegeKinds.Elder))
-			{
-				message += " * Elder ";
-			}
+				privileges.Add("* Elder");
 			else if(this.CurrentVolunteer.CongregationPrivileges.HasFlag(CongregationPrivilegeKinds.MinisterialServant))
-			{
-				message += " * Ministerial Servant ";
-			}
+				privileges.Add("* Ministerial Servant");
 			
 			if(this.CurrentVolunteer.RegularPioneer)
-			{
-				message += " * Regular Pioneer ";
-			}
+				privileges.Add("* Regular Pioneer");
 			
 			if(!this.CurrentVolunteer.RegularPioneer && this.CurrentVolunteer.CongregationPrivileges == CongregationPrivilegeKinds.NoneSpecified)
-				message += " None Specified ";
+				privileges.Add("None Specified");
 			
-			ConsoleX.WriteLine(message);
+			addDetailsList("Current Privileges: ", privileges);
 			
 			// Name of Mate
-			ConsoleX.WriteLine("Name of mate: " + this.CurrentVolunteer.NameOfMate);
+			addDetailsRow("Name of mate: ", this.CurrentVolunteer.NameOfMate);
+			
+			ConsoleX.WriteDataTable(detailsTable, 32, includeHeader:false, includeCount:false);
 			
 			// Work background
-			ConsoleX.WriteLine("Work background:");
-			DataTable table = new DataTable();
-			table.Columns.Add("Trade or profession");
-			table.Columns.Add("Type of experience");
-			table.Columns.Add("Years");
-			
-			// Emergency Contact Details
-			ConsoleX.WriteLine("Emergency Contact Name: " + this.CurrentVolunteer.EmergencyContactName);
-			ConsoleX.WriteLine("Emergency Contact Relationship: " + this.CurrentVolunteer.EmergencyContactRelationship);
-			ConsoleX.WriteLine("Emergency Contact Phone Number(s): " + this.CurrentVolunteer.EmergencyContactPhoneNumber);
-			ConsoleX.WriteLine("Emergency Contact Address: " + this.CurrentVolunteer.EmergencyContactAddress);
+			ConsoleX.WriteLine("Work background:", false);
+			detailsTable = new DataTable();
+			detailsTable.Columns.Add("Trade or profession");
+			detailsTable.Columns.Add("Type of experience");
+			detailsTable.Columns.Add("Years");
 			
 			Action<int> displayBackground = delegate(int index)
 			{
-				var row = table.NewRow();
+				var row = detailsTable.NewRow();
 				var bg = this.CurrentVolunteer.WorkBackgroundList[index];
 				row[0] = bg.TradeOrProfession;
 				row[1] = bg.TypeOfExprience;
 				row[2] = bg.Years;
-				table.Rows.Add(row);
+				detailsTable.Rows.Add(row);
 			};
 			
 			displayBackground(0);
@@ -584,12 +719,22 @@ namespace RbcConsole.Commands
 			displayBackground(2);
 			displayBackground(3);
 			
-			ConsoleX.WriteDataTable(table);
+			ConsoleX.WriteDataTable(detailsTable, includeCount:false);
+			detailsTable = newDetailsTable();
+			
+			// Emergency Contact Details
+			ConsoleX.WriteLine("Emeregency Contact Details:", false);
+			addDetailsRow("Name: ", this.CurrentVolunteer.EmergencyContactName);
+			addDetailsRow("Relationship: ", this.CurrentVolunteer.EmergencyContactRelationship);
+			addDetailsRow("Phone Number(s): ", this.CurrentVolunteer.EmergencyContactPhoneNumber);
+			addDetailsRow("Address: ", this.CurrentVolunteer.EmergencyContactAddress);
+			
+			ConsoleX.WriteDataTable(detailsTable, 32, includeHeader:false, includeCount:false);
 		}
 		
 		private void Step4_Save()
 		{
-			if(ConsoleX.WriteBooleanQuery("Shall I save to the database?"))
+			if(ConsoleX.WriteBooleanQuery("Shall I save to the database? (Say no to skip this file)"))
 			{
 //				this.CurrentVolunteer.SaveToDatabase();
 				ConsoleX.WriteWarning("DISABLED: Please note that the saving functionality is currently disabled in this test");
@@ -601,7 +746,7 @@ namespace RbcConsole.Commands
 			}
 			else
 			{
-				ConsoleX.WriteWarning("UNSAVED: This record was not saved.");
+				this.skipFile = true;
 			}
 		}
 		
@@ -609,7 +754,7 @@ namespace RbcConsole.Commands
 		
 		#region Reusable Methods
 		
-		public static string[] GetFiles(IConsoleX consoleX)
+		public static string[] GetFiles(ConsoleX consoleX)
 		{
 			consoleX.WriteLine("Press any key to select the S82 PDF files...");
 			Console.ReadKey();
