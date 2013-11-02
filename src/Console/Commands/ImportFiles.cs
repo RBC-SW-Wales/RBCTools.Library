@@ -437,25 +437,40 @@ namespace RbcConsole.Commands
 		
 		private void Step3_BirthAndBaptismDates()
 		{
-			var birthDate = this.CurrentReader.GetDateTimeValue("Text3");
-			var baptismDate = this.CurrentReader.GetDateTimeValue("Text4");
-			
-			if(birthDate == DateTime.MinValue)
+			var birthDateString = this.CurrentReader["Text3"];
+			if(!string.IsNullOrEmpty(birthDateString))
 			{
-				this.INeedYourHelp("Date of Birth");
-				
-				birthDate = ConsoleX.WriteDateTimeQuery("Please can you tell me their Date of Birth?");
+				var birthDate = this.CurrentReader.GetDateTimeValue("Text3");
+				if(birthDate == DateTime.MinValue)
+				{
+					this.INeedYourHelp("Date of Birth");
+					
+					birthDate = ConsoleX.WriteDateTimeQuery("Please can you tell me their Date of Birth?");
+				}
+				this.CurrentVolunteer.DateOfBirth = birthDate;
+			}
+			else
+			{
+				this.CurrentVolunteer.DateOfBirth = new DateTime(1900, 1, 1);
 			}
 			
-			if(baptismDate == DateTime.MinValue)
+			var baptismDateString = this.CurrentReader["Text4"];
+			if(!string.IsNullOrEmpty(baptismDateString))
 			{
-				this.INeedYourHelp("Date of Baptism");
-				
-				baptismDate = ConsoleX.WriteDateTimeQuery("Please can you tell me their Date of Baptism?");
+				var baptismDate = this.CurrentReader.GetDateTimeValue("Text4");
+				if(baptismDate == DateTime.MinValue)
+				{
+					this.INeedYourHelp("Date of Baptism");
+					
+					baptismDate = ConsoleX.WriteDateTimeQuery("Please can you tell me their Date of Baptism?");
+				}
+				this.CurrentVolunteer.DateOfBaptism = baptismDate;
+			}
+			else
+			{
+				this.CurrentVolunteer.DateOfBaptism = new DateTime(1900, 1, 1);
 			}
 			
-			this.CurrentVolunteer.DateOfBirth = birthDate;
-			this.CurrentVolunteer.DateOfBaptism = baptismDate;
 		}
 		
 		private void Step3_TelephoneNumbers()
@@ -519,7 +534,7 @@ namespace RbcConsole.Commands
 				}
 			};
 			
-			createBackground(1, "Text11.0.0", "Text11.0.1", "Text12.0.0");
+			createBackground(1, "Text11.0.1", "Text11.0.1", "Text12.0.0");
 			createBackground(2, "Text11.1.0", "Text11.1.1", "Text12.0.1");
 			createBackground(3, "Text11.2.0", "Text11.2.1", "Text12.0.2");
 			createBackground(4, "Text11.3.0", "Text11.3.1", "Text12.0.3");
@@ -611,15 +626,23 @@ namespace RbcConsole.Commands
 		
 		private void Step3_ApplicationDate()
 		{
-			var applicationDate = this.CurrentReader.GetDateTimeValue("Text15");
-			
-			if(applicationDate == DateTime.MinValue)
+			var dateAsString = this.CurrentReader["Text15"];
+			if(!string.IsNullOrEmpty(dateAsString))
 			{
-				this.INeedYourHelp("Application Date (after Signature)");
-				applicationDate = ConsoleX.WriteDateTimeQuery("Please can you tell me the Application Date?");
+				var applicationDate = this.CurrentReader.GetDateTimeValue("Text15");
+				
+				if(applicationDate == DateTime.MinValue)
+				{
+					this.INeedYourHelp("Application Date (after Signature)");
+					applicationDate = ConsoleX.WriteDateTimeQuery("Please can you tell me the Application Date?");
+				}
+				
+				this.CurrentVolunteer.ApplicationDate = applicationDate;
 			}
-			
-			this.CurrentVolunteer.ApplicationDate = applicationDate;
+			else
+			{
+				this.CurrentVolunteer.ApplicationDate = DateTime.Now.Date;
+			}
 		}
 		
 		private void Step4_DisplayDetails()

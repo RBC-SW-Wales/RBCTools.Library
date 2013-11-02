@@ -183,6 +183,11 @@ namespace RbcTools.Library
 			connector.AddParameter("@Experience4", this.WorkBackgroundList[3].TypeOfExprience);
 			connector.AddParameter("@Years4", this.WorkBackgroundList[3].Years);
 			
+			if(string.IsNullOrEmpty(this.EmergencyContactName)) this.EmergencyContactName = " ";
+			if(string.IsNullOrEmpty(this.EmergencyContactRelationship)) this.EmergencyContactRelationship = " ";
+			if(string.IsNullOrEmpty(this.EmergencyContactPhoneNumber)) this.EmergencyContactPhoneNumber = " ";
+			if(string.IsNullOrEmpty(this.EmergencyContactAddress)) this.EmergencyContactAddress = " ";
+			
 			connector.AddParameter("@EmergencyContactName", this.EmergencyContactName);
 			connector.AddParameter("@EmergencyContactRelationship", this.EmergencyContactRelationship);
 			connector.AddParameter("@EmergencyContactPhoneNumber", this.EmergencyContactPhoneNumber);

@@ -55,7 +55,7 @@
 		<DirectoryRef Id="MENUDIR">
 			<Component Id="ApplicationShortcut" Guid="D02F8404-3A45-4EA2-A4E3-D200642D823C">
 				<Shortcut Id="ApplicationStartMenuShortcut"
-				          Name="RBC Console v1.0.0"
+				          Name="RBC Console v1.0.1"
 				          Description="RBC Console application for interfacing with RBC database"
 				          Target="[#RbcConsole.exe]"
 				          WorkingDirectory="CONSOLEDIR"/>
