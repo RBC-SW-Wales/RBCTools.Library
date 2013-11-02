@@ -534,7 +534,7 @@ namespace RbcConsole.Commands
 				}
 			};
 			
-			createBackground(1, "Text11.0.0", "Text11.0.1", "Text12.0.0");
+			createBackground(1, "Text11.0.1", "Text11.0.1", "Text12.0.0");
 			createBackground(2, "Text11.1.0", "Text11.1.1", "Text12.0.1");
 			createBackground(3, "Text11.2.0", "Text11.2.1", "Text12.0.2");
 			createBackground(4, "Text11.3.0", "Text11.3.1", "Text12.0.3");
