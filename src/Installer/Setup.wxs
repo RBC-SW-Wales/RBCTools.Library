@@ -1,12 +1,12 @@
 ﻿<?xml version="1.0"?>
 <Wix xmlns="http://schemas.microsoft.com/wix/2006/wi">
 	<Product Id="02B5F842-21E3-4AB0-9350-ECA2A15151C8"
-	         Name="RBC Console v1.0.1"
+	         Name="RBC Console v1.0.2"
 	         Language="1033"
-	         Version="1.0.1"
+	         Version="1.0.2"
 	         UpgradeCode="75B576DB-23FB-4D73-96E8-DE43A1FAE3B5"
 	         Manufacturer="rbcwales.org">
-		<Package Description="Install RBC Console v1.0.1 (rbcwales.org)"
+		<Package Description="Install RBC Console v1.0.2 (rbcwales.org)"
 		         Comments="Comments"
 		         InstallerVersion="200"
 		         Compressed="yes"/>
@@ -19,7 +19,7 @@
 		<!-- Installation directory and files are defined in Files.wxs -->
 		<Directory Id="TARGETDIR" Name="SourceDir"/>
 		
-		<Feature Id="Complete" Title="RBC Console v1.0.1" Description="RBC Console application for interfacing with RBC database" Level="1">
+		<Feature Id="Complete" Title="RBC Console v1.0.2" Description="RBC Console application for interfacing with RBC database" Level="1">
 			
 			<ComponentRef Id="RbcConsoleExe" />
 			<ComponentRef Id="RbcConsoleConfig" />
