@@ -1,17 +1,12 @@
-RBC Tools
+RBC Tools Libary
 =========
 
-Tools for use by the RBC South and West Wales.
+Forked form the RBC Console repository to extract a reusable Library (in progress). 
 
-A work in progress...
+This library will provide reusable classed for querying the RBC volunteer database.
 
-RBC Console
-===========
-
-A simple command line tool used to interface with the RBCwales.org database
-
-Requirements
-------------
+Requirements to use this library
+--------------------------------
 
 * Install: [.NET Framework 4.5](http://www.microsoft.com/en-gb/download/details.aspx?id=30653).
 * Install: [Microsoft Access Database Engine 2010 Redistributable](http://www.microsoft.com/en-us/download/details.aspx?id=13255).
