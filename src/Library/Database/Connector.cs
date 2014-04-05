@@ -21,7 +21,6 @@ namespace RbcTools.Library.Database
 		
 		#region Fields
 		
-		private static string _AccessFilePath = null;
 		private static string _ConnectionString = null;
 		private string _Query;
 		private OleDbConnection Connection;
@@ -31,33 +30,16 @@ namespace RbcTools.Library.Database
 		
 		#region Properties
 		
-		public static string AccessFilePath
-		{
-			get
-			{
-				if(_AccessFilePath == null)
-				{
-					var directory = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + @"\RBCTool";
-					
-					if(!Directory.Exists(directory))
-						Directory.CreateDirectory(directory);
-					
-					_AccessFilePath = directory + @"\Console_0001_RBCWalesVolsDatabase.accdb";
-				}
-				return _AccessFilePath;
-			}
-		}
-		
 		private static string ConnectionString
 		{
 			get
 			{
 				if(_ConnectionString == null)
 				{
-					if(Connector.AccessFileExists)
-						_ConnectionString = string.Format(@"Provider=Microsoft.ACE.OLEDB.12.0; Data Source={0}", Connector.AccessFilePath);
+					if(AccessFileDownloader.AccessFileExists)
+						_ConnectionString = string.Format(@"Provider=Microsoft.ACE.OLEDB.12.0; Data Source={0}", AccessFileDownloader.AccessFilePath);
 					else
-						throw new AccessFileMissingException("The required Access database file was missing: " + Connector.AccessFilePath);
+						throw new AccessFileMissingException("The required Access database file was missing. File must be downloaded first to use this feature.");
 				}
 				return _ConnectionString;
 			}
@@ -76,13 +58,7 @@ namespace RbcTools.Library.Database
 			}
 		}
 		
-		public static bool AccessFileExists
-		{
-			get
-			{
-				return File.Exists(Connector.AccessFilePath);
-			}
-		}
+
 		
 		#endregion
 		
