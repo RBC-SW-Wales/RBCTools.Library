@@ -65,6 +65,7 @@
     <Compile Include="Database\Connector.cs" />
     <Compile Include="Database\Departments.cs" />
     <Compile Include="Database\Volunteers.cs" />
+    <Compile Include="Department.cs" />
     <Compile Include="FormOfServiceKinds.cs" />
     <Compile Include="GenderKind.cs" />
     <Compile Include="CongregationPriviledgeKinds.cs" />
