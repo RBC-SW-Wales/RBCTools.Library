@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Data;
+using RbcTools.Library.Badges;
 
 namespace RbcTools.Library.Database
 {
@@ -60,7 +61,7 @@ namespace RbcTools.Library.Database
 			return table;
 		}
 		
-		public static List<Volunteer> GetByDepartment(Department department)
+		public static List<Badge> GetByDepartment(Department department)
 		{
 			var connector = new Connector(" SELECT Volunteers.* FROM Volunteers " +
 			                              " INNER JOIN Trades ON (Trades.ID = Volunteers.Trade) " +
@@ -69,14 +70,14 @@ namespace RbcTools.Library.Database
 			connector.AddParameter("@DepartmentID", department.ID);
 			var table = connector.ExecuteDataTable();
 			
-			var volunteers = new List<Volunteer>();
+			var badges = new List<Badge>();
 			foreach(DataRow row in table.Rows)
 			{
-				volunteers.Add(new Volunteer(row));
+				badges.Add(new Badge(row));
 			}
 			
 			connector = null;
-			return volunteers;
+			return badges;
 		}
 		
 		public static Volunteer GetByID(int volunteerId)
