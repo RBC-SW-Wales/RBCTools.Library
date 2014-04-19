@@ -27,5 +27,24 @@ namespace RbcTools.Library.Database
 			}
 			return departments;
 		}
+		
+		public static Department GetById(int id)
+		{
+			var connector = new Connector("SELECT ID, Trade " +
+			                              "FROM Trades " +
+			                              "WHERE Trades.ID = @DepartmentId");
+			connector.AddParameter("@DepartmentId", id);
+			DataTable table = connector.ExecuteDataTable();
+			
+			Department department = null;
+			
+			if(table.Rows.Count == 1)
+			{
+				department = new Department(table.Rows[0]);
+			}
+			connector = null;
+			table = null;
+			return department;
+		}
 	}
 }
