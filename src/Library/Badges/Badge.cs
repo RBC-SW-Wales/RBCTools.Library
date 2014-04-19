@@ -12,11 +12,20 @@ namespace RbcTools.Library.Badges
 		
 		public Badge(DataRow row)
 		{
-			this.FirstName = row["FirstName"] as string;
-			this.LastName = row["Surname"] as string;
+			this.FirstName = (string)row["FirstName"];
+			this.LastName = (string)row["Surname"];
 			this.CongregationName = row["Congregation"] as string;
-			this.DepartmentName = row["Trade"] as string;
+			this.DepartmentName = row["TradeName"] as string;
 			this.HasDrillsTraining = (bool)row["Drills"];
+			this.HasPlanersTraing = (bool)row["Planers"];
+			this.HasRoutersTraining = (bool)row["Routers"];
+			this.HasCitbPlantTraining  = (bool)row["CITBPlant"];
+			this.HasJigsawsTraining  = (bool)row["Jigsaw"];
+			this.HasNailersTraining  = (bool)row["Nailers"];
+			this.HasChopSawsTraining  = (bool)row["ChopSaw"];
+			this.HasCircularSawsTraining  = (bool)row["CircSaw"];
+			this.HasRoofAndScaffoldAccess  = (bool)row["RoofScaffold"];
+			this.HasSiteAccess  = (bool)row["Inducted"];
 		}
 		
 		#endregion

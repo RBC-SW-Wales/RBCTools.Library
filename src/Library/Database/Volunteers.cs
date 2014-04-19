@@ -61,11 +61,11 @@ namespace RbcTools.Library.Database
 			return table;
 		}
 		
-		public static List<Badge> GetByDepartment(Department department)
+		public static List<Badge> GetBadgesByDepartment(Department department)
 		{
-			var connector = new Connector(" SELECT Volunteers.* FROM Volunteers " +
-			                              " INNER JOIN Trades ON (Trades.ID = Volunteers.Trade) " +
-			                              " WHERE Trades.ID = @DepartmentID " +
+			var connector = new Connector(" SELECT Volunteers.*, Trades.Trade AS TradeName, Congregation.CongregationName AS Congregation " +
+			                              " FROM (Volunteers INNER JOIN Trades ON (Trades.ID = Volunteers.Trade)) INNER JOIN Congregation ON (Congregation.ID = Volunteers.CongregationName) " +
+			                              " WHERE Trades.ID = @DepartmentId " +
 			                              " ORDER BY Volunteers.Surname");
 			connector.AddParameter("@DepartmentID", department.ID);
 			var table = connector.ExecuteDataTable();
