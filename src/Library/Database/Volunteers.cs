@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Data;
 
 namespace RbcTools.Library.Database
@@ -59,6 +60,25 @@ namespace RbcTools.Library.Database
 			return table;
 		}
 		
+		public static List<Volunteer> GetByDepartment(Department department)
+		{
+			var connector = new Connector(" SELECT Volunteers.* FROM Volunteers " +
+			                              " INNER JOIN Trades ON (Trades.ID = Volunteers.Trade) " +
+			                              " WHERE Trades.ID = @DepartmentID " +
+			                              " ORDER BY Volunteers.Surname");
+			connector.AddParameter("@DepartmentID", department.ID);
+			var table = connector.ExecuteDataTable();
+			
+			var volunteers = new List<Volunteer>();
+			foreach(DataRow row in table.Rows)
+			{
+				volunteers.Add(new Volunteer(row));
+			}
+			
+			connector = null;
+			return volunteers;
+		}
+		
 		public static Volunteer GetByID(int volunteerId)
 		{
 			Volunteer volunteer = null;
@@ -74,19 +94,9 @@ namespace RbcTools.Library.Database
 			
 			if(table.Rows.Count == 1)
 			{
-				volunteer = BuildFromDataRow(table.Rows[0]);
+				volunteer = new Volunteer(table.Rows[0]);
 			}
 			
-			return volunteer;
-		}
-		
-		private static Volunteer BuildFromDataRow(DataRow row)
-		{
-			var volunteer = new Volunteer();
-			volunteer.ID = (int)row["ID"];
-			volunteer.FirstName = row["FirstName"] as string;
-			volunteer.MiddleNames = row["MiddleName"] as string;
-			volunteer.LastName = row["Surname"] as string;
 			return volunteer;
 		}
 		
