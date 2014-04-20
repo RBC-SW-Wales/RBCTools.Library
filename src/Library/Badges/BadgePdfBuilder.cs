@@ -188,6 +188,8 @@ namespace RbcTools.Library.Badges
 			this.DrawCheckItem(contentRect.X, y, badge.HasCitbPlantTraining, "CITB plant");
 			this.DrawCheckItem(col2X, y, badge.HasCircularSawsTraining, "Circular saws");
 			
+			var dateRect = new XRect(col3X, y, columnWidth * 4, rowHeight);
+			this.DrawString("Printed: " + DateTime.Now.ToString("dd MMM yyyy"), dateRect, this.fontItalic);
 		}
 		
 		private void CreatePage()
