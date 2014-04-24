@@ -1,6 +1,8 @@
 ﻿
 using System;
 using System.Collections.Generic;
+using System.Data;
+
 using RbcTools.Library.Database;
 
 namespace RbcTools.Library
@@ -13,6 +15,14 @@ namespace RbcTools.Library
 	{
 		
 		public Volunteer(){}
+		
+		public Volunteer(DataRow row)
+		{
+			this.ID = (int)row["ID"];
+			this.FirstName = row["FirstName"] as string;
+			this.MiddleNames = row["MiddleName"] as string;
+			this.LastName = row["Surname"] as string;
+		}
 		
 		#region Properties
 		

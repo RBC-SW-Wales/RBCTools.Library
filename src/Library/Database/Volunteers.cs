@@ -1,5 +1,7 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Data;
+using RbcTools.Library.Badges;
 
 namespace RbcTools.Library.Database
 {
@@ -59,6 +61,25 @@ namespace RbcTools.Library.Database
 			return table;
 		}
 		
+		public static List<Badge> GetBadgesByDepartment(Department department)
+		{
+			var connector = new Connector(" SELECT Volunteers.*, Trades.Trade AS TradeName, Congregation.CongregationName AS Congregation " +
+			                              " FROM (Volunteers INNER JOIN Trades ON (Trades.ID = Volunteers.Trade)) INNER JOIN Congregation ON (Congregation.ID = Volunteers.CongregationName) " +
+			                              " WHERE Trades.ID = @DepartmentId " +
+			                              " ORDER BY Volunteers.Surname");
+			connector.AddParameter("@DepartmentID", department.ID);
+			var table = connector.ExecuteDataTable();
+			
+			var badges = new List<Badge>();
+			foreach(DataRow row in table.Rows)
+			{
+				badges.Add(new Badge(row));
+			}
+			
+			connector = null;
+			return badges;
+		}
+		
 		public static Volunteer GetByID(int volunteerId)
 		{
 			Volunteer volunteer = null;
@@ -74,19 +95,9 @@ namespace RbcTools.Library.Database
 			
 			if(table.Rows.Count == 1)
 			{
-				volunteer = BuildFromDataRow(table.Rows[0]);
+				volunteer = new Volunteer(table.Rows[0]);
 			}
 			
-			return volunteer;
-		}
-		
-		private static Volunteer BuildFromDataRow(DataRow row)
-		{
-			var volunteer = new Volunteer();
-			volunteer.ID = (int)row["ID"];
-			volunteer.FirstName = row["FirstName"] as string;
-			volunteer.MiddleNames = row["MiddleName"] as string;
-			volunteer.LastName = row["Surname"] as string;
 			return volunteer;
 		}
 		

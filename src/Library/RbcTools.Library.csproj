@@ -46,11 +46,27 @@
     <Reference Include="itextsharp">
       <HintPath>..\packages\iTextSharp.5.4.3\lib\itextsharp.dll</HintPath>
     </Reference>
+    <Reference Include="MigraDoc.DocumentObjectModel">
+      <HintPath>..\..\..\..\packages\PDFsharp-MigraDoc-GDI.1.32.4334.0\lib\net20\MigraDoc.DocumentObjectModel.dll</HintPath>
+    </Reference>
+    <Reference Include="MigraDoc.Rendering">
+      <HintPath>..\..\..\..\packages\PDFsharp-MigraDoc-GDI.1.32.4334.0\lib\net20\MigraDoc.Rendering.dll</HintPath>
+    </Reference>
+    <Reference Include="MigraDoc.RtfRendering">
+      <HintPath>..\..\..\..\packages\PDFsharp-MigraDoc-GDI.1.32.4334.0\lib\net20\MigraDoc.RtfRendering.dll</HintPath>
+    </Reference>
+    <Reference Include="PdfSharp">
+      <HintPath>..\..\..\..\packages\PDFsharp-MigraDoc-GDI.1.32.4334.0\lib\net20\PdfSharp.dll</HintPath>
+    </Reference>
+    <Reference Include="PdfSharp.Charting">
+      <HintPath>..\..\..\..\packages\PDFsharp-MigraDoc-GDI.1.32.4334.0\lib\net20\PdfSharp.Charting.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core">
       <RequiredTargetFramework>3.5</RequiredTargetFramework>
     </Reference>
     <Reference Include="System.Data" />
+    <Reference Include="System.Drawing" />
     <Reference Include="System.Xml" />
     <Reference Include="System.Xml.Linq">
       <RequiredTargetFramework>3.5</RequiredTargetFramework>
@@ -58,11 +74,16 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="ApplicationKind.cs" />
+    <Compile Include="Badges\Badge.cs" />
+    <Compile Include="Badges\BadgePdfBuilder.cs" />
+    <Compile Include="Database\AccessFileDownloader.cs" />
     <Compile Include="Database\AccessFileMissingException.cs" />
+    <Compile Include="Database\AccessFileUrlException.cs" />
     <Compile Include="Database\Congregations.cs" />
     <Compile Include="Database\Connector.cs" />
     <Compile Include="Database\Departments.cs" />
     <Compile Include="Database\Volunteers.cs" />
+    <Compile Include="Department.cs" />
     <Compile Include="FormOfServiceKinds.cs" />
     <Compile Include="GenderKind.cs" />
     <Compile Include="CongregationPriviledgeKinds.cs" />
@@ -77,6 +98,7 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Database" />
+    <Folder Include="Badges" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
