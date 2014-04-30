@@ -114,8 +114,8 @@ namespace RbcTools.Library.Badges
 			var contentRect = new XRect(rectBadge.X + (columnWidth / 2), topRow.Bottom, rectBadge.Width - columnWidth, rectBadge.Height - topRow.Height);
 			
 			// Name, Congregation and Department labels
-			var labelWidth = columnWidth * 2;
-			var valueWidth = columnWidth * 5.5;
+			var labelWidth = columnWidth * 1.5;
+			var valueWidth = columnWidth * 6;
 			var valueXPoint = contentRect.X + labelWidth;
 			
 			var nameLabel = new XRect(contentRect.X, contentRect.Y, labelWidth, rowHeight);
