@@ -61,6 +61,23 @@ namespace RbcTools.Library.Database
 			return table;
 		}
 		
+		public static DataTable GetByDepartment(Department department)
+		{
+			var connector = new Connector(" SELECT " +
+			                              " Volunteers.ID, " +
+			                              " Volunteers.FirstName, " +
+			                              " Volunteers.MiddleName, " +
+			                              " Volunteers.Surname " +
+			                              " FROM Volunteers " +
+			                              " INNER JOIN Trades ON (Trades.ID = Volunteers.Trade) " +
+			                              " WHERE Trades.ID = @DepartmentId " +
+			                              " ORDER BY Volunteers.Surname ");
+			connector.AddParameter("@DepartmentID", department.ID);
+			var table = connector.ExecuteDataTable();
+			connector = null;
+			return table;
+		}
+		
 		public static List<Badge> GetBadgesByDepartment(Department department)
 		{
 			var connector = new Connector(" SELECT Volunteers.*, Trades.Trade AS TradeName, Congregation.CongregationName AS Congregation " +
@@ -68,6 +85,26 @@ namespace RbcTools.Library.Database
 			                              " WHERE Trades.ID = @DepartmentId " +
 			                              " ORDER BY Volunteers.Surname");
 			connector.AddParameter("@DepartmentID", department.ID);
+			var table = connector.ExecuteDataTable();
+			
+			var badges = new List<Badge>();
+			foreach(DataRow row in table.Rows)
+			{
+				badges.Add(new Badge(row));
+			}
+			
+			connector = null;
+			return badges;
+		}
+		
+		public static List<Badge> GetBadgesByVolunteerIdList(List<int> volunteerIds)
+		{
+			var volunteerIdString = string.Join(", ", volunteerIds);
+			
+			var connector = new Connector(" SELECT Volunteers.*, Trades.Trade AS TradeName, Congregation.CongregationName AS Congregation " +
+			                              " FROM (Volunteers INNER JOIN Trades ON (Trades.ID = Volunteers.Trade)) INNER JOIN Congregation ON (Congregation.ID = Volunteers.CongregationName) " +
+			                              " WHERE Volunteers.ID IN(" + volunteerIdString + ") " +
+			                              " ORDER BY Volunteers.Surname");
 			var table = connector.ExecuteDataTable();
 			
 			var badges = new List<Badge>();
