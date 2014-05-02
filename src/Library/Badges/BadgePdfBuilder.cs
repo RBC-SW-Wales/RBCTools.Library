@@ -137,7 +137,7 @@ namespace RbcTools.Library.Badges
 			this.graphics.DrawLine(XPens.Gray, deptLabel.BottomLeft, dept.BottomRight);
 			
 			// Logo Area
-			var logoXPoint = valueXPoint + (columnWidth * 6);
+			var logoXPoint = valueXPoint + (columnWidth * 6.5);
 			
 			if(this.UseLocalVolunteerDesign)
 			{
