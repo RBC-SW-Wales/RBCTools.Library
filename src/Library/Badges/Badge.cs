@@ -8,7 +8,23 @@ namespace RbcTools.Library.Badges
 	{
 		#region Constructors
 		
-		public Badge(){}
+		public Badge()
+		{
+			this.FirstName = "";
+			this.LastName = "";
+			this.CongregationName = "";
+			this.DepartmentName = "";
+			this.HasDrillsTraining = false;
+			this.HasPlanersTraing = false;
+			this.HasRoutersTraining = false;
+			this.HasCitbPlantTraining  = false;
+			this.HasJigsawsTraining = false;
+			this.HasNailersTraining = false;
+			this.HasChopSawsTraining = false;
+			this.HasCircularSawsTraining = false;
+			this.HasRoofAndScaffoldAccess = false;
+			this.HasSiteAccess = false;
+		}
 		
 		public Badge(DataRow row)
 		{
@@ -19,18 +35,18 @@ namespace RbcTools.Library.Badges
 			this.HasDrillsTraining = (bool)row["Drills"];
 			this.HasPlanersTraing = (bool)row["Planers"];
 			this.HasRoutersTraining = (bool)row["Routers"];
-			this.HasCitbPlantTraining  = (bool)row["CITBPlant"];
-			this.HasJigsawsTraining  = (bool)row["Jigsaw"];
-			this.HasNailersTraining  = (bool)row["Nailers"];
-			this.HasChopSawsTraining  = (bool)row["ChopSaw"];
-			this.HasCircularSawsTraining  = (bool)row["CircSaw"];
-			this.HasRoofAndScaffoldAccess  = (bool)row["RoofScaffold"];
-			this.HasSiteAccess  = (bool)row["Inducted"];
+			this.HasCitbPlantTraining = (bool)row["CITBPlant"];
+			this.HasJigsawsTraining = (bool)row["Jigsaw"];
+			this.HasNailersTraining = (bool)row["Nailers"];
+			this.HasChopSawsTraining = (bool)row["ChopSaw"];
+			this.HasCircularSawsTraining = (bool)row["CircSaw"];
+			this.HasRoofAndScaffoldAccess = (bool)row["RoofScaffold"];
+			this.HasSiteAccess = (bool)row["Inducted"];
 		}
 		
 		#endregion
 		
-		
+		#region Properties
 		
 		public string FirstName { get; set; }
 		
@@ -68,5 +84,6 @@ namespace RbcTools.Library.Badges
 		
 		public bool HasSiteAccess { get; set; }
 		
+		#endregion
 	}
 }

@@ -114,8 +114,8 @@ namespace RbcTools.Library.Badges
 			var contentRect = new XRect(rectBadge.X + (columnWidth / 2), topRow.Bottom, rectBadge.Width - columnWidth, rectBadge.Height - topRow.Height);
 			
 			// Name, Congregation and Department labels
-			var labelWidth = columnWidth * 2;
-			var valueWidth = columnWidth * 5.5;
+			var labelWidth = columnWidth * 1.5;
+			var valueWidth = columnWidth * 6;
 			var valueXPoint = contentRect.X + labelWidth;
 			
 			var nameLabel = new XRect(contentRect.X, contentRect.Y, labelWidth, rowHeight);
@@ -137,7 +137,7 @@ namespace RbcTools.Library.Badges
 			this.graphics.DrawLine(XPens.Gray, deptLabel.BottomLeft, dept.BottomRight);
 			
 			// Logo Area
-			var logoXPoint = valueXPoint + (columnWidth * 6);
+			var logoXPoint = valueXPoint + (columnWidth * 6.5);
 			
 			if(this.UseLocalVolunteerDesign)
 			{
@@ -189,7 +189,7 @@ namespace RbcTools.Library.Badges
 			this.DrawCheckItem(col2X, y, badge.HasCircularSawsTraining, "Circular saws");
 			
 			var dateRect = new XRect(col3X, y, columnWidth * 4, rowHeight);
-			this.DrawString("Printed: " + DateTime.Now.ToString("dd MMM yyyy"), dateRect, this.fontItalic);
+			this.DrawString("Date: " + DateTime.Now.ToString("d MMM yyyy"), dateRect, this.fontItalic);
 		}
 		
 		private void CreatePage()
