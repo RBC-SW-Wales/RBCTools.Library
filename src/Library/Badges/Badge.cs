@@ -11,6 +11,7 @@ namespace RbcTools.Library.Badges
 		public Badge()
 		{
 			this.FirstName = "";
+			this.MiddleName = "";
 			this.LastName = "";
 			this.CongregationName = "";
 			this.DepartmentName = "";
@@ -28,8 +29,9 @@ namespace RbcTools.Library.Badges
 		
 		public Badge(DataRow row)
 		{
-			this.FirstName = (string)row["FirstName"];
-			this.LastName = (string)row["Surname"];
+			this.FirstName = row["FirstName"] as string;
+			this.MiddleName = row["MiddleName"] as string;
+			this.LastName = row["Surname"] as string;
 			this.CongregationName = row["Congregation"] as string;
 			this.DepartmentName = row["TradeName"] as string;
 			this.HasDrillsTraining = (bool)row["Drills"];
@@ -50,13 +52,22 @@ namespace RbcTools.Library.Badges
 		
 		public string FirstName { get; set; }
 		
+		public string MiddleName { get; set; }
+		
 		public string LastName { get; set; }
 		
 		public string FullName
 		{
 			get
 			{
-				return FirstName + " " + LastName;
+				var fullName = "";
+				
+				if(!string.IsNullOrWhiteSpace(this.MiddleName))
+					fullName = string.Format("{0} {1} {2}", this.FirstName, this.MiddleName, this.LastName);
+				else
+					fullName = string.Format("{0} {1}", this.FirstName, this.LastName);
+				
+				return fullName;
 			}
 		}
 		
