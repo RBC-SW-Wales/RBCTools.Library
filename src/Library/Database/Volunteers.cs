@@ -24,11 +24,11 @@ namespace RbcTools.Library.Database
 			var connector = new Connector(BasicQuery +
 			                              " WHERE Volunteers.FirstName = @FirstName " +
 			                              " AND Volunteers.Surname = @Surname " +
-			                              " AND Volunteers.Gender = @Gender " +
+//			                              " AND Volunteers.Gender = @Gender " +
 			                              " ORDER BY Volunteers.Surname ");
 			connector.AddParameter("@FirstName", firstName);
 			connector.AddParameter("@Surname", lastName);
-			connector.AddParameter("@Gender", gender.ToString());
+//			connector.AddParameter("@Gender", gender.ToString());
 			var table = connector.ExecuteDataTable();
 			connector = null;
 			return table;
@@ -39,11 +39,11 @@ namespace RbcTools.Library.Database
 			var connector = new Connector(BasicQuery +
 			                              " WHERE " +
 			                              " (Volunteers.FirstName = @FirstName OR Volunteers.Surname = @Surname)" +
-			                              " AND Volunteers.Gender = @Gender " +
+//			                              " AND Volunteers.Gender = @Gender " +
 			                              " ORDER BY Volunteers.Surname ");
 			connector.AddParameter("@FirstName", firstName);
 			connector.AddParameter("@Surname", lastName);
-			connector.AddParameter("@Gender", gender.ToString());
+//			connector.AddParameter("@Gender", gender.ToString());
 			var table = connector.ExecuteDataTable();
 			connector = null;
 			return table;
@@ -52,10 +52,11 @@ namespace RbcTools.Library.Database
 		public static DataTable GetByLastName(string lastName, GenderKind gender)
 		{
 			var connector = new Connector(BasicQuery +
-			                              " WHERE Volunteers.Surname = @Surname AND Volunteers.Gender = @Gender " +
+			                              " WHERE Volunteers.Surname = @Surname " +
+//			                              " AND Volunteers.Gender = @Gender " +
 			                              " ORDER BY Volunteers.Surname ");
 			connector.AddParameter("@Surname", lastName);
-			connector.AddParameter("@Gender", gender.ToString());
+//			connector.AddParameter("@Gender", gender.ToString());
 			var table = connector.ExecuteDataTable();
 			connector = null;
 			return table;
