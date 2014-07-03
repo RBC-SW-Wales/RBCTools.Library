@@ -8,31 +8,51 @@ namespace RbcTools.Library.Badges
 	{
 		#region Constructors
 		
-		public Badge(){}
+		public Badge()
+		{
+			this.FirstName = "";
+			this.MiddleName = "";
+			this.LastName = "";
+			this.CongregationName = "";
+			this.DepartmentName = "";
+			this.HasDrillsTraining = false;
+			this.HasPlanersTraing = false;
+			this.HasRoutersTraining = false;
+			this.HasCitbPlantTraining  = false;
+			this.HasJigsawsTraining = false;
+			this.HasNailersTraining = false;
+			this.HasChopSawsTraining = false;
+			this.HasCircularSawsTraining = false;
+			this.HasRoofAndScaffoldAccess = false;
+			this.HasSiteAccess = false;
+		}
 		
 		public Badge(DataRow row)
 		{
-			this.FirstName = (string)row["FirstName"];
-			this.LastName = (string)row["Surname"];
+			this.FirstName = row["FirstName"] as string;
+			this.MiddleName = row["MiddleName"] as string;
+			this.LastName = row["Surname"] as string;
 			this.CongregationName = row["Congregation"] as string;
 			this.DepartmentName = row["TradeName"] as string;
 			this.HasDrillsTraining = (bool)row["Drills"];
 			this.HasPlanersTraing = (bool)row["Planers"];
 			this.HasRoutersTraining = (bool)row["Routers"];
-			this.HasCitbPlantTraining  = (bool)row["CITBPlant"];
-			this.HasJigsawsTraining  = (bool)row["Jigsaw"];
-			this.HasNailersTraining  = (bool)row["Nailers"];
-			this.HasChopSawsTraining  = (bool)row["ChopSaw"];
-			this.HasCircularSawsTraining  = (bool)row["CircSaw"];
-			this.HasRoofAndScaffoldAccess  = (bool)row["RoofScaffold"];
-			this.HasSiteAccess  = (bool)row["Inducted"];
+			this.HasCitbPlantTraining = (bool)row["CITBPlant"];
+			this.HasJigsawsTraining = (bool)row["Jigsaw"];
+			this.HasNailersTraining = (bool)row["Nailers"];
+			this.HasChopSawsTraining = (bool)row["ChopSaw"];
+			this.HasCircularSawsTraining = (bool)row["CircSaw"];
+			this.HasRoofAndScaffoldAccess = (bool)row["RoofScaffold"];
+			this.HasSiteAccess = (bool)row["Inducted"];
 		}
 		
 		#endregion
 		
-		
+		#region Properties
 		
 		public string FirstName { get; set; }
+		
+		public string MiddleName { get; set; }
 		
 		public string LastName { get; set; }
 		
@@ -40,7 +60,14 @@ namespace RbcTools.Library.Badges
 		{
 			get
 			{
-				return FirstName + " " + LastName;
+				var fullName = "";
+				
+				if(!string.IsNullOrWhiteSpace(this.MiddleName))
+					fullName = string.Format("{0} {1} {2}", this.FirstName, this.MiddleName, this.LastName);
+				else
+					fullName = string.Format("{0} {1}", this.FirstName, this.LastName);
+				
+				return fullName;
 			}
 		}
 		
@@ -68,5 +95,6 @@ namespace RbcTools.Library.Badges
 		
 		public bool HasSiteAccess { get; set; }
 		
+		#endregion
 	}
 }
