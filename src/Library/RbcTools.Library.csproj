@@ -43,6 +43,9 @@
     <DefineConstants>TRACE</DefineConstants>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="BarcodeLib">
+      <HintPath>..\references\BarcodeLib.dll</HintPath>
+    </Reference>
     <Reference Include="itextsharp">
       <HintPath>..\packages\iTextSharp.5.4.3\lib\itextsharp.dll</HintPath>
     </Reference>
