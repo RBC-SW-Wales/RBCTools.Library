@@ -4,11 +4,11 @@ using System.Drawing;
 using System.IO;
 using System.Reflection;
 
+using BarcodeLib;
 using MigraDoc.DocumentObjectModel;
 using PdfSharp;
 using PdfSharp.Drawing;
 using PdfSharp.Pdf;
-
 using RbcTools.Library;
 
 namespace RbcTools.Library.Badges
@@ -174,11 +174,6 @@ namespace RbcTools.Library.Badges
 			this.DrawString("Access & Training", training, this.fontItalic);
 			
 			y += this.rowHeight;
-			
-			// Placeholder for barcode to appear
-			var barcodeRect = new XRect(col3X, y, columnWidth * 4, rowHeight * 4);
-			this.graphics.DrawRectangle(topRowBrush, barcodeRect);
-			
 			this.DrawCheckItem(contentRect.X, y, badge.HasSiteAccess, "Site");
 			this.DrawCheckItem(col2X, y, badge.HasRoofAndScaffoldAccess, "Roof/Scaffold");
 			
@@ -190,6 +185,17 @@ namespace RbcTools.Library.Badges
 			this.DrawCheckItem(contentRect.X, y, badge.HasPlanersTraing, "Planers");
 			this.DrawCheckItem(col2X, y, badge.HasNailersTraining, "Nailers");
 			
+			// Placeholder for barcode to appear
+			var barcodeRect = new XRect(col3X, y, columnWidth * 4, rowHeight * 2);
+			//this.graphics.DrawRectangle(topRowBrush, barcodeRect);
+			using(Barcode barcode = new Barcode())
+			{
+				barcode.IncludeLabel = false;
+				barcode.ImageFormat = System.Drawing.Imaging.ImageFormat.Gif;
+				barcode.Encode(TYPE.CODE128, badge.VolunteerID.ToString(), 600, 100);
+				this.graphics.DrawImage(XImage.FromGdiPlusImage(barcode.EncodedImage), barcodeRect);
+			}
+			
 			y += this.rowHeight;
 			this.DrawCheckItem(contentRect.X, y, badge.HasRoutersTraining, "Routers");
 			this.DrawCheckItem(col2X, y, badge.HasChopSawsTraining, "Chop saws");
@@ -197,6 +203,9 @@ namespace RbcTools.Library.Badges
 			y += this.rowHeight;
 			this.DrawCheckItem(contentRect.X, y, badge.HasCitbPlantTraining, "CITB plant");
 			this.DrawCheckItem(col2X, y, badge.HasCircularSawsTraining, "Circular saws");
+			
+			var idRect = new XRect(col3X, y, columnWidth * 4, rowHeight);
+			this.DrawString("ID: " + badge.VolunteerID, idRect, this.fontNormal);
 			
 		}
 		
@@ -255,7 +264,7 @@ namespace RbcTools.Library.Badges
 //			var bitmap = GetBitmapFromResource(imageName);
 //			return XImage.FromGdiPlusImage(bitmap);
 //		}
-//		
+//
 //		private static Bitmap GetBitmapFromResource(string imageName)
 //		{
 //			Bitmap bitmap = null;

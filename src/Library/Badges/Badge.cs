@@ -29,6 +29,7 @@ namespace RbcTools.Library.Badges
 		
 		public Badge(DataRow row)
 		{
+			this.VolunteerID = (int)row["ID"];
 			this.FirstName = row["FirstName"] as string;
 			this.MiddleName = row["MiddleName"] as string;
 			this.LastName = row["Surname"] as string;
@@ -49,6 +50,8 @@ namespace RbcTools.Library.Badges
 		#endregion
 		
 		#region Properties
+		
+		public int VolunteerID { get; set; }
 		
 		public string FirstName { get; set; }
 		
