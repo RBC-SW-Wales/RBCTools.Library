@@ -28,8 +28,8 @@ namespace RbcTools.Library.Badges
 			this.badgeWidth = Unit.FromInch(3.3);
 			this.badgeHeight = Unit.FromInch(2.1);
 			
-			// Each badge area is split into 9 even rows and 13 even columns.
-			this.rowHeight = this.badgeHeight / 9;
+			// Each badge area is split into 11 even rows and 13 even columns.
+			this.rowHeight = this.badgeHeight / 11;
 			this.columnWidth = this.badgeWidth / 13;
 			
 			var fontOptions = new XPdfFontOptions(PdfFontEmbedding.Always);
@@ -136,13 +136,19 @@ namespace RbcTools.Library.Badges
 			this.graphics.DrawString(badge.DepartmentName, this.fontNormal, XBrushes.Black, dept, this.centerLeft);
 			this.graphics.DrawLine(XPens.Gray, deptLabel.BottomLeft, dept.BottomRight);
 			
+			var dateLabel = new XRect(contentRect.X, deptLabel.Bottom, labelWidth, rowHeight);
+			this.graphics.DrawString("Date", this.fontItalic, XBrushes.Black, dateLabel, this.centerLeft);
+			var dateRect = new XRect(valueXPoint, deptLabel.Bottom, valueWidth, rowHeight);
+			this.graphics.DrawString(DateTime.Now.ToString("d MMM yyyy"), this.fontNormal, XBrushes.Black, dateRect, this.centerLeft);
+			this.graphics.DrawLine(XPens.Gray, dateLabel.BottomLeft, dateRect.BottomRight);
+			
 			// Logo Area
 			var logoXPoint = valueXPoint + (columnWidth * 6.5);
 			
 			if(this.UseLocalVolunteerDesign)
 			{
 				// If the "Local Volunteer" flag is true, show that text
-				var localRect1 = new XRect(logoXPoint, contentRect.Y + rowHeight / 2, columnWidth * 4, rowHeight * 1);
+				var localRect1 = new XRect(logoXPoint, contentRect.Y + rowHeight / 2, columnWidth * 4, rowHeight * 2);
 				var localRect2 = new XRect(logoXPoint, localRect1.Bottom, columnWidth * 4, rowHeight * 1);
 				this.graphics.DrawString("Local", this.fontLocal, XBrushes.DarkOrange, localRect1, XStringFormats.Center);
 				this.graphics.DrawString("Volunteer", this.fontLocal, XBrushes.DarkOrange, localRect2, XStringFormats.Center);
@@ -150,7 +156,7 @@ namespace RbcTools.Library.Badges
 			else
 			{
 				// Otherwise (not local volunteer badge), show the RBC text
-				var logoRect1 = new XRect(logoXPoint, contentRect.Y + Unit.FromPoint(1), columnWidth * 4, rowHeight * 2);
+				var logoRect1 = new XRect(logoXPoint, contentRect.Y + Unit.FromPoint(1), columnWidth * 4, rowHeight * 2.5);
 				var logoRect2 = new XRect(logoXPoint, logoRect1.Bottom, columnWidth * 4, rowHeight / 2);
 				var logoRect3 = new XRect(logoXPoint, logoRect2.Bottom, columnWidth * 4, rowHeight / 2);
 				this.graphics.DrawString("RBC", this.fontLogo, XBrushes.DarkGreen, logoRect1, XStringFormats.Center);
@@ -159,26 +165,30 @@ namespace RbcTools.Library.Badges
 			}
 			
 			// Training
-			var y = dept.Bottom;
+			var y = dateRect.Bottom;
 			var col2X = contentRect.X + (columnWidth * 4);
 			var col3X = contentRect.X + (columnWidth * 8);
 			var halfRow = rowHeight / 2;
 			
 			var training = new XRect(contentRect.X, y + halfRow, columnWidth * 4, halfRow);
-			this.DrawString("Training", training, this.fontItalic);
+			this.DrawString("Access & Training", training, this.fontItalic);
 			
-			var access = new XRect(col3X, y + halfRow, columnWidth * 4, halfRow);
-			this.DrawString("Access", access, this.fontItalic);
+			y += this.rowHeight;
+			
+			// Placeholder for barcode to appear
+			var barcodeRect = new XRect(col3X, y, columnWidth * 4, rowHeight * 4);
+			this.graphics.DrawRectangle(topRowBrush, barcodeRect);
+			
+			this.DrawCheckItem(contentRect.X, y, badge.HasSiteAccess, "Site");
+			this.DrawCheckItem(col2X, y, badge.HasRoofAndScaffoldAccess, "Roof/Scaffold");
 			
 			y += this.rowHeight;
 			this.DrawCheckItem(contentRect.X, y, badge.HasDrillsTraining, "Drills");
 			this.DrawCheckItem(col2X, y, badge.HasJigsawsTraining, "Jigsaws");
-			this.DrawCheckItem(col3X, y, badge.HasRoofAndScaffoldAccess, "Roof/Scaffold");
 			
 			y += this.rowHeight;
 			this.DrawCheckItem(contentRect.X, y, badge.HasPlanersTraing, "Planers");
 			this.DrawCheckItem(col2X, y, badge.HasNailersTraining, "Nailers");
-			this.DrawCheckItem(col3X, y, badge.HasSiteAccess, "Site");
 			
 			y += this.rowHeight;
 			this.DrawCheckItem(contentRect.X, y, badge.HasRoutersTraining, "Routers");
@@ -188,8 +198,6 @@ namespace RbcTools.Library.Badges
 			this.DrawCheckItem(contentRect.X, y, badge.HasCitbPlantTraining, "CITB plant");
 			this.DrawCheckItem(col2X, y, badge.HasCircularSawsTraining, "Circular saws");
 			
-			var dateRect = new XRect(col3X, y, columnWidth * 4, rowHeight);
-			this.DrawString("Date: " + DateTime.Now.ToString("d MMM yyyy"), dateRect, this.fontItalic);
 		}
 		
 		private void CreatePage()
