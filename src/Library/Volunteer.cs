@@ -28,6 +28,14 @@ namespace RbcTools.Library
 		
 		public int ID { get; set; }
 		
+		public bool IsNewID
+		{
+			get
+			{
+				return this.ID == 0;
+			}
+		}
+		
 		public ApplicationKind ApplicationKind { get; set; }
 		
 		public FormOfServiceKinds FormsOfService { get; set; }
@@ -37,6 +45,21 @@ namespace RbcTools.Library
 		public string FirstName { get; set; }
 		
 		public string MiddleNames { get; set; }
+		
+		public string FullName
+		{
+			get
+			{
+				var fullName = "";
+				
+				if(!string.IsNullOrWhiteSpace(this.MiddleNames))
+					fullName = string.Format("{0} {1} {2}", this.FirstName, this.MiddleNames, this.LastName);
+				else
+					fullName = string.Format("{0} {1}", this.FirstName, this.LastName);
+				
+				return fullName;
+			}
+		}
 		
 		public GenderKind Gender { get; set; }
 		

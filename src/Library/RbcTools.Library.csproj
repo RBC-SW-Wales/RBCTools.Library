@@ -80,6 +80,7 @@
     <Compile Include="Database\AccessFileDownloader.cs" />
     <Compile Include="Database\AccessFileMissingException.cs" />
     <Compile Include="Database\AccessFileUrlException.cs" />
+    <Compile Include="Database\ActivityLog.cs" />
     <Compile Include="Database\Congregations.cs" />
     <Compile Include="Database\Connector.cs" />
     <Compile Include="Database\Departments.cs" />
