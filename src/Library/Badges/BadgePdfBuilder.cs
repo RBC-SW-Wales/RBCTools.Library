@@ -164,29 +164,106 @@ namespace RbcTools.Library.Badges
 				this.graphics.DrawString("Gloucestershire", this.fontNormal, XBrushes.DarkGreen, logoRect3, XStringFormats.Center);
 			}
 			
-			// Training
-			var y = dateRect.Bottom;
-			var col2X = contentRect.X + (columnWidth * 4);
-			var col3X = contentRect.X + (columnWidth * 8);
-			var halfRow = rowHeight / 2;
+			this.AccessAndTrainingLayout(badge, contentRect, dateRect.Bottom);
 			
-			var training = new XRect(contentRect.X, y + halfRow, columnWidth * 4, halfRow);
+			
+		}
+		
+		private void AccessAndTrainingLayout(Badge badge, XRect contentRect, double y)
+		{
+			// Heading
+			var training = new XRect(contentRect.X, y, columnWidth * 4, rowHeight);
 			this.DrawString("Access & Training", training, this.fontItalic);
 			
-			y += this.rowHeight;
-			this.DrawCheckItem(contentRect.X, y, badge.HasSiteAccess, "Site");
-			this.DrawCheckItem(col2X, y, badge.HasRoofAndScaffoldAccess, "Roof/Scaffold");
+			// Co-ordinates
+			var yRow1 = training.Bottom;
+			var yRow2 = yRow1 + rowHeight;
+			var yRow3 = yRow2 + rowHeight;
+			var yRow4 = yRow3 + rowHeight;
+			var yRow5 = yRow4 + rowHeight;
 			
-			y += this.rowHeight;
-			this.DrawCheckItem(contentRect.X, y, badge.HasDrillsTraining, "Drills");
-			this.DrawCheckItem(col2X, y, badge.HasJigsawsTraining, "Jigsaws");
+			var xCol1 = contentRect.X;
+			var xCol2 = xCol1 + (columnWidth * 4);
+			var xCol3 = xCol2 + (columnWidth * 4);
 			
-			y += this.rowHeight;
-			this.DrawCheckItem(contentRect.X, y, badge.HasPlanersTraing, "Planers");
-			this.DrawCheckItem(col2X, y, badge.HasNailersTraining, "Nailers");
+			var availablePoints = new List<XPoint>();
+			
+			// Column 1
+			availablePoints.Add(new XPoint(xCol1, yRow1));
+			availablePoints.Add(new XPoint(xCol1, yRow2));
+			availablePoints.Add(new XPoint(xCol1, yRow3));
+			availablePoints.Add(new XPoint(xCol1, yRow4));
+			availablePoints.Add(new XPoint(xCol1, yRow5));
+			
+			// Column 2
+			availablePoints.Add(new XPoint(xCol2, yRow1));
+			availablePoints.Add(new XPoint(xCol2, yRow2));
+			availablePoints.Add(new XPoint(xCol2, yRow3));
+			availablePoints.Add(new XPoint(xCol2, yRow4));
+			availablePoints.Add(new XPoint(xCol2, yRow5));
+
+			// Column 3
+			availablePoints.Add(new XPoint(xCol3, yRow1));
+			availablePoints.Add(new XPoint(xCol3, yRow2));
+			
+			var p = 0;
+			
+			// Access Boxes
+			if(badge.HasSiteAccess)
+			{
+				this.DrawAccessLabel(availablePoints[p].X, availablePoints[p].Y, XBrushes.LightGreen, "Construction"); p++;
+			}
+			if(badge.HasRoofAndScaffoldAccess)
+			{
+				this.DrawAccessLabel(availablePoints[p].X, availablePoints[p].Y, XBrushes.Yellow, "Roof/Scaffold"); p++;
+			}
+			/*
+			if(true)
+			{
+				this.DrawAccessLabel(availablePoints[p].X, availablePoints[p].Y, XBrushes.LightBlue, "Kitchen Areas"); p++;
+			}
+			if(true)
+			{
+				this.DrawAccessLabel(availablePoints[p].X, availablePoints[p].Y, XBrushes.IndianRed, "First Aid"); p++;
+			}
+			*/
+			
+			// Training Boxes
+			if(badge.HasDrillsTraining)
+			{
+				this.DrawCheckItem(availablePoints[p].X, availablePoints[p].Y, badge.HasDrillsTraining, "Drills"); p++;
+			}
+			if(badge.HasJigsawsTraining)
+			{
+				this.DrawCheckItem(availablePoints[p].X, availablePoints[p].Y, badge.HasJigsawsTraining, "Jigsaws"); p++;
+			}
+			if(badge.HasPlanersTraing)
+			{
+				this.DrawCheckItem(availablePoints[p].X, availablePoints[p].Y, badge.HasPlanersTraing, "Planers"); p++;
+			}
+			if(badge.HasNailersTraining)
+			{
+				this.DrawCheckItem(availablePoints[p].X, availablePoints[p].Y, badge.HasNailersTraining, "Nailers"); p++;
+			}
+			if(badge.HasRoutersTraining)
+			{
+				this.DrawCheckItem(availablePoints[p].X, availablePoints[p].Y, badge.HasRoutersTraining, "Routers"); p++;
+			}
+			if(badge.HasChopSawsTraining)
+			{
+				this.DrawCheckItem(availablePoints[p].X, availablePoints[p].Y, badge.HasChopSawsTraining, "Chop saws"); p++;
+			}
+			if(badge.HasCitbPlantTraining)
+			{
+				this.DrawCheckItem(availablePoints[p].X, availablePoints[p].Y, badge.HasCitbPlantTraining, "CITB plant"); p++;
+			}
+			if(badge.HasCircularSawsTraining)
+			{
+				this.DrawCheckItem(availablePoints[p].X, availablePoints[p].Y, badge.HasCircularSawsTraining, "Circular saws"); p++;
+			}
 			
 			// Placeholder for barcode to appear
-			var barcodeRect = new XRect(col3X, y, columnWidth * 4, rowHeight * 2);
+			var barcodeRect = new XRect(xCol3, yRow3, columnWidth * 4, rowHeight * 2);
 			//this.graphics.DrawRectangle(topRowBrush, barcodeRect);
 			using(Barcode barcode = new Barcode())
 			{
@@ -196,17 +273,8 @@ namespace RbcTools.Library.Badges
 				this.graphics.DrawImage(XImage.FromGdiPlusImage(barcode.EncodedImage), barcodeRect);
 			}
 			
-			y += this.rowHeight;
-			this.DrawCheckItem(contentRect.X, y, badge.HasRoutersTraining, "Routers");
-			this.DrawCheckItem(col2X, y, badge.HasChopSawsTraining, "Chop saws");
-			
-			y += this.rowHeight;
-			this.DrawCheckItem(contentRect.X, y, badge.HasCitbPlantTraining, "CITB plant");
-			this.DrawCheckItem(col2X, y, badge.HasCircularSawsTraining, "Circular saws");
-			
-			var idRect = new XRect(col3X, y, columnWidth * 4, rowHeight);
+			var idRect = new XRect(xCol3, yRow5, columnWidth * 4, rowHeight);
 			this.DrawString("ID: " + badge.VolunteerID, idRect, this.fontNormal);
-			
 		}
 		
 		private void CreatePage()
@@ -247,6 +315,29 @@ namespace RbcTools.Library.Badges
 			
 			this.DrawString(isChecked ? "R" : "£", checkRect, this.fontWingdings);
 			this.DrawString(text, textRect);
+		}
+		
+		private void DrawAccessLabel(double x, double y, XBrush colour, string text)
+		{
+			// Settings
+			double marginBottom = 2;
+			double paddingSides = 2;
+			double paddingTopBottom = 1;
+			
+			// Outer rect
+			var outerHeight = rowHeight - marginBottom;
+			var outer = new XRect(x, y, columnWidth * 3.5, outerHeight);
+			
+			// Inner rect
+			var innerX = outer.X + paddingSides;
+			var innerY = outer.Y + paddingTopBottom;
+			var innerWidth = outer.Width - (paddingSides * 2);
+			var innerHeight = outer.Height - (paddingTopBottom * 2);
+			var inner = new XRect(innerX, innerY, innerWidth, innerHeight);
+			
+			// Draw
+			this.graphics.DrawRectangle(colour, outer);
+			this.graphics.DrawString(text, this.fontNormal, XBrushes.Black, inner, this.centerLeft);
 		}
 		
 		private void DrawString(string text, XRect rect, XFont font = null)
