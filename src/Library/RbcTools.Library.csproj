@@ -83,6 +83,7 @@
     <Compile Include="Database\ActivityLog.cs" />
     <Compile Include="Database\Congregations.cs" />
     <Compile Include="Database\Connector.cs" />
+    <Compile Include="Database\DatabaseState.cs" />
     <Compile Include="Database\Departments.cs" />
     <Compile Include="Database\Volunteers.cs" />
     <Compile Include="Department.cs" />

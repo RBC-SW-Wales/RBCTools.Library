@@ -14,29 +14,5 @@ namespace RbcTools.Library.Database
 			conn.ExecuteNonQuery();
 			conn = null;
 		}
-		
-		public static void DeleteUnsyncronisedEntry()
-		{
-			var conn = new Connector("DELETE FROM ActivityLog WHERE ActivityLog.ID = -1");
-			conn.ExecuteNonQuery();
-			conn = null;
-		}
-		
-		public static bool IsDataSynchronsed()
-		{
-			var connector = new Connector(" SELECT " +
-			                              " ActivityLog.ID, " +
-			                              " ActivityLog.LogDateTime, " +
-			                              " ActivityLog.Description " +
-			                              " FROM ActivityLog " +
-			                              " WHERE ActivityLog.ID = -1 " +
-			                              " ORDER BY ActivityLog.LogDateTime ");
-			
-			var synced = connector.ExecuteDataTable().Rows.Count == 0;
-			
-			connector = null;
-			
-			return synced;
-		}
 	}
 }
