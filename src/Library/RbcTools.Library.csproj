@@ -46,6 +46,7 @@
     <Reference Include="itextsharp">
       <HintPath>..\packages\iTextSharp.5.4.3\lib\itextsharp.dll</HintPath>
     </Reference>
+    <Reference Include="Microsoft.Office.Interop.Access" />
     <Reference Include="MigraDoc.DocumentObjectModel">
       <HintPath>..\..\..\..\packages\PDFsharp-MigraDoc-GDI.1.32.4334.0\lib\net20\MigraDoc.DocumentObjectModel.dll</HintPath>
     </Reference>
@@ -79,8 +80,10 @@
     <Compile Include="Database\AccessFileDownloader.cs" />
     <Compile Include="Database\AccessFileMissingException.cs" />
     <Compile Include="Database\AccessFileUrlException.cs" />
+    <Compile Include="Database\ActivityLog.cs" />
     <Compile Include="Database\Congregations.cs" />
     <Compile Include="Database\Connector.cs" />
+    <Compile Include="Database\DatabaseState.cs" />
     <Compile Include="Database\Departments.cs" />
     <Compile Include="Database\Volunteers.cs" />
     <Compile Include="Department.cs" />
