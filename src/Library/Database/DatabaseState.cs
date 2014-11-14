@@ -1,4 +1,5 @@
 ﻿using System;
+using System.IO;
 using System.Runtime.InteropServices;
 using Access = Microsoft.Office.Interop.Access;
 
@@ -57,20 +58,24 @@ namespace RbcTools.Library.Database
 		public static bool TrySync()
 		{
 			var trySync = false;
-			var app = new Access.ApplicationClass();
-			app.OpenCurrentDatabase(AccessFileDownloader.AccessFilePath);
 			try
 			{
-				app.DoCmd.RunCommand(Access.AcCommand.acCmdSyncWebApplication);
-				trySync = true;
+				var app = new Access.ApplicationClass();
+				app.OpenCurrentDatabase(AccessFileDownloader.AccessFilePath);
+				try
+				{
+					app.DoCmd.RunCommand(Access.AcCommand.acCmdSyncWebApplication);
+					trySync = true;
+				}
+				catch (COMException){}
+				finally
+				{
+					app.CloseCurrentDatabase();
+					app.Quit(Access.AcQuitOption.acQuitSaveAll);
+				}
+				app = null;
 			}
-			catch (COMException){}
-			finally
-			{
-				app.CloseCurrentDatabase();
-				app.Quit(Access.AcQuitOption.acQuitSaveAll);
-			}
-			app = null;
+			catch (FileNotFoundException){}
 			return trySync;
 		}
 	}
