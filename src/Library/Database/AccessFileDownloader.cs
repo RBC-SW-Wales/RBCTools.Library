@@ -88,6 +88,14 @@ namespace RbcTools.Library.Database
 			return builder.ToString();
 		}
 		
+		public static void DeleteExistingFile()
+		{
+			if(AccessFileExists)
+			{
+				File.Delete(AccessFilePath);
+			}
+		}
+		
 		#endregion
 	}
 }
